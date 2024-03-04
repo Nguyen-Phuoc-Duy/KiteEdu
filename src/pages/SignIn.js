@@ -1,5 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useStore } from "../stores/store";
+import { Link, useHistory } from "react-router-dom";
 import {
   Layout,
   Menu,
@@ -11,29 +12,56 @@ import {
   Input,
   Switch,
 } from "antd";
-import signinbg from "../assets/images/img-signin.jpg";
+// import signinbg from "../assets/images/img-signin.jpg";
 import {
   DribbbleOutlined,
   TwitterOutlined,
   InstagramOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
+import { observer } from "mobx-react-lite";
 
 const SignIn = () => {
   const { Title } = Typography;
   const { Header, Footer, Content } = Layout;
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  const { accountStore } = useStore();
+  const { login, errorMessage } = accountStore;
+
+  // const onFinish = async (values) => {
+  //   console.log(values);
+  //   //await axiosAgents.AuthAction.login({});
+  // };
+
+  // useEffect(() => {
+  //   localStorage.removeItem("userInfo");
+  // }, []);
+
+  const handleSubmit = async (values) => {
+    const credentials = {
+      email: values.email,
+      password: values.password,
+    };
+
+    login(credentials);
+
+    // await axiosAgents.AuthAction.login(credentials).then((response) => {
+    //   if (response.errCode === 200) {
+    //     localStorage.setItem("userInfo", response.data.token);
+    //     history.push("/dashboard");
+    //   } else {
+    //     setErrorMessage(response.errMsg);
+    //   }
+    // });
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  // const onFinishFailed = (values) => {
+  //   console.log(values);
+  // };
 
-  const onChange = (checked) => {
-    console.log(`switch to ${checked}`);
-  };
+  // const onChange = (checked) => {
+  //   console.log(`switch to ${checked}`);
+  // };
 
   const template = (
     <svg
@@ -75,7 +103,12 @@ const SignIn = () => {
   );
 
   const signinIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+    >
       {/* SVG paths */}
     </svg>
   );
@@ -86,6 +119,14 @@ const SignIn = () => {
         <Header>
           <div className="header-col header-brand">
             <h5>Muse Dashboard</h5>
+            <marquee 
+            // class="marq" 
+            // bgcolor="Green" 
+            // direction="right" 
+            // loop=""
+            >
+              I love you ❤
+            </marquee>
           </div>
           <div className="header-col header-nav">
             <Menu mode="horizontal" defaultSelectedKeys={["4"]}>
@@ -119,6 +160,7 @@ const SignIn = () => {
             <Button type="primary">FREE DOWNLOAD</Button>
           </div>
         </Header>
+
         <Content className="signin">
           <Row gutter={[24, 0]} justify="space-around">
             <Col
@@ -127,12 +169,9 @@ const SignIn = () => {
               md={{ span: 12 }}
             >
               <Title className="mb-15">Sign In</Title>
-              <Title className="font-regular text-muted" level={5}>
-                Enter your email and password to sign in
-              </Title>
               <Form
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
+                onFinish={handleSubmit}
+                // onFinishFailed={onFinishFailed}
                 layout="vertical"
                 className="row-col"
               >
@@ -169,9 +208,11 @@ const SignIn = () => {
                   className="aligin-center"
                   valuePropName="checked"
                 >
-                  <Switch defaultChecked onChange={onChange} />
-                  Remember me
+                  {/* <Switch defaultChecked onChange={onChange} />
+                  Remember me */}
                 </Form.Item>
+
+                {errorMessage && <p>{errorMessage}</p>}
 
                 <Form.Item>
                   <Button
@@ -190,7 +231,7 @@ const SignIn = () => {
                 </p>
               </Form>
             </Col>
-            <Col
+            {/* <Col
               className="sign-img"
               style={{ padding: 12 }}
               xs={{ span: 24 }}
@@ -198,9 +239,10 @@ const SignIn = () => {
               md={{ span: 12 }}
             >
               <img src={signinbg} alt="" />
-            </Col>
+            </Col> */}
           </Row>
         </Content>
+
         <Footer>
           <Menu mode="horizontal">
             <Menu.Item>Company</Menu.Item>
@@ -253,4 +295,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default observer(SignIn);

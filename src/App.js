@@ -12,17 +12,36 @@
 import { Switch, Route, Redirect } from "react-router-dom";
 import Home from "./pages/Home";
 import Tables from "./pages/Tables";
+import Accounts from "./pages/Accounts";
 import Billing from "./pages/Billing";
 import Rtl from "./pages/Rtl";
 import Profile from "./pages/Profile";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import Main from "./components/layout/Main";
+import CreateAccounts from "./pages/CreateAccounts";
 //import "antd/dist/antd.css";
 import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
 import "antd/dist/antd.min.css";
+import { useEffect } from "react";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { observer } from "mobx-react-lite";
+import { useStore } from "./stores/store";
+
 function App() {
+  const history = useHistory();
+
+  const { accountStore } = useStore();
+  const { currentUserToken } = accountStore;
+
+  // useEffect(() => {
+  //   if (userToken) {
+  //     localStorage.removeItem("userInfo");
+  //     history.push("/sign-in");
+  //   }
+  // }, []);
+
   return (
     <div className="App">
       <Switch>
@@ -31,6 +50,8 @@ function App() {
         <Main>
           <Route exact path="/dashboard" component={Home} />
           <Route exact path="/tables" component={Tables} />
+          <Route exact path="/accounts" component={Accounts} />
+          <Route exact path="/create-accounts" component={CreateAccounts} />
           <Route exact path="/billing" component={Billing} />
           <Route exact path="/rtl" component={Rtl} />
           <Route exact path="/profile" component={Profile} />
@@ -41,4 +62,4 @@ function App() {
   );
 }
 
-export default App;
+export default observer(App);

@@ -9,7 +9,7 @@
   =========================================================
   * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Row,
@@ -42,10 +42,19 @@ import convesionImg5 from "../assets/images/face-2.jpg";
 import project1 from "../assets/images/home-decor-1.jpeg";
 import project2 from "../assets/images/home-decor-2.jpeg";
 import project3 from "../assets/images/home-decor-3.jpeg";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../stores/store";
 
 function Profile() {
   const [imageURL, setImageURL] = useState(false);
   const [, setLoading] = useState(false);
+
+  const { accountStore } = useStore();
+  const { currentUserInfo } = accountStore;
+
+  useEffect(() => {
+    console.log(currentUserInfo.email);
+  }, []);
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -368,8 +377,9 @@ function Profile() {
           </Col>
         </Row>
       </Card>
+      <div>sedrtfhu</div>
     </>
   );
 }
 
-export default Profile;
+export default observer(Profile);

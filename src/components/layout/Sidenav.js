@@ -248,8 +248,28 @@ function Sidenav({ color }) {
             <span className="label">Sign Up</span>
           </NavLink>
         </Menu.Item>
+        <Menu.Item key="9">
+          <NavLink to="/accounts">
+            <span
+              className="icon"
+            >
+              {profile}
+            </span>
+            <span className="label">Accounts</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="9">
+          <NavLink to="/create-accounts">
+            <span
+              className="icon"
+            >
+              {profile}
+            </span>
+            <span className="label">Create Accounts</span>
+          </NavLink>
+        </Menu.Item>
       </Menu>
-      <div className="aside-footer">
+      {/* <div className="aside-footer">
         <div
           className="footer-box"
           style={{
@@ -265,7 +285,7 @@ function Sidenav({ color }) {
             DOCUMENTATION
           </Button>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

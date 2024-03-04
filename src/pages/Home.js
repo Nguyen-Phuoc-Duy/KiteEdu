@@ -9,7 +9,7 @@
   =========================================================
   * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Card,
@@ -45,14 +45,35 @@ import team2 from "../assets/images/team-2.jpg";
 import team3 from "../assets/images/team-3.jpg";
 import team4 from "../assets/images/team-4.jpg";
 import card from "../assets/images/info-card-1.jpg";
-
+import { Link, useHistory } from "react-router-dom";
 function Home() {
   const { Title, Text } = Typography;
 
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
 
   const [reverse, setReverse] = useState(false);
+  const history = useHistory();
+  // useEffect(() => {
+  //   const userInfo = localStorage.getItem("userInfo");
+  //   if (!userInfo || userInfo.trim() === "") {
+  //     history.push("/sign-in");
+  //   }
+  // }, [history]);
 
+  // const handleSubmit = async (values) => {
+  //   const credentials = {
+  //     email: values.email,
+  //     password: values.password,
+  //   };
+  //   await axiosAgents.AuthAction.login(credentials).then((response) => {
+  //     if (response.errCode === 200) {
+  //       localStorage.setItem("userInfo", response.data.token);
+  //       history.push("/dashboard");
+  //     } else {
+  //       setErrorMessage(response.errMsg);
+  //     }
+  //   });
+  // };
   const dollor = [
     <svg
       width="22"
