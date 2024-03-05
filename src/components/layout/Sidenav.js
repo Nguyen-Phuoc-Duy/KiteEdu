@@ -258,14 +258,24 @@ function Sidenav({ color }) {
             <span className="label">Accounts</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="9">
-          <NavLink to="/create-accounts">
+        <Menu.Item key="10">
+          <NavLink to="/create-account">
             <span
               className="icon"
             >
               {profile}
             </span>
-            <span className="label">Create Accounts</span>
+            <span className="label">Create Account</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="11">
+          <NavLink to="/account-information">
+            <span
+              className="icon"
+            >
+              {profile}
+            </span>
+            <span className="label">Account Information</span>
           </NavLink>
         </Menu.Item>
       </Menu>

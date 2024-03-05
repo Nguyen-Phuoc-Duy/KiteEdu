@@ -119,14 +119,7 @@ const SignIn = () => {
         <Header>
           <div className="header-col header-brand">
             <h5>Muse Dashboard</h5>
-            <marquee 
-            // class="marq" 
-            // bgcolor="Green" 
-            // direction="right" 
-            // loop=""
-            >
-              I love you ❤
-            </marquee>
+            
           </div>
           <div className="header-col header-nav">
             <Menu mode="horizontal" defaultSelectedKeys={["4"]}>

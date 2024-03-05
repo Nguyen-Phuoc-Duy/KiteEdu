@@ -9,6 +9,7 @@ import {
   Switch,
   Modal,
   Select,
+  Tag,
 } from "antd";
 import moment from "moment";
 import { useStore } from "../stores/store";
@@ -36,11 +37,11 @@ function Accounts() {
   };
 
   const handleChange = (value) => {
-    console.log('vvvvvvvvvvvvvvvvvvvvvvv',value);
+    console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
   };
 
   const handleSwitchChange = (value) => {
-    console.log('dfffffffffff',value);
+    console.log("dfffffffffff", value);
   };
 
   const columns = [
@@ -57,16 +58,7 @@ function Accounts() {
         </>
       ),
     },
-    {
-      title: "ADDRESS",
-      dataIndex: "address",
-      key: "address",
-      render: (address) => (
-        <>
-          <div className="semibold">{address}</div>
-        </>
-      ),
-    },
+
     {
       title: "EMAIL",
       dataIndex: "email",
@@ -78,6 +70,16 @@ function Accounts() {
       dataIndex: "phone",
       key: "phone",
       render: (phone) => <div className="semibold">{phone}</div>,
+    },
+    {
+      title: "ADDRESS",
+      dataIndex: "address",
+      key: "address",
+      render: (address) => (
+        <>
+          <div className="semibold">{address}</div>
+        </>
+      ),
     },
     {
       title: "GENDER",
@@ -99,7 +101,15 @@ function Accounts() {
       title: "ROLE",
       dataIndex: "role",
       key: "role",
-      render: (role) => <div className="semibold">{role}</div>,
+      render: (role) => (
+        <>
+          {role === "employee" ? (
+            <Tag color="green">{role}</Tag>
+          ) : (
+            <Tag color="red">{role}</Tag>
+          )}
+        </>
+      ),
     },
     {
       title: "STATUS",
@@ -125,7 +135,15 @@ function Accounts() {
             className="tag-primary"
             onClick={() => showModal(record)}
           >
-            Edit {record.username}
+            Edit
+            {/* {record.username} */}
+          </Button>
+          <Button
+            type="danger"
+            className="tag-primary"
+            onClick={() => showModal(record)}
+          >
+            Delete
           </Button>
         </>
       ),
@@ -237,12 +255,12 @@ function Accounts() {
                     />
                   )} */}
                   <Switch
-                      checked={!selectedRecord.locked}
-                      // valuePropName={!selectedRecord.locked}
-                      onChange={(value) =>
-                        handleSwitchChange(value, selectedRecord.locked)
-                      }
-                    />
+                    checked={!selectedRecord.locked}
+                    // valuePropName={!selectedRecord.locked}
+                    onChange={(value) =>
+                      handleSwitchChange(value, selectedRecord.locked)
+                    }
+                  />
                 </div>
               </Col>
             </Row>

@@ -19,7 +19,7 @@ import Profile from "./pages/Profile";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import Main from "./components/layout/Main";
-import CreateAccounts from "./pages/CreateAccounts";
+import CreateAccount from "./pages/CreateAccount";
 //import "antd/dist/antd.css";
 import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
@@ -28,6 +28,7 @@ import { useEffect } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./stores/store";
+import AccountInformation from "./pages/AccountInfomation";
 
 function App() {
   const history = useHistory();
@@ -51,7 +52,8 @@ function App() {
           <Route exact path="/dashboard" component={Home} />
           <Route exact path="/tables" component={Tables} />
           <Route exact path="/accounts" component={Accounts} />
-          <Route exact path="/create-accounts" component={CreateAccounts} />
+          <Route exact path="/create-account" component={CreateAccount} />
+          <Route exact path="/account-information" component={AccountInformation} />
           <Route exact path="/billing" component={Billing} />
           <Route exact path="/rtl" component={Rtl} />
           <Route exact path="/profile" component={Profile} />
