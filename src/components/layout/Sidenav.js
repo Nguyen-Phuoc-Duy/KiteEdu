@@ -13,7 +13,7 @@
 // import { useState } from "react";
 import { Menu, Button } from "antd";
 import { NavLink, useLocation } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
+import Kite from "../../assets/images/Kite.png"
 
 function Sidenav({ color }) {
   const { pathname } = useLocation();
@@ -163,8 +163,8 @@ function Sidenav({ color }) {
   return (
     <>
       <div className="brand">
-        <img src={logo} alt="" />
-        <span>Muse Dashboard</span>
+        <img src={Kite} alt="" />
+        <span>KiteEdu</span>
       </div>
       <hr />
       <Menu theme="light" mode="inline">
@@ -181,7 +181,7 @@ function Sidenav({ color }) {
             <span className="label">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2">
+        {/* <Menu.Item key="2">
           <NavLink to="/tables">
             <span
               className="icon"
@@ -219,11 +219,11 @@ function Sidenav({ color }) {
             </span>
             <span className="label">RTL</span>
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item>
-        <Menu.Item key="6">
+        {/* <Menu.Item key="6">
           <NavLink to="/profile">
             <span
               className="icon"
@@ -247,7 +247,7 @@ function Sidenav({ color }) {
             <span className="icon">{signup}</span>
             <span className="label">Sign Up</span>
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item key="9">
           <NavLink to="/accounts">
             <span

@@ -5,7 +5,7 @@ axios.defaults.baseURL = "http://localhost:2222";
 
 axios.interceptors.request.use((config) => {
   const token = store.accountStore.currentUserToken;
-  
+
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,7 +23,7 @@ const request = {
   },
   post: (url, body) => {
     return axios.post(url, body).then(responseBody);
-  },
+  }
 };
 
 const AuthAction = {
@@ -33,8 +33,20 @@ const AuthAction = {
   getAllUsers: () => {
     return request.get(`/users/getAll`);
   },
+  updateUserInfo: (newUserInfo) => {
+    return request.post(`/users/updateProfile`, newUserInfo);
+  },
+  // updateUserRole: () => {
+  //   return request.post(`/updateUserRole`);
+  // },
 };
 
-const axiosAgents = { AuthAction };
+const AdminAction = {
+  lockAndUnlockUser: (id, body) => {
+    return request.post(`/admin/lockOrUnlockUser/${id}`, body);
+  },
+};
+
+const axiosAgents = { AuthAction, AdminAction };
 
 export default axiosAgents;

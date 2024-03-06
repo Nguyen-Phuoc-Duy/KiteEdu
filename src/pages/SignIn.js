@@ -12,7 +12,7 @@ import {
   Input,
   Switch,
 } from "antd";
-// import signinbg from "../assets/images/img-signin.jpg";
+import KiteEduLgo from "../assets/images/KiteEduLogo.jpg";
 import {
   DribbbleOutlined,
   TwitterOutlined,
@@ -63,94 +63,13 @@ const SignIn = () => {
   //   console.log(`switch to ${checked}`);
   // };
 
-  const template = (
-    <svg
-      data-v-4ebdc598=""
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* SVG paths */}
-    </svg>
-  );
-
-  const profile = (
-    <svg
-      data-v-4ebdc598=""
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* SVG paths */}
-    </svg>
-  );
-
-  const signup = (
-    <svg
-      data-v-4ebdc598=""
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* SVG paths */}
-    </svg>
-  );
-
-  const signinIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-    >
-      {/* SVG paths */}
-    </svg>
-  );
 
   return (
     <>
       <Layout className="layout-default layout-signin">
         <Header>
           <div className="header-col header-brand">
-            <h5>Muse Dashboard</h5>
-            
-          </div>
-          <div className="header-col header-nav">
-            <Menu mode="horizontal" defaultSelectedKeys={["4"]}>
-              <Menu.Item key="1">
-                <Link to="/dashboard">
-                  {template}
-                  <span> Dashboard</span>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key="2">
-                <Link to="/profile">
-                  {profile}
-                  <span>Profile</span>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key="3">
-                <Link to="/sign-up">
-                  {signup}
-                  <span> Sign Up</span>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key="4">
-                <Link to="/sign-in">
-                  {signinIcon}
-                  <span> Sign In</span>
-                </Link>
-              </Menu.Item>
-            </Menu>
-          </div>
-          <div className="header-col header-btn">
-            <Button type="primary">FREE DOWNLOAD</Button>
+            <h1>KiteEdu</h1>
           </div>
         </Header>
 
@@ -216,27 +135,27 @@ const SignIn = () => {
                     SIGN IN
                   </Button>
                 </Form.Item>
-                <p className="font-semibold text-muted">
+                {/* <p className="font-semibold text-muted">
                   Don't have an account?{" "}
                   <Link to="/sign-up" className="text-dark font-bold">
                     Sign Up
                   </Link>
-                </p>
+                </p> */}
               </Form>
             </Col>
-            {/* <Col
+            <Col
               className="sign-img"
               style={{ padding: 12 }}
               xs={{ span: 24 }}
               lg={{ span: 12 }}
               md={{ span: 12 }}
             >
-              <img src={signinbg} alt="" />
-            </Col> */}
+              <img src={KiteEduLgo} alt="" />
+            </Col>
           </Row>
         </Content>
 
-        <Footer>
+        {/* <Footer>
           <Menu mode="horizontal">
             <Menu.Item>Company</Menu.Item>
             <Menu.Item>About Us</Menu.Item>
@@ -282,7 +201,7 @@ const SignIn = () => {
           <p className="copyright">
             Copyright © 2021 Muse by <a href="#pablo">Creative Tim</a>.
           </p>
-        </Footer>
+        </Footer> */}
       </Layout>
     </>
   );

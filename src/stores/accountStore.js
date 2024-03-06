@@ -42,4 +42,26 @@ export default class AccountStore {
       }
     });
   };
+
+  updateUserInfo = async (newUserInfo) => {
+    await axiosAgents.AuthAction.updateUserInfo(newUserInfo).then(
+      (response) => {
+        if (response.errCode === 200) {
+          runInAction(() => {
+            console.log(response.errMsg);
+          });
+        } else {
+          console.log(response.errMsg);
+        }
+      }
+    );
+  };
+
+  lockAndUnlockUser = async (id, body) => {
+    await axiosAgents.AdminAction.lockAndUnlockUser(id, body).then(
+      (response) => {
+        console.log("theResponse", response);
+      }
+    );
+  };
 }

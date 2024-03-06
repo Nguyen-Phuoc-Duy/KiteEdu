@@ -11,22 +11,29 @@
 */
 import React from "react";
 import { Button, Card, Form, Input, Row, Col, Select, DatePicker } from "antd";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
-import 'dayjs/locale/zh-cn'; //en_US
+import "dayjs/locale/zh-cn"; //en_US
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../stores/store";
 const { Option } = Select;
 const AccountInformation = () => {
-
   const { accountStore } = useStore();
-  const { currentUserInfo } = accountStore;
-  useEffect(() => {
-    console.log(currentUserInfo.birth);
-  }, []);
+  const { currentUserInfo, updateUserInfo } = accountStore;
+  // useEffect(() => {
+  //   console.log(currentUserInfo.birth);
+  // }, []);
   const onFinish = (values) => {
-    console.log("Success:", values);
+    updateUserInfo({
+      ...values,
+      ID: currentUserInfo.id,
+    });
+    console.log('fffffff', values);
+    // updateUserInfo({
+    //   ID: currentUserInfo.id,
+    //   name: currentUserInfo.name,
+    // });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -35,9 +42,7 @@ const AccountInformation = () => {
   const onGenderChange = (value) => {};
   return (
     <>
-      <div
-        className="layout-default  layout-sign-up"
-      >
+      <div className="layout-default  layout-sign-up">
         <Card
           className=" header-solid h-full ant-card pt-0"
           title={<h5>ACCOUNT INFOMATION</h5>}
@@ -54,26 +59,26 @@ const AccountInformation = () => {
                 <Form.Item
                   name="name"
                   label="Name"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input name!",
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: "Please input name!",
+                  //   },
+                  // ]}
                 >
                   <Input defaultValue={currentUserInfo.name} />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              {/* <Col span={8}>
                 <Form.Item
                   name="username"
                   label="Username"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input username!",
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: "Please input username!",
+                  //   },
+                  // ]}
                 >
                   <Input defaultValue={currentUserInfo.username} />
                 </Form.Item>
@@ -82,7 +87,7 @@ const AccountInformation = () => {
                 <Form.Item
                   name="gender"
                   label="Gender"
-                  rules={[{ required: true }]}
+                  // rules={[{ required: true }]}
                 >
                   <Select
                     placeholder="Gender"
@@ -99,12 +104,12 @@ const AccountInformation = () => {
                 <Form.Item
                   name="email"
                   label="E-mail"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input email!",
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: "Please input email!",
+                  //   },
+                  // ]}
                 >
                   <Input defaultValue={currentUserInfo.email} />
                 </Form.Item>
@@ -113,12 +118,12 @@ const AccountInformation = () => {
                 <Form.Item
                   name="phone"
                   label="Phone Number"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input phone number!",
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: "Please input phone number!",
+                  //   },
+                  // ]}
                 >
                   <Input defaultValue={currentUserInfo.phone} />
                 </Form.Item>
@@ -127,14 +132,24 @@ const AccountInformation = () => {
                 <Form.Item
                   label="Birth"
                   name="DatePicker"
-                  rules={[{ required: true, message: "Please input!" }]}
+                  // rules={[{ required: true, message: "Please input!" }]}
                 >
                   <DatePicker
                     defaultValue={dayjs(currentUserInfo.birth, "YYYY-MM-DD")}
                   />
                 </Form.Item>
+              </Col> */}
+              
+              <Col span={8}>
+                <Form.Item
+                  name="address"
+                  label="Address"
+                  // rules={[{ required: true, message: "Please input address!" }]}
+                >
+                  <Input defaultValue={currentUserInfo.address} />
+                </Form.Item>
               </Col>
-              {/* <Col span={8}>
+{/* <Col span={8}>
                 <Form.Item
                   name="password"
                   label="Password"
@@ -159,16 +174,6 @@ const AccountInformation = () => {
                   <Input.Password placeholder="Confirm Password" />
                 </Form.Item>
               </Col> */}
-              <Col span={8}>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  rules={[{ required: true, message: "Please input address!" }]}
-                >
-                  <Input defaultValue={currentUserInfo.address} />
-                </Form.Item>
-              </Col>
-              
               <Col span={16}></Col>
               <Col span={8}></Col>
               <Col span={4}>

@@ -21,14 +21,21 @@ const { Option } = Select;
 function Accounts() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [lockedState, setLockedState] = useState(null);
 
   const showModal = (record) => {
     setSelectedRecord(record);
-    console.log("abc", selectedRecord);
+    // console.log("abc", selectedRecord);
+    // console.log("log", record);
+    setLockedState(!record.locked);
     setIsModalVisible(true);
   };
 
   const handleOk = () => {
+    // lockAndUnlockUser(selectedRecord.ID, {
+    //   isLocked: false,
+    // });
+    console.log("LockedState", lockedState);
     setIsModalVisible(false);
   };
 
@@ -41,7 +48,7 @@ function Accounts() {
   };
 
   const handleSwitchChange = (value) => {
-    console.log("dfffffffffff", value);
+    setLockedState(!value);
   };
 
   const columns = [
@@ -112,14 +119,15 @@ function Accounts() {
       ),
     },
     {
-      title: "STATUS",
+      title: "ACTIVE",
       dataIndex: "locked",
       key: "locked",
       render: (locked) => (
         <div className="semibold">
           <Switch
-            defaultChecked={locked === 0}
-            onChange={(value) => handleSwitchChange(value, locked)}
+            checked={!locked}
+            
+            // onChange={(value) => handleSwitchChange(value, locked)}
             disabled
           />
         </div>
@@ -151,7 +159,7 @@ function Accounts() {
   ];
 
   const { accountStore } = useStore();
-  const { getAllUsers, userList } = accountStore;
+  const { getAllUsers, userList, lockAndUnlockUser } = accountStore;
 
   useEffect(() => {
     getAllUsers();
@@ -255,11 +263,11 @@ function Accounts() {
                     />
                   )} */}
                   <Switch
-                    checked={!selectedRecord.locked}
+                    checked={lockedState}
                     // valuePropName={!selectedRecord.locked}
-                    onChange={(value) =>
-                      handleSwitchChange(value, selectedRecord.locked)
-                    }
+                    onChange={(value) => {
+                      handleSwitchChange(value);
+                    }}
                   />
                 </div>
               </Col>
