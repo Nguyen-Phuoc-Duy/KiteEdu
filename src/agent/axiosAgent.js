@@ -23,7 +23,7 @@ const request = {
   },
   post: (url, body) => {
     return axios.post(url, body).then(responseBody);
-  }
+  },
 };
 
 const AuthAction = {
@@ -36,17 +36,34 @@ const AuthAction = {
   updateUserInfo: (newUserInfo) => {
     return request.post(`/users/updateProfile`, newUserInfo);
   },
-  // updateUserRole: () => {
-  //   return request.post(`/updateUserRole`);
-  // },
 };
 
 const AdminAction = {
   lockAndUnlockUser: (id, body) => {
     return request.post(`/admin/lockOrUnlockUser/${id}`, body);
   },
+  updateRole: (body) => {
+    return request.post(`/admin/updateUserRole`, body);
+  },
+  updateUserSubject: (body) => {
+    return request.post(`/admin/updateUserSubject`, body);
+  },
+  createUser: (body) => {
+    return request.post(`/admin/createUser`, body);
+  },
 };
 
-const axiosAgents = { AuthAction, AdminAction };
+const SubjectAction = {
+  getAllSubjects: () => {
+    return request.get(`/subjects/getAll`);
+  },
+  updateSubject: (body) => {
+    return request.post(`/admin/updateSubject`, body);
+  },
+  createSubject: (body) => {
+    return request.post(`/admin/createSubject`, body);
+  },
+};
+const axiosAgents = { AuthAction, AdminAction, SubjectAction };
 
 export default axiosAgents;

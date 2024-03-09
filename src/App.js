@@ -29,7 +29,8 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./stores/store";
 import AccountInformation from "./pages/AccountInfomation";
-
+import Subjects from "./pages/Subjects";
+import CreateSubject from "./pages/CreateSubject";
 function App() {
   const history = useHistory();
 
@@ -53,11 +54,20 @@ function App() {
           <Route exact path="/tables" component={Tables} />
           <Route exact path="/accounts" component={Accounts} />
           <Route exact path="/create-account" component={CreateAccount} />
-          <Route exact path="/account-information" component={AccountInformation} />
+          <Route exact path="/create-subject" component={CreateSubject} />
+          <Route
+            exact
+            path="/account-information"
+            component={AccountInformation}
+          />
+          <Route exact path="/subjects" component={Subjects} />
           <Route exact path="/billing" component={Billing} />
           <Route exact path="/rtl" component={Rtl} />
           <Route exact path="/profile" component={Profile} />
-          <Redirect from="*" to="/dashboard" />
+          <Route from="*" to="/dashboard" />
+          {/* <Route exact path="/">
+            {currentUserToken ? <Redirect to="/sign-in" /> : <Home />}
+          </Route> */}
         </Main>
       </Switch>
     </div>

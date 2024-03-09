@@ -10,32 +10,72 @@ import {
   Modal,
   Select,
   Tag,
+  Spin,
 } from "antd";
 import moment from "moment";
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
-
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Title } = Typography;
 const { Option } = Select;
 
 function Accounts() {
+  const history = useHistory();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [lockedState, setLockedState] = useState(null);
+  const [roleState, setRoleState] = useState(null);
+  const [subjectState, setSubjectState] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false)
 
   const showModal = (record) => {
     setSelectedRecord(record);
     // console.log("abc", selectedRecord);
-    // console.log("log", record);
-    setLockedState(!record.locked);
+    setLockedState(record.locked);
+    setRoleState(record.role);
+    setSubjectState(record.subjectId);
     setIsModalVisible(true);
+    console.log("log", subjectState, newArray1);
   };
 
+  const { accountStore } = useStore();
+  const {
+    getAllUsers,
+    userList,
+    adminUpdate,
+    isLoading,
+    subjectList,
+    getAllSubjects,
+    currentUserInfo,
+    updateUserSubject,
+  } = accountStore;
+  //   useEffect(() => {
+  //     if (subjectState !== null) {
+  //         const foundSubject = subjectsArray.find(subject => subject.name === subjectState);
+  //         if (foundSubject) {
+  //             setSubjectId(foundSubject.id); // Cập nhật state mới với id tương ứng
+  //         }
+  //     }
+  // }, [subjectState]);
   const handleOk = () => {
-    // lockAndUnlockUser(selectedRecord.ID, {
-    //   isLocked: false,
-    // });
-    console.log("LockedState", lockedState);
+    adminUpdate(
+      selectedRecord.ID,
+      {
+        isLocked: lockedState,
+      },
+      {
+        ID: selectedRecord.ID,
+        role: roleState,
+      },
+      // updateUserSubject(
+      {
+        ID: selectedRecord.ID,
+        subjectId: subjectState,
+        role: selectedRecord.role,
+      }
+      // )
+    );
+    console.log("hhhhhhhhhhhhhhhh", selectedRecord.ID, subjectState, roleState);
     setIsModalVisible(false);
   };
 
@@ -45,10 +85,14 @@ function Accounts() {
 
   const handleChange = (value) => {
     console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
+    setRoleState(value);
   };
-
+  const handleChangeSubject = (value) => {
+    console.log("v", value);
+    setSubjectState(value);
+  };
   const handleSwitchChange = (value) => {
-    setLockedState(!value);
+    setLockedState(value);
   };
 
   const columns = [
@@ -65,7 +109,21 @@ function Accounts() {
         </>
       ),
     },
-
+    {
+      title: "SUBJECT",
+      dataIndex: "subjectId",
+      key: "subjectId",
+      render: (subjectId) => (
+        <>
+          {/* {role === "employee" ? (
+            <Tag color="green">{role}</Tag>
+          ) : (
+            <Tag color="red">{role}</Tag>
+          )} */}
+          {subjectId}
+        </>
+      ),
+    },
     {
       title: "EMAIL",
       dataIndex: "email",
@@ -119,14 +177,13 @@ function Accounts() {
       ),
     },
     {
-      title: "ACTIVE",
+      title: "LOCKED",
       dataIndex: "locked",
       key: "locked",
       render: (locked) => (
         <div className="semibold">
           <Switch
-            checked={!locked}
-            
+            checked={locked}
             // onChange={(value) => handleSwitchChange(value, locked)}
             disabled
           />
@@ -158,21 +215,21 @@ function Accounts() {
     },
   ];
 
-  const { accountStore } = useStore();
-  const { getAllUsers, userList, lockAndUnlockUser } = accountStore;
-
   useEffect(() => {
     getAllUsers();
+    getAllSubjects();
   }, []);
 
   const dataA = Array.from(userList);
   const dataArray = dataA.map((user) => {
+    // console.log(user)
     const order = [
       "ID",
       "name",
       "username",
       "birth",
       "gender",
+      "subjectId",
       "email",
       "phone",
       "address",
@@ -192,7 +249,33 @@ function Accounts() {
 
     return sortedUser;
   });
+  const dataB = Array.from(subjectList);
+  const dataArrayB = dataB.map((user) => {
+    // console.log(user)
+    const order = ["ID", "name", "status", "createdAt", "updatedAt"];
 
+    const sortedUser = {};
+    order.forEach((key) => {
+      if (user.hasOwnProperty(key)) {
+        sortedUser[key] = user[key];
+      }
+    });
+
+    return sortedUser;
+  });
+
+  let newArray1 = dataArray.map((item1) => {
+    // Tìm phần tử tương ứng trong Array2
+    let correspondingItem = dataArrayB.find(
+      (item2) => item2.ID === item1.subjectId
+    );
+    // Trả về một đối tượng mới với idArray2 được thay thế bằng name
+    // console.log(correspondingItem);
+    return {
+      ...item1,
+      subjectId: correspondingItem ? correspondingItem.name : null,
+    };
+  });
   return (
     <>
       <div className="tabled">
@@ -206,9 +289,21 @@ function Accounts() {
               <div className="table-responsive">
                 <Table
                   columns={columns}
-                  dataSource={dataArray}
+                  dataSource={newArray1}
                   pagination={false}
                   className="ant-border-space"
+                  loading={isLoading}
+                  // bordered
+                  title={() => (
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      onClick={() => history.push("/create-account")}
+                      style={{ align: "right" }}
+                    >
+                      Create Account
+                    </Button>
+                  )}
                 />
               </div>
             </Card>
@@ -224,19 +319,47 @@ function Accounts() {
       >
         {selectedRecord && (
           <>
-            <div className="author-info">
-              <Title level={5}>UserName</Title>
-              <p>{selectedRecord.username}</p>
-            </div>
             <Row>
+              <Col span={12}>
+                <div className="author-info">
+                  <Title level={5}>UserName</Title>
+                  <p>{selectedRecord.username}</p>
+                </div>
+              </Col>
+              <Col span={12}>
+                <div className="author-info">
+                  <Title level={5}>Role</Title>
+                  <Select
+                    style={{ width: 120 }}
+                    onChange={(value) => {
+                      handleChangeSubject(value || {subjectState});
+                    }}
+                    // defaultValue={subjectState}
+                    value={subjectState}
+                  >
+                    {dataArrayB.map((item) => {
+                      if (item.status === "active") {
+                        return (
+                          <Option key={item.ID} value={item.ID}>
+                            {item.name}
+                          </Option>
+                        );
+                      }
+                      return null; // Trả về null nếu item.status không phải 'active'
+                    })}
+                  </Select>
+                </div>
+              </Col>
               <Col span={12}>
                 <div className="author-info">
                   <Title level={5}>Role</Title>
                   <Select
                     // defaultValue={selectedRecord.role}
                     style={{ width: 120 }}
-                    onChange={handleChange}
-                    value={selectedRecord.role}
+                    onChange={(value) => {
+                      handleChange(value);
+                    }}
+                    value={roleState}
                   >
                     <Option value="manager">manager</Option>
                     <Option value="employee">employee</Option>
@@ -245,7 +368,7 @@ function Accounts() {
               </Col>
               <Col span={12}>
                 <div className="author-info">
-                  <Title level={5}>Status</Title>
+                  <Title level={5}>Locked</Title>
                   {/* {selectedRecord.locked == 1 ? (
                     <Switch
                       // defaultChecked={selectedRecord.locked === 0}

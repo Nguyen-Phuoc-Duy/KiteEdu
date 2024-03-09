@@ -7,16 +7,26 @@ export default class AccountStore {
   currentUserInfo = undefined;
   errorMessage = undefined;
   userList = {};
+  subjectList = {};
+  isLoading = false;
 
   constructor() {
     makeAutoObservable(this);
 
     autorun(() => {
       if (this.currentUserToken) {
-        this.currentUserInfo = jwtDecode(this.currentUserToken);
+        runInAction(() => {
+          this.currentUserInfo = jwtDecode(this.currentUserToken);
+        });
       }
     });
   }
+
+  setIsLoading = (value) => {
+    runInAction(() => {
+      this.isLoading = value;
+    });
+  };
 
   login = async (credentials) => {
     await axiosAgents.AuthAction.login(credentials).then((response) => {
@@ -36,6 +46,18 @@ export default class AccountStore {
       if (response.errCode === 200) {
         runInAction(() => {
           this.userList = response.data;
+        });
+      } else {
+        console.log(response.errMsg);
+      }
+    });
+  };
+
+  getAllSubjects = async () => {
+    await axiosAgents.SubjectAction.getAllSubjects().then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.subjectList = response.data;
         });
       } else {
         console.log(response.errMsg);
@@ -63,5 +85,63 @@ export default class AccountStore {
         console.log("theResponse", response);
       }
     );
+  };
+
+  updateRole = async (body) => {
+    await axiosAgents.AdminAction.updateRole(body).then((response) => {
+      console.log("theResponse", response);
+    });
+  };
+
+  updateSubject = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.SubjectAction.updateSubject(body).then((response) => {
+      console.log("theResponse", response);
+    });
+    await this.getAllSubjects();
+    this.setIsLoading(false);
+  };
+
+  adminUpdate = async (id, updateLockedBody, updateRoleBody, updateSubjectBody) => {
+    this.setIsLoading(true);
+    await axiosAgents.AdminAction.updateRole(updateRoleBody).then(
+      (response) => {
+        console.log("theResponse", response);
+      }
+    );
+
+    await axiosAgents.AdminAction.lockAndUnlockUser(id, updateLockedBody).then(
+      (response) => {
+        console.log("theResponse", response);
+      }
+    );
+
+    await axiosAgents.AdminAction.updateUserSubject(updateSubjectBody).then(
+      (response) => {
+        console.log("theResponse", response);
+      }
+    );
+
+    await this.getAllUsers();
+    this.setIsLoading(false);
+  };
+
+  // updateUserSubject = async(body) => {
+  //   await axiosAgents.AdminAction.updateUserSubject(body).then(
+  //     (response) => {
+  //       console.log("theResponse", response);
+  //     }
+  //   );
+  // }
+  createUser = async (body) => {
+    await axiosAgents.AdminAction.createUser(body).then((response) => {
+      console.log("theResponse", response);
+    });
+  };
+
+  createSubject = async (body) => {
+    await axiosAgents.SubjectAction.createSubject(body).then((response) => {
+      console.log("theResponse", response);
+    });
   };
 }

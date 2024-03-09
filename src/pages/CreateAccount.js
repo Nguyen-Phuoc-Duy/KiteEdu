@@ -9,7 +9,7 @@
 =========================================================
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Layout,
   Menu,
@@ -24,17 +24,47 @@ import {
   Select,
   DatePicker,
 } from "antd";
+import Title from "antd/lib/skeleton/Title";
+import { useStore } from "../stores/store";
+import { observer } from "mobx-react-lite";
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const CreateAccount = () => {
+  const { accountStore } = useStore();
+  const { createUser, subjectList, getAllSubjects } = accountStore;
+  const [form] = Form.useForm();
+
   const onFinish = (values) => {
-    console.log("Success:", values);
+    console.log("finishResults", values, dataArray);
+    createUser(values);
+    form.resetFields();
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    console.log(
+      "Failed:",
+      errorInfo,
+      dataArray
+    );
   };
-  const onGenderChange = (value) => {};
+
+  useEffect(() => {
+    getAllSubjects();
+  }, []);
+  
+  const dataA = Array.from(subjectList);
+  const dataArray = dataA.map((user) => {
+    const order = ["ID", "name", "status", "createdAt", "updatedAt"];
+
+    const sortedUser = {};
+    order.forEach((key) => {
+      if (user.hasOwnProperty(key)) {
+        sortedUser[key] = user[key];
+      }
+    });
+
+    return sortedUser;
+  });
   return (
     <>
       <div
@@ -51,7 +81,7 @@ const CreateAccount = () => {
           ant-card 
           pt-0
           "
-          title={<h5>ACCOUNT INFOMATION</h5>}
+          title={<h1>ACCOUNT INFORMATION</h1>}
           bordered={false}
         >
           <Form
@@ -59,6 +89,7 @@ const CreateAccount = () => {
             initialValues={{ remember: true }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            form={form}
           >
             <Row gutter={[16, 16]}>
               <Col span={8}>
@@ -170,13 +201,36 @@ const CreateAccount = () => {
               <Col span={8}>
                 <Form.Item
                   label="Birth"
-                  name="DatePicker"
+                  name="birth"
                   rules={[{ required: true, message: "Please input!" }]}
                 >
                   <DatePicker />
                 </Form.Item>
               </Col>
-              <Col span={8}></Col>
+              <Col span={8}>
+                <Form.Item
+                  name="subjectId"
+                  label="Subject"
+                  rules={[{ required: true }]}
+                >
+                  <Select
+                    placeholder="Subject"
+                    // onChange={onGenderChange}
+                    allowClear
+                  >
+                    {dataArray.map((item) => {
+                      if (item.status === "active") {
+                        return (
+                          <Option key={item.ID} value={item.ID}>
+                            {item.name}
+                          </Option>
+                        );
+                      }
+                      return null; // Trả về null nếu item.status không phải 'active'
+                    })}
+                  </Select>
+                </Form.Item>
+              </Col>
               <Col span={4}>
                 <Form.Item>
                   <Button htmlType="reset" style={{ width: "100%" }}>
@@ -190,6 +244,9 @@ const CreateAccount = () => {
                     type="primary"
                     htmlType="submit"
                     style={{ width: "100%" }}
+                    // onClick={() => {
+                    //   form.resetFields();
+                    // }}
                   >
                     Create
                   </Button>
@@ -203,4 +260,4 @@ const CreateAccount = () => {
   );
 };
 
-export default CreateAccount;
+export default observer(CreateAccount);
