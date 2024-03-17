@@ -31,6 +31,10 @@ import { useStore } from "./stores/store";
 import AccountInformation from "./pages/AccountInfomation";
 import Subjects from "./pages/Subjects";
 import CreateSubject from "./pages/CreateSubject";
+import Rooms from "./pages/Rooms";
+import CreateRoom from "./pages/CreateRoom";
+import Pupils from "./pages/Pupils";
+import CreatePupil from "./pages/CreatePupil";
 function App() {
   const history = useHistory();
 
@@ -55,12 +59,16 @@ function App() {
           <Route exact path="/accounts" component={Accounts} />
           <Route exact path="/create-account" component={CreateAccount} />
           <Route exact path="/create-subject" component={CreateSubject} />
+          <Route exact path="/create-room" component={CreateRoom} />
+          <Route exact path="/create-pupil" component={CreatePupil} />
           <Route
             exact
             path="/account-information"
             component={AccountInformation}
           />
           <Route exact path="/subjects" component={Subjects} />
+          <Route exact path="/rooms" component={Rooms} />
+          <Route exact path="/pupils" component={Pupils} />
           <Route exact path="/billing" component={Billing} />
           <Route exact path="/rtl" component={Rtl} />
           <Route exact path="/profile" component={Profile} />

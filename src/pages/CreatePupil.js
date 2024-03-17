@@ -11,60 +11,51 @@
 */
 import React from "react";
 import { Button, Card, Form, Input, Row, Col, Select, DatePicker } from "antd";
-import dayjs from "dayjs";
-
-import "dayjs/locale/zh-cn"; //en_US
-import { useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
 import { useStore } from "../stores/store";
-
+import { observer } from "mobx-react-lite";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Option } = Select;
-
-const AccountInformation = () => {
+const CreatePupil = () => {
   const { accountStore } = useStore();
-  const { currentUserInfo, updateUserInfo } = accountStore;
-  // useEffect(() => {
-  //   console.log(currentUserInfo.birth);
-  // }, []);
+  const { createUser, createSubject, createRoom, createPupil } = accountStore;
+  const [form] = Form.useForm();
+  const history = useHistory();
   const onFinish = (values) => {
-    updateUserInfo({
-      ...values,
-      ID: currentUserInfo.id,
-    });
-    console.log("update vales", values);
-    // updateUserInfo({
-    //   ID: currentUserInfo.id,
-    //   name: currentUserInfo.name,
-    // });
+    console.log(values, "ffffffffffffffffffffffff");
+    createPupil(values);
+    form.resetFields();
+    history.push("/pupils");
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
-  const onGenderChange = (value) => {};
-
   return (
     <>
-      <div className="layout-default  layout-sign-up">
+      <div
+        className="
+      layout-default 
+      
+      layout-sign-up
+      "
+      >
         <Card
-          className=" header-solid h-full ant-card pt-0"
-          title={<h5>ACCOUNT INFORMATION</h5>}
+          className="
+          header-solid 
+          h-full 
+          ant-card 
+          pt-0
+          "
+          title={<h1>PUPIL INFOMATION</h1>}
           bordered={false}
         >
           <Form
             name="basic"
-            initialValues={{
-              name: currentUserInfo.name,
-              username: currentUserInfo.username,
-              gender: currentUserInfo.gender == true ? 'Nam' : 'Nữ',
-              email: currentUserInfo.email,
-              phone: currentUserInfo.phone,
-              birth: dayjs(currentUserInfo.birth, "YYYY-MM-DD"),
-              address: currentUserInfo.address,
-            }}
+            initialValues={{ remember: true }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            form={form}
           >
             <Row gutter={[16, 16]}>
               <Col span={8}>
@@ -78,33 +69,7 @@ const AccountInformation = () => {
                     },
                   ]}
                 >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="username"
-                  label="Username"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input username!",
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item name="gender" label="Gender">
-                  <Select
-                    placeholder="Gender"
-                    onChange={onGenderChange}
-                    rules={[{ required: true }]}
-                  >
-                    <Option value='true'>Nam</Option>
-                    <Option value='false'>Nữ</Option>
-                  </Select>
+                  <Input placeholder="Name" />
                 </Form.Item>
               </Col>
               <Col span={8}>
@@ -118,7 +83,7 @@ const AccountInformation = () => {
                     },
                   ]}
                 >
-                  <Input />
+                  <Input placeholder="Email" />
                 </Form.Item>
               </Col>
               <Col span={8}>
@@ -128,11 +93,67 @@ const AccountInformation = () => {
                   rules={[
                     {
                       required: true,
-                      message: "Please input phone!",
+                      message: "Please input phone number!",
                     },
                   ]}
                 >
-                  <Input />
+                  <Input placeholder="Phone Number" />
+                </Form.Item>
+              </Col>
+
+              <Col span={8}>
+                <Form.Item
+                  name="parent_name"
+                  label="Parent's Name"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input parent's name!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Parent's Name" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="parent_email"
+                  label="Parent's E-mail"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input parent's email!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Parent's Email" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="parent_phone"
+                  label="Parent's Phone Number"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input parent's phone number!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Parent's Phone Number" />
+                </Form.Item>
+              </Col>
+
+              <Col span={8}>
+                <Form.Item
+                  name="gender"
+                  label="Gender"
+                  rules={[{ required: true }]}
+                >
+                  <Select placeholder="Gender" allowClear>
+                    <Option value="1">Nam</Option>
+                    <Option value="0">Nữ</Option>
+                  </Select>
                 </Form.Item>
               </Col>
               <Col span={8}>
@@ -148,41 +169,27 @@ const AccountInformation = () => {
                 <Form.Item
                   name="address"
                   label="Address"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input address!",
-                    },
-                  ]}
+                  rules={[{ required: true, message: "Please input address!" }]}
                 >
-                  <Input />
-                </Form.Item>
-              </Col>
-              {/* <Col span={8}>
-                <Form.Item
-                  name="password"
-                  label="Password"
-                  rules={[
-                    { required: true, message: "Please input password!" },
-                  ]}
-                >
-                  <Input.Password placeholder="Password" />
+                  <Input placeholder="Address" />
                 </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input confirm password!",
-                    },
-                  ]}
+                  name="status"
+                  label="Status"
+                  rules={[{ required: true }]}
                 >
-                  <Input.Password placeholder="Confirm Password" />
+                  <Select
+                    placeholder="Status"
+                    // onChange={onGenderChange}
+                    allowClear
+                  >
+                    <Option value="active">active</Option>
+                    <Option value="inactive">inactive</Option>
+                  </Select>
                 </Form.Item>
-              </Col> */}
+              </Col>
               <Col span={16}></Col>
               <Col span={8}></Col>
               <Col span={4}>
@@ -199,7 +206,7 @@ const AccountInformation = () => {
                     htmlType="submit"
                     style={{ width: "100%" }}
                   >
-                    Update
+                    Create
                   </Button>
                 </Form.Item>
               </Col>
@@ -211,4 +218,4 @@ const AccountInformation = () => {
   );
 };
 
-export default observer(AccountInformation);
+export default observer(CreatePupil);

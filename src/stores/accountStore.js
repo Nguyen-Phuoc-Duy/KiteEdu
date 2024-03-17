@@ -8,6 +8,8 @@ export default class AccountStore {
   errorMessage = undefined;
   userList = {};
   subjectList = {};
+  roomList = {};
+  pupilList = {};
   isLoading = false;
 
   constructor() {
@@ -65,6 +67,29 @@ export default class AccountStore {
     });
   };
 
+  getAllRooms = async () => {
+    await axiosAgents.RoomAction.getAllRooms().then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.roomList = response.data;
+        });
+      } else {
+        console.log(response.errMsg);
+      }
+    });
+  };
+
+  getAllPupils = async () => {
+    await axiosAgents.PupilAction.getAllPupils().then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.pupilList = response.data;
+        });
+      } else {
+        console.log(response.errMsg);
+      }
+    });
+  };
   updateUserInfo = async (newUserInfo) => {
     await axiosAgents.AuthAction.updateUserInfo(newUserInfo).then(
       (response) => {
@@ -102,23 +127,45 @@ export default class AccountStore {
     this.setIsLoading(false);
   };
 
-  adminUpdate = async (id, updateLockedBody, updateRoleBody, updateSubjectBody) => {
+  updateRoom = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.RoomAction.updateRoom(body).then((response) => {
+      console.log("theResponse", response);
+    });
+    await this.getAllRooms();
+    this.setIsLoading(false);
+  };
+
+  updatePupil = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.PupilAction.updatePupil(body).then((response) => {
+      console.log("theResponse", response);
+    });
+    await this.getAllRooms();
+    this.setIsLoading(false);
+  };
+  adminUpdate = async (
+    id,
+    updateLockedBody,
+    updateRoleBody,
+    updateSubjectBody
+  ) => {
     this.setIsLoading(true);
     await axiosAgents.AdminAction.updateRole(updateRoleBody).then(
       (response) => {
-        console.log("theResponse", response);
+        console.log("theResponse1", response);
       }
     );
 
     await axiosAgents.AdminAction.lockAndUnlockUser(id, updateLockedBody).then(
       (response) => {
-        console.log("theResponse", response);
+        console.log("theResponse2", response);
       }
     );
 
     await axiosAgents.AdminAction.updateUserSubject(updateSubjectBody).then(
       (response) => {
-        console.log("theResponse", response);
+        console.log("theResponse3", response);
       }
     );
 
@@ -141,6 +188,18 @@ export default class AccountStore {
 
   createSubject = async (body) => {
     await axiosAgents.SubjectAction.createSubject(body).then((response) => {
+      console.log("theResponse", response);
+    });
+  };
+
+  createRoom = async (body) => {
+    await axiosAgents.RoomAction.createRoom(body).then((response) => {
+      console.log("theResponse", response);
+    });
+  };
+
+  createPupil = async (body) => {
+    await axiosAgents.PupilAction.createPupil(body).then((response) => {
       console.log("theResponse", response);
     });
   };

@@ -445,7 +445,7 @@ function Header({
                 <span>{currentUserInfo.username}</span>
               ) : (
                 <span>Sign in</span>
-              )}{" "}
+              )}
             </div>
           </Dropdown>
 

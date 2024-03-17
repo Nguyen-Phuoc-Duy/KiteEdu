@@ -25,33 +25,32 @@ import {
   DatePicker,
 } from "antd";
 import Title from "antd/lib/skeleton/Title";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
 const { Option } = Select;
+
 const { RangePicker } = DatePicker;
 const CreateAccount = () => {
+  const history = useHistory();
   const { accountStore } = useStore();
   const { createUser, subjectList, getAllSubjects } = accountStore;
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    console.log("finishResults", values, dataArray);
+    console.log("finishResults", values);
     createUser(values);
     form.resetFields();
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log(
-      "Failed:",
-      errorInfo,
-      dataArray
-    );
+    console.log("Failed:", errorInfo, dataArray);
   };
 
   useEffect(() => {
     getAllSubjects();
   }, []);
-  
+
   const dataA = Array.from(subjectList);
   const dataArray = dataA.map((user) => {
     const order = ["ID", "name", "status", "createdAt", "updatedAt"];
@@ -231,6 +230,8 @@ const CreateAccount = () => {
                   </Select>
                 </Form.Item>
               </Col>
+              <Col span={16}></Col>
+              <Col span={8}></Col>
               <Col span={4}>
                 <Form.Item>
                   <Button htmlType="reset" style={{ width: "100%" }}>
@@ -244,9 +245,6 @@ const CreateAccount = () => {
                     type="primary"
                     htmlType="submit"
                     style={{ width: "100%" }}
-                    // onClick={() => {
-                    //   form.resetFields();
-                    // }}
                   >
                     Create
                   </Button>

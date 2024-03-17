@@ -18,7 +18,25 @@ import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Title } = Typography;
 const { Option } = Select;
-
+const pencil = [
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    key={0}
+  >
+    <path
+      d="M13.5858 3.58579C14.3668 2.80474 15.6332 2.80474 16.4142 3.58579C17.1953 4.36683 17.1953 5.63316 16.4142 6.41421L15.6213 7.20711L12.7929 4.37868L13.5858 3.58579Z"
+      className="fill-gray-7"
+    ></path>
+    <path
+      d="M11.3787 5.79289L3 14.1716V17H5.82842L14.2071 8.62132L11.3787 5.79289Z"
+      className="fill-gray-7"
+    ></path>
+  </svg>,
+];
 function Accounts() {
   const history = useHistory();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -49,14 +67,7 @@ function Accounts() {
     currentUserInfo,
     updateUserSubject,
   } = accountStore;
-  //   useEffect(() => {
-  //     if (subjectState !== null) {
-  //         const foundSubject = subjectsArray.find(subject => subject.name === subjectState);
-  //         if (foundSubject) {
-  //             setSubjectId(foundSubject.id); // Cập nhật state mới với id tương ứng
-  //         }
-  //     }
-  // }, [subjectState]);
+
   const handleOk = () => {
     adminUpdate(
       selectedRecord.ID,
@@ -84,11 +95,11 @@ function Accounts() {
   };
 
   const handleChange = (value) => {
-    console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
+    // console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
     setRoleState(value);
   };
   const handleChangeSubject = (value) => {
-    console.log("v", value);
+    console.log("aaaaa", value);
     setSubjectState(value);
   };
   const handleSwitchChange = (value) => {
@@ -115,12 +126,7 @@ function Accounts() {
       key: "subjectId",
       render: (subjectId) => (
         <>
-          {/* {role === "employee" ? (
-            <Tag color="green">{role}</Tag>
-          ) : (
-            <Tag color="red">{role}</Tag>
-          )} */}
-          {subjectId}
+          <div className="semibold">{subjectId}</div>
         </>
       ),
     },
@@ -200,16 +206,20 @@ function Accounts() {
             className="tag-primary"
             onClick={() => showModal(record)}
           >
+            {pencil}
             Edit
             {/* {record.username} */}
           </Button>
-          <Button
+          <Button type="link" className="darkbtn">
+            {pencil} EDIT
+          </Button>
+          {/* <Button
             type="danger"
             className="tag-primary"
             onClick={() => showModal(record)}
           >
             Delete
-          </Button>
+          </Button> */}
         </>
       ),
     },
@@ -328,11 +338,14 @@ function Accounts() {
               </Col>
               <Col span={12}>
                 <div className="author-info">
-                  <Title level={5}>Role</Title>
+                  <Title level={5}>Subject</Title>
                   <Select
                     style={{ width: 120 }}
                     onChange={(value) => {
-                      handleChangeSubject(value || {subjectState});
+                      handleChangeSubject(
+                        value
+                        // || { subjectState }
+                      );
                     }}
                     // defaultValue={subjectState}
                     value={subjectState}

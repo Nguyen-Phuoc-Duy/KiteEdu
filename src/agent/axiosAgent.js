@@ -64,6 +64,29 @@ const SubjectAction = {
     return request.post(`/admin/createSubject`, body);
   },
 };
-const axiosAgents = { AuthAction, AdminAction, SubjectAction };
+
+const RoomAction = {
+  getAllRooms: () => {
+    return request.get(`/rooms/getAll`);
+  },
+  updateRoom: (body) => {
+    return request.post(`/admin/updateRoom`, body);
+  },
+  createRoom: (body) => {
+    return request.post(`/admin/createRoom`, body);
+  },
+};
+const PupilAction = {
+  getAllPupils: () => {
+    return request.get(`/pupils/getAll`);
+  },
+  updatePupil: (body) => {
+    return request.post(`/admin/updatePupil`, body);
+  },
+  createPupil: (body) => {
+    return request.post(`/admin/createPupil`, body);
+  },
+};
+const axiosAgents = { AuthAction, AdminAction, SubjectAction, RoomAction, PupilAction };
 
 export default axiosAgents;
