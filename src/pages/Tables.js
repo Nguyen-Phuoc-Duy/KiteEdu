@@ -25,7 +25,8 @@ import {
 
 import { ToTopOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-
+import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 // Images
 import ava1 from "../assets/images/logo-shopify.svg";
 import ava2 from "../assets/images/logo-atlassian.svg";
@@ -68,15 +69,25 @@ const columns = [
     width: "32%",
   },
   {
-    title: "FUNCTION",
-    dataIndex: "function",
-    key: "function",
+    title: "BIRTH",
+    dataIndex: "birth",
+    key: "birth",
+  },
+  {
+    title: "ROLE",
+    key: "role",
+    dataIndex: "role",
   },
 
   {
     title: "STATUS",
     key: "status",
     dataIndex: "status",
+  },
+  {
+    title: "FUNCTION",
+    dataIndex: "function",
+    key: "function",
   },
   {
     title: "EMPLOYED",
@@ -588,7 +599,67 @@ const dataproject = [
 
 function Tables() {
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
+  const moment = require("moment");
+  const [userInfo, setUserInfo] = useState(
+    jwtDecode(localStorage.getItem("userInfo"))
+  );
+  const dataAllUsers = [
+    {
+      key: "1",
+      name: (
+        <>
+          <Avatar.Group>
+            <Avatar
+              className="shape-avatar"
+              shape="square"
+              size={40}
+              src={face2}
+            ></Avatar>
+            <div className="avatar-info">
+              <Title level={5}>{userInfo.name}</Title>
+              <p>{userInfo.email}</p>
+            </div>
+          </Avatar.Group>{" "}
+        </>
+      ),
+      birth: (
+        <>
+          <div className="semibold">
+            {moment(userInfo.birth).format("DD-MM-YYYY")}
+          </div>
+        </>
+      ),
+      role: (
+        <>
+          <div className="semibold">{userInfo.role}</div>
+        </>
+      ),
+      function: (
+        <>
+          <div className="author-info">
+            <Title level={5}>Manager</Title>
+            <p>Organization</p>
+          </div>
+        </>
+      ),
 
+      status: (
+        <>
+          <Button type="primary" className="tag-primary">
+            {userInfo.status}
+          </Button>
+        </>
+      ),
+      employed: (
+        <>
+          <div className="ant-employed">
+            <span>23/04/18</span>
+            <a href="#pablo">Edit</a>
+          </div>
+        </>
+      ),
+    },
+  ];
   return (
     <>
       <div className="tabled">
@@ -610,7 +681,7 @@ function Tables() {
               <div className="table-responsive">
                 <Table
                   columns={columns}
-                  dataSource={data}
+                  dataSource={dataAllUsers}
                   pagination={false}
                   className="ant-border-space"
                 />

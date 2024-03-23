@@ -17,9 +17,11 @@ function Footer() {
   const { Footer: AntFooter } = Layout;
 
   return (
+    // <>
+    // </>
     <AntFooter style={{ background: "#fafafa" }}>
       <Row className="just">
-        <Col xs={24} md={12} lg={12}>
+        {/* <Col xs={24} md={12} lg={12}>
           <div className="copyright">
             © 2021, made with
             {<HeartFilled />} by
@@ -70,6 +72,16 @@ function Footer() {
               </li>
             </ul>
           </div>
+        </Col> */}
+        <Col xs={24} md={24} lg={24}>
+          <marquee
+          // class="marq"
+          // bgcolor="Green"
+          // direction="right"
+          // loop=""
+          >
+            I love you ❤
+          </marquee>
         </Col>
       </Row>
     </AntFooter>

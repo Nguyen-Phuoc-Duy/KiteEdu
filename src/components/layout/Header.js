@@ -25,13 +25,17 @@ import {
   Drawer,
   Typography,
   Switch,
+  Popover,
+  Menu,
 } from "antd";
 
+import { useStore } from "../../stores/store";
 import {
   SearchOutlined,
   StarOutlined,
   TwitterOutlined,
   FacebookFilled,
+  DownOutlined,
 } from "@ant-design/icons";
 
 import { NavLink, Link } from "react-router-dom";
@@ -268,6 +272,19 @@ function Header({
   const showDrawer = () => setVisible(true);
   const hideDrawer = () => setVisible(false);
 
+  const { accountStore } = useStore();
+  const { currentUserInfo } = accountStore;
+
+  const userSignOut = (
+    <Menu>
+      <Link to="/sign-in" className="btn-sign-in">
+        <Menu.Item danger onClick={() => localStorage.removeItem("userInfo")}>
+          Sign out
+        </Menu.Item>
+      </Link>
+    </Menu>
+  );
+
   return (
     <>
       <div className="setting-drwer" onClick={showDrawer}>
@@ -421,10 +438,17 @@ function Header({
               </div>
             </div>
           </Drawer>
-          <Link to="/sign-in" className="btn-sign-in">
-            {profile}
-            <span>Sign in</span>
-          </Link>
+          <Dropdown overlay={userSignOut}>
+            <div className="btn-sign-in">
+              {profile}
+              {currentUserInfo.username ? (
+                <span>{currentUserInfo.username}</span>
+              ) : (
+                <span>Sign in</span>
+              )}
+            </div>
+          </Dropdown>
+
           <Input
             className="header-search"
             placeholder="Type here..."
