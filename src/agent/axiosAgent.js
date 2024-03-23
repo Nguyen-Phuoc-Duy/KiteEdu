@@ -81,10 +81,10 @@ const PupilAction = {
     return request.get(`/pupils/getAll`);
   },
   updatePupil: (body) => {
-    return request.post(`/admin/updatePupil`, body);
+    return request.post(`/pupil/updatePupil`, body);
   },
   createPupil: (body) => {
-    return request.post(`/admin/createPupil`, body);
+    return request.post(`/pupil/createPupil`, body);
   },
 };
 
