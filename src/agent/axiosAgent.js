@@ -87,6 +87,31 @@ const PupilAction = {
     return request.post(`/admin/createPupil`, body);
   },
 };
-const axiosAgents = { AuthAction, AdminAction, SubjectAction, RoomAction, PupilAction };
+
+const ClassAction = {
+  getAllClasses: () => {
+    return request.get(`/classes/getAll`);
+  },
+  updateClass: (body) => {
+    return request.post(`/class/updateClass`, body);
+  },
+  createClass: (body) => {
+    return request.post(`/class/createClass`, body);
+  },
+  getClassByUser: (body) => {
+    return request.post(`/class/getClassByUser`, body);
+  },
+  getPupilByClass: (body) => {
+    return request.post(`/class/getPupilByClass`, body);
+  },
+};
+const axiosAgents = {
+  AuthAction,
+  AdminAction,
+  SubjectAction,
+  RoomAction,
+  PupilAction,
+  ClassAction,
+};
 
 export default axiosAgents;

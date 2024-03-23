@@ -286,6 +286,13 @@ function Accounts() {
       subjectId: correspondingItem ? correspondingItem.name : null,
     };
   });
+  let filteredArray = [];
+  if (currentUserInfo.role == "manager" || currentUserInfo.role == "employee") {
+    filteredArray = newArray1.filter((item) => item.role !== "manager");
+  }
+  if (currentUserInfo.role == "admin") {
+    filteredArray = newArray1;
+  }
   return (
     <>
       <div className="tabled">
@@ -299,7 +306,7 @@ function Accounts() {
               <div className="table-responsive">
                 <Table
                   columns={columns}
-                  dataSource={newArray1}
+                  dataSource={filteredArray}
                   pagination={false}
                   className="ant-border-space"
                   loading={isLoading}
@@ -336,7 +343,7 @@ function Accounts() {
                   <p>{selectedRecord.username}</p>
                 </div>
               </Col>
-              <Col span={12}>
+              {/* <Col span={12}>
                 <div className="author-info">
                   <Title level={5}>Subject</Title>
                   <Select
@@ -362,7 +369,8 @@ function Accounts() {
                     })}
                   </Select>
                 </div>
-              </Col>
+              </Col> */}
+              <Col span={12}></Col>
               <Col span={12}>
                 <div className="author-info">
                   <Title level={5}>Role</Title>

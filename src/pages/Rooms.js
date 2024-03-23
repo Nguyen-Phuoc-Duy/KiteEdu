@@ -19,10 +19,14 @@ const { Option } = Select;
 
 function Rooms() {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [statusStates, setStatusStates] = useState(null);
   const [name, setName] = useState(null);
+  const [statusStates1, setStatusStates1] = useState(null);
+  const [name1, setName1] = useState(null);
   const history = useHistory();
+
   const showModal = (record) => {
     setSelectedRecord(record);
     setStatusStates(record.status);
@@ -30,7 +34,13 @@ function Rooms() {
     console.log("fff", record.name);
     setIsModalVisible(true);
   };
-
+  const showModal1 = (record) => {
+    // setSelectedRecord(record);
+    // setStatusStates(record.status);
+    // setName(record.name);
+    console.log("tttttttttttttttttttttt", record);
+    setIsModalVisible1(true);
+  };
   const { accountStore } = useStore();
   const {
     isLoading,
@@ -40,6 +50,7 @@ function Rooms() {
     updateRoom,
     roomList,
     getAllRooms,
+    createRoom,
   } = accountStore;
 
   const handleOk = () => {
@@ -49,11 +60,23 @@ function Rooms() {
       name: name,
     });
     setIsModalVisible(false);
-    console.log('jkjk', name, statusStates, selectedRecord.ID);
+    console.log("jkjk", name, statusStates, selectedRecord.ID);
+  };
+  const handleOk1 = () => {
+    createRoom({
+      status: statusStates1,
+      name: name1,
+    });
+    setIsModalVisible1(false);
+    setName1(null);
+    setStatusStates1(null);
+    getAllRooms();
+    console.log("111111111111", name1, statusStates1);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsModalVisible1(false);
   };
 
   const handleChange = (value) => {
@@ -64,6 +87,17 @@ function Rooms() {
   const handleChangeName = (value) => {
     console.log("aaaaaaaaa", value);
     setName(value);
+    console.log("name", name);
+  };
+
+  const handleChange1 = (value) => {
+    console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
+    setStatusStates1(value);
+  };
+
+  const handleChangeName1 = (value) => {
+    console.log("aaaaaaaaa", value);
+    setName1(value);
     console.log("name", name);
   };
   const columns = [
@@ -81,7 +115,7 @@ function Rooms() {
       ),
     },
     {
-      title: "Status",
+      title: "STATUS",
       dataIndex: "status",
       key: "status",
       render: (status) => (
@@ -91,7 +125,7 @@ function Rooms() {
           ) : status === "fix" ? (
             <Tag color="red">{status}</Tag>
           ) : status === "full" ? (
-            <Tag color="yellow">{status}</Tag>
+            <Tag color="blue">{status}</Tag>
           ) : (
             <Tag color="orange">{status}</Tag>
           )}
@@ -122,7 +156,7 @@ function Rooms() {
     () => {
       getAllRooms();
     },
-    []
+    [isModalVisible1, isModalVisible]
     // [subjectList]
   );
 
@@ -149,6 +183,17 @@ function Rooms() {
               bordered={true}
               className="criclebox tablespace mb-24"
               title="INFORMATION ROOMS"
+              extra={
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  // onClick={() => history.push("/create-room")}
+                  onClick={(record) => showModal1(record)}
+                  style={{ align: "right" }}
+                >
+                  Add Room
+                </Button>
+              }
             >
               <div className="table-responsive">
                 <Table
@@ -158,16 +203,6 @@ function Rooms() {
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
-                  title={() => (
-                    <Button
-                      type="primary"
-                      className="tag-primary"
-                      onClick={() => history.push("/create-room")}
-                      style={{ align: "right" }}
-                    >
-                      Add Room
-                    </Button>
-                  )}
                 />
               </div>
             </Card>
@@ -214,6 +249,52 @@ function Rooms() {
             </Row>
           </>
         )}
+      </Modal>
+      <Modal
+        title="ADD"
+        visible={isModalVisible1}
+        onOk={handleOk1}
+        onCancel={handleCancel}
+        destroyOnClose={true}
+      >
+        <>
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Room</Title>
+                <Input
+                  // value={name1}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input name!",
+                    },
+                  ]}
+                  onChange={(event) => {
+                    handleChangeName1(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Status</Title>
+                <Select
+                  style={{ width: 120 }}
+                  onChange={(value) => {
+                    handleChange1(value);
+                  }}
+                  rules={[{ required: true, message: "Please input status!" }]}
+                  value={statusStates1  || 'empty'}
+                >
+                  <Option value="empty">empty</Option>
+                  <Option value="fix">fix</Option>
+                  <Option value="full">full</Option>
+                </Select>
+              </div>
+            </Col>
+          </Row>
+        </>
       </Modal>
     </>
   );

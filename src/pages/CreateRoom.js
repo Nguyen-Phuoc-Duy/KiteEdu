@@ -20,6 +20,7 @@ import {
   Select,
 } from "antd";
 import { useStore } from "../stores/store";
+import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Option } = Select;
 const CreateRoom = () => {
@@ -126,4 +127,4 @@ const CreateRoom = () => {
   );
 };
 
-export default CreateRoom;
+export default observer(CreateRoom);

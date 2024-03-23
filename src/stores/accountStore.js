@@ -10,6 +10,10 @@ export default class AccountStore {
   subjectList = {};
   roomList = {};
   pupilList = {};
+  classList = {};
+  detailClass = [];
+  ClassByUser = [];
+  PupilByClass = []
   isLoading = false;
 
   constructor() {
@@ -90,6 +94,46 @@ export default class AccountStore {
       }
     });
   };
+
+  getAllClasses = async () => {
+    await axiosAgents.ClassAction.getAllClasses().then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.classList = response.data;
+        });
+      } else {
+        console.log("getAllClassFailed", response.errMsg);
+      }
+    });
+  };
+
+  getClassByUser = async (body) => {
+    await axiosAgents.ClassAction.getClassByUser(body).then((response) => {
+      // console.log('oooooooooooooooo', body)
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.ClassByUser = response.data;
+        });
+      } else {
+        console.log("getAllClassByUserFailed", response.errMsg);
+      }
+    });
+  };
+
+  getPupilByClass = async (body) => {
+    await axiosAgents.ClassAction.getPupilByClass(body).then((response) => {
+      console.log('getPupilByClass', body)
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.PupilByClass = response.data;
+        });
+      } else {
+        console.log("Failed", response.errMsg);
+      }
+    });
+  };
+
+
   updateUserInfo = async (newUserInfo) => {
     await axiosAgents.AuthAction.updateUserInfo(newUserInfo).then(
       (response) => {
@@ -136,12 +180,21 @@ export default class AccountStore {
     this.setIsLoading(false);
   };
 
+  updateClass = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.ClassAction.updateClass(body).then((response) => {
+      console.log("theResponse", response);
+    });
+    await this.getAllClasses();
+    this.setIsLoading(false);
+  };
+
   updatePupil = async (body) => {
     this.setIsLoading(true);
     await axiosAgents.PupilAction.updatePupil(body).then((response) => {
       console.log("theResponse", response);
     });
-    await this.getAllRooms();
+    await this.getAllPupils();
     this.setIsLoading(false);
   };
   adminUpdate = async (
@@ -193,14 +246,22 @@ export default class AccountStore {
   };
 
   createRoom = async (body) => {
+    console.log("body", body);
     await axiosAgents.RoomAction.createRoom(body).then((response) => {
-      console.log("theResponse", response);
+      console.log("theResponse123", response, body);
     });
   };
 
   createPupil = async (body) => {
     await axiosAgents.PupilAction.createPupil(body).then((response) => {
       console.log("theResponse", response);
+    });
+  };
+
+  createClass = async (body) => {
+    console.log("body", body);
+    await axiosAgents.ClassAction.createClass(body).then((response) => {
+      console.log("theResponse456", response, "ggg", body);
     });
   };
 }

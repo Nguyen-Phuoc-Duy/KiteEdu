@@ -31,7 +31,7 @@ const AccountInformation = () => {
       ...values,
       ID: currentUserInfo.id,
     });
-    console.log("update vales", values);
+    console.log("update vales", values, 'hhhhhhhhhh', currentUserInfo);
     // updateUserInfo({
     //   ID: currentUserInfo.id,
     //   name: currentUserInfo.name,

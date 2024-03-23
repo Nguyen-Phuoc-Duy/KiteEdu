@@ -210,12 +210,13 @@ const CreateAccount = () => {
                 <Form.Item
                   name="subjectId"
                   label="Subject"
-                  rules={[{ required: true }]}
+                  // rules={[{ required: true }]}
                 >
                   <Select
                     placeholder="Subject"
                     // onChange={onGenderChange}
                     allowClear
+                    defaultValue={''}
                   >
                     {dataArray.map((item) => {
                       if (item.status === "active") {

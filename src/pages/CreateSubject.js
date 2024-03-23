@@ -20,6 +20,7 @@ import {
   Select,
 } from "antd";
 import { useStore } from "../stores/store";
+import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Option } = Select;
 const CreateSubject = () => {
@@ -125,4 +126,4 @@ const CreateSubject = () => {
   );
 };
 
-export default CreateSubject;
+export default  observer(CreateSubject);

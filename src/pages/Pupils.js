@@ -163,6 +163,7 @@ function Pulpils() {
       title: "NAME",
       dataIndex: "name",
       key: "name",
+      fixed: 'left',
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -257,6 +258,7 @@ function Pulpils() {
     {
       title: "ACTION",
       key: "action",
+      fixed: 'right',
       render: (text, record) => (
         <>
           <Button
@@ -267,47 +269,21 @@ function Pulpils() {
             Edit
             {/* {record.username} */}
           </Button>
-          <Button
+          {/* <Button
             type="danger"
             className="tag-primary"
-            onClick={() => showModal(record)}
           >
             Delete
-          </Button>
+          </Button> */}
         </>
       ),
     },
   ];
   useEffect(() => {
     getAllPupils();
-  }, []);
-  const dataA = Array.from(pupilList);
-  const dataArray = dataA.map((user) => {
-    const order = [
-      "ID",
-      "name",
-      "email",
-      "phone",
-      "parent_name",
-      "parent_email",
-      "parent_phone",
-      "gender",
-      "birth",
-      "address",
-      "status",
-      "createdAt",
-      "updatedAt",
-    ];
+  }, [isModalVisible]);
+  const dataArray = Array.from(pupilList);
 
-    const sortedUser = {};
-    order.forEach((key) => {
-      if (user.hasOwnProperty(key)) {
-        sortedUser[key] = user[key];
-      }
-    });
-
-    return sortedUser;
-  });
 
   return (
     <>
@@ -318,6 +294,14 @@ function Pulpils() {
               bordered={true}
               className="criclebox tablespace mb-24"
               title="INFORMATION PUPILS"
+              extra={<Button
+                type="primary"
+                className="tag-primary"
+                onClick={() => history.push("/create-pupil")}
+                style={{ align: "right" }}
+              >
+                Add Pupils
+              </Button>}
             >
               <div className="table-responsive">
                 <Table
@@ -327,16 +311,7 @@ function Pulpils() {
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
-                  title={() => (
-                    <Button
-                      type="primary"
-                      className="tag-primary"
-                      onClick={() => history.push("/create-pupil")}
-                      style={{ align: "right" }}
-                    >
-                      Add Pupils
-                    </Button>
-                  )}
+                  
                 />
               </div>
             </Card>

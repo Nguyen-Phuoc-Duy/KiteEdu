@@ -599,7 +599,7 @@ const dataproject = [
 
 function Tables() {
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
-  const moment = require('moment');
+  const moment = require("moment");
   const [userInfo, setUserInfo] = useState(
     jwtDecode(localStorage.getItem("userInfo"))
   );
@@ -624,14 +624,14 @@ function Tables() {
       ),
       birth: (
         <>
-          <div className="semibold">{moment(userInfo.birth).format("DD-MM-YYYY")}</div>
+          <div className="semibold">
+            {moment(userInfo.birth).format("DD-MM-YYYY")}
+          </div>
         </>
       ),
       role: (
         <>
-          <div className="semibold">
-            {userInfo.role}
-          </div>
+          <div className="semibold">{userInfo.role}</div>
         </>
       ),
       function: (

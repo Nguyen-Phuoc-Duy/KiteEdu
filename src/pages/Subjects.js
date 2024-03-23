@@ -73,7 +73,7 @@ function Subjects() {
       ),
     },
     {
-      title: "Status",
+      title: "STATUS",
       dataIndex: "status",
       key: "status",
       render: (status) => (
