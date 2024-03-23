@@ -31,14 +31,9 @@ function Rooms() {
     setSelectedRecord(record);
     setStatusStates(record.status);
     setName(record.name);
-    console.log("fff", record.name);
     setIsModalVisible(true);
   };
   const showModal1 = (record) => {
-    // setSelectedRecord(record);
-    // setStatusStates(record.status);
-    // setName(record.name);
-    console.log("tttttttttttttttttttttt", record);
     setIsModalVisible1(true);
   };
   const { accountStore } = useStore();
@@ -60,7 +55,6 @@ function Rooms() {
       name: name,
     });
     setIsModalVisible(false);
-    console.log("jkjk", name, statusStates, selectedRecord.ID);
   };
   const handleOk1 = () => {
     createRoom({
@@ -71,7 +65,6 @@ function Rooms() {
     setName1(null);
     setStatusStates1(null);
     getAllRooms();
-    console.log("111111111111", name1, statusStates1);
   };
 
   const handleCancel = () => {
@@ -80,25 +73,19 @@ function Rooms() {
   };
 
   const handleChange = (value) => {
-    console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
     setStatusStates(value);
   };
 
   const handleChangeName = (value) => {
-    console.log("aaaaaaaaa", value);
     setName(value);
-    console.log("name", name);
   };
 
   const handleChange1 = (value) => {
-    console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
     setStatusStates1(value);
   };
 
   const handleChangeName1 = (value) => {
-    console.log("aaaaaaaaa", value);
     setName1(value);
-    console.log("name", name);
   };
   const columns = [
     {
@@ -286,6 +273,7 @@ function Rooms() {
                   }}
                   rules={[{ required: true, message: "Please input status!" }]}
                   value={statusStates1  || 'empty'}
+                  disabled
                 >
                   <Option value="empty">empty</Option>
                   <Option value="fix">fix</Option>

@@ -111,6 +111,7 @@ function Accounts() {
       title: "NAME",
       dataIndex: "name",
       key: "name",
+      fixed: "left",
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -199,6 +200,7 @@ function Accounts() {
     {
       title: "ACTION",
       key: "action",
+      fixed: "right",
       render: (text, record) => (
         <>
           <Button
@@ -206,13 +208,13 @@ function Accounts() {
             className="tag-primary"
             onClick={() => showModal(record)}
           >
-            {pencil}
+            {/* {pencil} */}
             Edit
             {/* {record.username} */}
           </Button>
-          <Button type="link" className="darkbtn">
+          {/* <Button type="link" className="darkbtn">
             {pencil} EDIT
-          </Button>
+          </Button> */}
           {/* <Button
             type="danger"
             className="tag-primary"

@@ -23,10 +23,14 @@ const { Option } = Select;
 
 function Pulpils() {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleAdd, setIsModalVisibleAdd] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [statusStates, setStatusStates] = useState(null);
+  const [statusStatesAdd, setStatusStatesAdd] = useState(null);
   const [genderStates, setGenderStates] = useState(null);
   const [birth, setBirth] = useState(null);
+  const [genderStatesAdd, setGenderStatesAdd] = useState(null);
+  const [birthAdd, setBirthAdd] = useState(null);
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState(null);
@@ -36,7 +40,6 @@ function Pulpils() {
   const [address, setAddress] = useState(null);
   const history = useHistory();
   const showModal = (record) => {
-    
     setSelectedRecord(record);
     setStatusStates(record.status);
     setGenderStates(record.gender);
@@ -49,16 +52,16 @@ function Pulpils() {
     setPhoneP(record.parent_phone);
     setAddress(record.address);
     setIsModalVisible(true);
-    console.log('kkkkkkkkkkkkk', record, genderStates, name, email, birth, statusStates , selectedRecord);
+  };
+
+  const showModalAdd = (record) => {
+    setIsModalVisibleAdd(true);
   };
 
   const { accountStore } = useStore();
-  const {
-    isLoading,
-    pupilList,
-    getAllPupils,
-    updatePupil,
-  } = accountStore;
+  const { isLoading, pupilList, getAllPupils, updatePupil, createPupil } =
+    accountStore;
+
   const handleOk = async () => {
     await updatePupil({
       ID: selectedRecord.ID,
@@ -73,10 +76,10 @@ function Pulpils() {
       birth: birth,
       address: address,
     });
-    
+
     // Cách 1: Gọi lại API để tải lại danh sách học viên
     getAllPupils();
-  
+
     // Cách 2: Cập nhật trực tiếp danh sách học viên
     // const updatedPupilIndex = pupilList.findIndex(pupil => pupil.ID === selectedRecord.ID);
     // if (updatedPupilIndex !== -1) {
@@ -98,37 +101,47 @@ function Pulpils() {
     //   // Cập nhật lại danh sách học viên
     //   setPupilList(updatedPupilList);
     // }
-  
+
     setIsModalVisible(false);
   };
-  
-  // const handleOk = () => {
-  //   updatePupil({
-  //     ID: selectedRecord.ID,
-  //     status: statusStates,
-  //     name: name,
-  //     email: email,
-  //     phone: phone,
-  //     parent_email: emailP,
-  //     parent_name: nameP,
-  //     parent_phone: phoneP,
-  //     gender: genderStates,
-  //     birth: birth,
-  //     address: address,
-  //   });
-  //   getAllPupils()
-  //   setIsModalVisible(false);
-  // };
+
+  const handleOkAdd = async () => {
+    await createPupil({
+      status: statusStatesAdd,
+      name: name,
+      email: email,
+      phone: phone,
+      parent_email: emailP,
+      parent_name: nameP,
+      parent_phone: phoneP,
+      gender: genderStatesAdd,
+      birth: birthAdd,
+      address: address,
+    });
+    setIsModalVisibleAdd(false);
+    setBirthAdd(null);
+    setStatusStatesAdd(null);
+    setName(null);
+    setEmail(null);
+    setPhone(null);
+    setNameP(null);
+    setEmailP(null);
+    setPhoneP(null);
+    setGenderStatesAdd(null);
+    setAddress(null);
+    getAllPupils();
+  };
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsModalVisibleAdd(false);
   };
 
   const handleChange = (value) => {
     setStatusStates(value);
   };
   const handleChangeGender = (value) => {
-    console.log('gender', value);
+    console.log("gender", value);
 
     setGenderStates(value);
   };
@@ -145,7 +158,6 @@ function Pulpils() {
   const handleChangePhone = (value) => {
     setPhone(value);
   };
-
   const handleChangeNameP = (value) => {
     setNameP(value);
   };
@@ -158,12 +170,47 @@ function Pulpils() {
   const handleChangeAddress = (value) => {
     setAddress(value);
   };
+  /////////////////////////////////////////////////////////////////////
+  const handleChangeAdd = (value) => {
+    setStatusStatesAdd(value);
+  };
+  const handleChangeGenderAdd = (value) => {
+    console.log("gender", value);
+
+    setGenderStatesAdd(value);
+  };
+  const handleChangeBirthAdd = (value) => {
+    console.log("llllllllllllllll", value, moment(value).format("DD-MM-YYYY"), dayjs(value, "YYYY-MM-DD"));
+    setBirthAdd(moment(value).format("DD-MM-YYYY"));
+  };
+  const handleChangeNameAdd = (value) => {
+    setName(value);
+  };
+  const handleChangeEmailAdd = (value) => {
+    setEmail(value);
+  };
+  const handleChangePhoneAdd = (value) => {
+    setPhone(value);
+  };
+  const handleChangeNamePAdd = (value) => {
+    setNameP(value);
+  };
+  const handleChangeEmailPAdd = (value) => {
+    setEmailP(value);
+  };
+  const handleChangePhonePAdd = (value) => {
+    setPhoneP(value);
+  };
+  const handleChangeAddressAdd = (value) => {
+    setAddress(value);
+  };
+
   const columns = [
     {
       title: "NAME",
       dataIndex: "name",
       key: "name",
-      fixed: 'left',
+      fixed: "left",
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -258,7 +305,7 @@ function Pulpils() {
     {
       title: "ACTION",
       key: "action",
-      fixed: 'right',
+      fixed: "right",
       render: (text, record) => (
         <>
           <Button
@@ -267,23 +314,15 @@ function Pulpils() {
             onClick={() => showModal(record)}
           >
             Edit
-            {/* {record.username} */}
           </Button>
-          {/* <Button
-            type="danger"
-            className="tag-primary"
-          >
-            Delete
-          </Button> */}
         </>
       ),
     },
   ];
   useEffect(() => {
     getAllPupils();
-  }, [isModalVisible]);
+  }, [isModalVisible, isModalVisibleAdd]);
   const dataArray = Array.from(pupilList);
-
 
   return (
     <>
@@ -294,14 +333,16 @@ function Pulpils() {
               bordered={true}
               className="criclebox tablespace mb-24"
               title="INFORMATION PUPILS"
-              extra={<Button
-                type="primary"
-                className="tag-primary"
-                onClick={() => history.push("/create-pupil")}
-                style={{ align: "right" }}
-              >
-                Add Pupils
-              </Button>}
+              extra={
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={(record) => showModalAdd(record)}
+                  style={{ align: "right" }}
+                >
+                  Add Pupil
+                </Button>
+              }
             >
               <div className="table-responsive">
                 <Table
@@ -311,7 +352,6 @@ function Pulpils() {
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
-                  
                 />
               </div>
             </Card>
@@ -402,10 +442,10 @@ function Pulpils() {
                     onChange={(value) => {
                       handleChangeGender(value);
                     }}
-                    value={genderStates == 1 ? 'Nam' : 'Nữ'}
+                    value={genderStates == 1 ? "Nam" : "Nữ"}
                   >
-                    <Option value= '1'>Nam</Option>
-                    <Option value= '0'>Nữ</Option>
+                    <Option value="1">Nam</Option>
+                    <Option value="0">Nữ</Option>
                   </Select>
                 </div>
               </Col>
@@ -449,6 +489,135 @@ function Pulpils() {
             </Row>
           </>
         )}
+      </Modal>
+
+      <Modal
+        title="ADD"
+        visible={isModalVisibleAdd}
+        onOk={handleOkAdd}
+        onCancel={handleCancel}
+        destroyOnClose={true}
+      >
+        <>
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Name</Title>
+                <Input
+                  onChange={(event) => {
+                    handleChangeNameAdd(event.target.value);
+                  }}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input name!",
+                    },
+                  ]}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Email</Title>
+                <Input
+                  onChange={(event) => {
+                    handleChangeEmailAdd(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Phone</Title>
+                <Input
+                  onChange={(event) => {
+                    handleChangePhoneAdd(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Parent's Name</Title>
+                <Input
+                  onChange={(event) => {
+                    handleChangeNamePAdd(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Parent's Email</Title>
+                <Input
+                  onChange={(event) => {
+                    handleChangeEmailPAdd(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Parent's Phone</Title>
+                <Input
+                  onChange={(event) => {
+                    handleChangePhonePAdd(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Gender</Title>
+                <Select
+                  style={{ width: 120 }}
+                  onChange={(value) => {
+                    handleChangeGenderAdd(value);
+                  }}
+                  // value={genderStatesAdd == 1 ? "Nam" : "Nữ"}
+                >
+                  <Option value="1">Nam</Option>
+                  <Option value="0">Nữ</Option>
+                </Select>
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Birth</Title>
+                <DatePicker
+                  onChange={(value) => {
+                    handleChangeBirthAdd(value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Address</Title>
+                <Input
+                  onChange={(event) => {
+                    handleChangeAddressAdd(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Status</Title>
+                <Select
+                  style={{ width: 120 }}
+                  onChange={(value) => {
+                    handleChangeAdd(value);
+                  }}
+                  value={statusStatesAdd || "active"}
+                >
+                  <Option value="active">active</Option>
+                  <Option value="inactive">inactive</Option>
+                </Select>
+              </div>
+            </Col>
+          </Row>
+        </>
       </Modal>
     </>
   );
