@@ -37,6 +37,55 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
   <title>KiteEdu</title>
+  <script>
+    // Function to update the title based on the current route
+    function updateTitle() {
+      // Get the current path
+      var path = window.location.pathname;
+      // Set the default title
+      var title = "KiteEdu";
+
+      // Check the current path and set the title accordingly
+      if (path === "/dashboard") {
+        title = "Dashboard | KiteEdu";
+      } else if (path == "/subjects") {
+        title = "Subjects | KiteEdu";
+      } else if (path == "/rooms") {
+        title = "Rooms | KiteEdu";
+      }else if (path === "/pupils") {
+        title = "Pupils | KiteEdu";
+      }else if (path === "/classes") {
+        title = "Classes | KiteEdu";
+      }else if (path === "/accounts") {
+        title = "Accounts | KiteEdu";
+      }else if (path === "/account-information") {
+        title = "Profile | KiteEdu";
+      }else if (path === "/create-account") {
+        title = "Create account | KiteEdu";
+      }
+      else if (path === "/create-account") {
+        title = "Create account | KiteEdu";
+      }
+      else if (path === "/create-account") {
+        title = "Create account | KiteEdu";
+      }
+      else if (path === "/create-account") {
+        title = "Create account | KiteEdu";
+      }
+      else if (path === "/create-account") {
+        title = "Create account | KiteEdu";
+      }
+      // Update the title element
+      document.title = title;
+    }
+
+    // Call the function when the page is loaded and when the route changes
+    window.onload = updateTitle;
+    window.onpopstate = updateTitle;
+    window.onpopstate = function(event) {
+      updateTitle();
+    };
+  </script>
 </head>
 
 <body>

@@ -352,6 +352,7 @@ function Pulpils() {
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
+                  scroll={{x:1600, y: 415 }}
                 />
               </div>
             </Card>

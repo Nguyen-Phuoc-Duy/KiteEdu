@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   Row,
   Col,
@@ -11,19 +11,24 @@ import {
   Tag,
   Input,
   Space,
+  DatePicker,
 } from "antd";
+import moment from "moment";
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Title } = Typography;
 const { Option } = Select;
 
-function Classes() {
+function Lessons() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [statusStates, setStatusStates] = useState(null);
+  const [room, setRoom] = useState(null);
   const [name, setName] = useState(null);
+  const [classname, setClassName] = useState(null);
+  const [content, setContent] = useState(null);
   const [lecturer, setLecturer] = useState(null);
   const [subject, setSubject] = useState(null);
   const [statusStates1, setStatusStates1] = useState(null);
@@ -31,11 +36,41 @@ function Classes() {
   const [classPupils, setClassPupils] = useState([]);
   const [idClass, setIdClass] = useState();
   const history = useHistory();
+  const { RangePicker } = DatePicker;
+
+  const handleChangeSelect = (value) => {
+    // const result = value.split(' ').pop();
+    setClassPupils(value);
+    // console.log(`selected ${value}`);
+  };
+  const showModal = (record) => {
+    setSelectedRecord(record);
+    setStatusStates(record.status);
+    setName(record.name);
+    setContent(record.content)
+    setSubject(record.subjectId);
+    setLecturer(record.userId);
+    setRoom(record.roomId)
+    setIdClass(record.ID);
+    setClassName(record.classId)
+    setIsModalVisible(true);
+  };
+  const showModal1 = (record) => {
+    // getPupilByClass({
+    //   ID: idClass,
+    // });
+    setIsModalVisible1(true);
+  };
   const { accountStore } = useStore();
   const {
     isLoading,
     subjectList,
     getAllSubjects,
+    updateSubject,
+    updateRoom,
+    roomList,
+    getAllRooms,
+    classList,
     getAllClasses,
     createClass,
     userList,
@@ -48,28 +83,10 @@ function Classes() {
     getClassByUser,
     PupilByClass,
     getPupilByClass,
+    LessonByClass,
+    getLessonByClass,
+    testMsg,
   } = accountStore;
-
-  const handleChangeSelect = (value) => {
-    // const result = value.split(' ').pop();
-    setClassPupils(value);
-    // console.log(`selected ${value}`);
-  };
-
-  const showModal = (record) => {
-    setSelectedRecord(record);
-    setStatusStates(record.status);
-    setName(record.name);
-    setSubject(record.subjectId);
-    setLecturer(record.userId);
-    setIdClass(record.ID);
-    // console.log("fff", record.name);
-    setIsModalVisible(true);
-  };
-
-  const showModal1 = (record) => {
-    setIsModalVisible1(true);
-  };
 
   const handleOk = () => {
     updateClass({
@@ -78,10 +95,9 @@ function Classes() {
       name: name,
     });
     getPupilByClass({
-      ID: idClass,
-      // role: currentUserInfo.role,
+      // ID: idClass,
+      ID: "f36e6597-3350-4e9e-b49f-2ddaad5930a8",
     });
-    console.log("PupilByClass", PupilByClass, selectedRecord);
     setIsModalVisible(false);
   };
 
@@ -109,14 +125,13 @@ function Classes() {
     getAllSubjects();
     getAllUsers();
     setIsModalVisible1(false);
-    setStatusStates(null);
     // console.log("jkjk", currentUserInfo);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setIsModalVisible1(false);
-    console.log("ggggggggggggggggggggggggg", listPupilByClass);
+    // console.log("ggggggggggggggggggggggggg", listPupilByClass);
     // console.log("jkjkxxxxxxx", currentUserInfo.subjectId, currentUserInfo);
     // console.log(`bbbbbbbbbbbbbbbbbbbbb`, classPupils);
   };
@@ -148,6 +163,7 @@ function Classes() {
       title: "NAME",
       dataIndex: "name",
       key: "name",
+      fixed: "left",
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -157,7 +173,19 @@ function Classes() {
         </>
       ),
     },
-
+    {
+      title: "CONTENT",
+      dataIndex: "content",
+      key: "content",
+      render: (content) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{content}</Title>
+            <p>{content}</p>
+          </div>
+        </>
+      ),
+    },
     {
       title: "LECTURER",
       dataIndex: "userId",
@@ -172,19 +200,52 @@ function Classes() {
       ),
     },
     {
-      title: "SUBJECT",
-      dataIndex: "subjectId",
-      key: "subjectId",
-      render: (subjectId) => (
+      title: "CLASS",
+      dataIndex: "classId",
+      key: "classId",
+      render: (classId) => (
         <>
           <div className="avatar-info">
-            <Title level={5}>{subjectId}</Title>
-            <p>{subjectId}</p>
+            <Title level={5}>{classId}</Title>
+            <p>{classId}</p>
+          </div>
+        </>
+      ),
+    },
+    {
+      title: "ROOM",
+      dataIndex: "roomId",
+      key: "roomId",
+      render: (roomId) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{roomId}</Title>
+            <p>{roomId}</p>
           </div>
         </>
       ),
     },
 
+    {
+      title: "TIME START",
+      dataIndex: "timeStart",
+      key: "timeStart",
+      render: (timeStart) => (
+        <div className="semibold">
+          {moment.parseZone(timeStart).format("DD-MM-YYYY HH:mm:ss")}
+        </div>
+      ),
+    },
+    {
+      title: "TIME FINISH",
+      dataIndex: "timeFinish",
+      key: "timeFinish",
+      render: (timeFinish) => (
+        <div className="semibold">
+          {moment.parseZone(timeFinish).format("DD-MM-YYYY HH:mm:ss")}
+        </div>
+      ),
+    },
     {
       title: "STATUS",
       dataIndex: "status",
@@ -208,6 +269,7 @@ function Classes() {
       title: "ACTION",
       key: "action",
       // align: 'center',
+      fixed: "right",
       render: (text, record) => (
         <>
           <Button
@@ -215,16 +277,8 @@ function Classes() {
             className="tag-primary"
             onClick={() => showModal(record)}
           >
-            Edit
-            {/* {record.ID} */}
-          </Button>
-          {' '}
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => history.push("/lessons")}
-          >
             Detail
+            {/* {record.ID} */}
           </Button>
         </>
       ),
@@ -254,7 +308,7 @@ function Classes() {
         <>
           {status === "present" ? (
             <Tag color="green">{status}</Tag>
-          ) : status === "not present" ? (
+          ) : status === "absent" ? (
             <Tag color="red">{status}</Tag>
           ) : status === "attended" ? (
             <Tag color="blue">{status}</Tag>
@@ -276,8 +330,16 @@ function Classes() {
             className="tag-primary"
             onClick={() => showModal1(record)}
           >
-            Remove
+            Present
             {/* {record.username} */}
+          </Button>
+          {' '}
+          <Button
+            type="danger"
+            className="tag-primary"
+            onClick={() => showModal1(record)}
+          >
+            Absent
           </Button>
         </>
       ),
@@ -305,13 +367,13 @@ function Classes() {
       subjectId: correspondingItem ? correspondingItem.name : null,
     };
   });
-
   const dataArrayD = Array.from(pupilList);
+
+  const dataArrayE = Array.from(roomList);
 
   const listPupilByClass = Array.from(PupilByClass);
 
   let newArrayPupil = listPupilByClass.map((item1) => {
-    console.log("oooooooooooooooooo", dataArrayD, listPupilByClass);
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayD.find((item2) => {
       return item2.ID === item1.pupilId;
@@ -321,43 +383,50 @@ function Classes() {
       pupilId: correspondingItem1 ? correspondingItem1.name : null,
     };
   });
+  console.log(" newArrayPupil", newArrayPupil);
   let options = [];
-  let optionsUpdate = [];
-  let optionsUpdateFinal = [];
-  // for (let i = 10; i < 36; i++) {
-  //   options.push({
-  //     label: i.toString(36) + i,
-  //     value: i.toString(36) + i,
-  //   });
-  // }
 
   const arrayPupils = dataArrayD.map((itemB) => ({
     label: itemB.name,
     value: itemB.name + " " + itemB.ID,
   }));
-  
+
   options = arrayPupils;
+  let obj = {};
+  obj = testMsg.errMsg;
 
-  for (const itemA of dataArrayD) {
-    let found = false;
-    for (const itemB of listPupilByClass) {
-      if (itemA.ID === itemB.pupilId) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      optionsUpdate.push(itemA);
-    }
-  }
+  const dataArray0 = Array.from(LessonByClass);
+  // console.log("dataArray0", LessonByClass);
+  let newArrayLesson = dataArray0.map((item1) => {
+    // Tìm phần tử tương ứng trong Array2
+    let correspondingItem1 = dataArrayC.find((item2) => {
+      return item2.ID === item1.userId;
+    });
+    let correspondingItem2 = dataArray.find((item2) => {
+      return item2.ID === item1.classId;
+    });
+    let correspondingItem3 = dataArrayE.find((item2) => {
+      return item2.ID === item1.roomId;
+    });
 
-  const arrayPupilsUpdate = optionsUpdate.map((itemB) => ({
-    label: itemB.name,
-    value: itemB.name + " " + itemB.ID,
-  }));
+    return {
+      ...item1,
+      userId: correspondingItem1 ? correspondingItem1.name : null,
+      classId: correspondingItem2 ? correspondingItem2.name : null,
+      roomId: correspondingItem3 ? correspondingItem3.name : null,
+    };
+  });
 
-  optionsUpdateFinal = arrayPupilsUpdate
+  const onChange123 = (value, dateString) => {
+    console.log("Selected Time: ", value);
+    console.log("Formatted Selected Time: ", dateString);
+  };
+  const onOk123 = (value) => {
+    console.log("onOk: ", value);
+  };
+
   useEffect(() => {
+    getAllRooms();
     getAllClasses();
     getAllSubjects();
     getAllUsers();
@@ -367,9 +436,28 @@ function Classes() {
       role: currentUserInfo.role,
     });
     getPupilByClass({
-      ID: idClass,
+      // ID: idClass,
+      ID: "f36e6597-3350-4e9e-b49f-2ddaad5930a8",
     });
+    getLessonByClass({ ID: "f36e6597-3350-4e9e-b49f-2ddaad5930a8" });
+    // console.log('hohohoho', dataArrayD, options);
   }, [isModalVisible1, isModalVisible]);
+
+  // useLayoutEffect(() => {
+  //   getAllRooms();
+  //   getAllClasses();
+  //   getAllSubjects();
+  //   getAllUsers();
+  //   getAllPupils();
+  //   getClassByUser({
+  //     ID: currentUserInfo.id,
+  //     role: currentUserInfo.role,
+  //   });
+  //   getPupilByClass({
+  //     ID: idClass,
+  //   });
+  //   getLessonByClass({ ID: "f36e6597-3350-4e9e-b49f-2ddaad5930a8" });
+  // }, [isModalVisible1, isModalVisible]);
   return (
     <>
       <div className="tabled">
@@ -378,7 +466,7 @@ function Classes() {
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
-              title="INFORMATION CLASSES"
+              title="INFORMATION LESSON"
               extra={
                 <Button
                   type="primary"
@@ -386,19 +474,19 @@ function Classes() {
                   onClick={(record) => showModal1(record)}
                   style={{ align: "right" }}
                 >
-                  Add Class
+                  Add Lesson
                 </Button>
               }
             >
               <div className="table-responsive">
                 <Table
                   columns={columns}
-                  dataSource={newArray1}
+                  dataSource={newArrayLesson}
                   pagination={false}
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
-                  scroll={{ y: 420 }}
+                  scroll={{ x: 1600, y: 415 }}
                   // title={() => (
                   //   <Button
                   //     type="primary"
@@ -423,7 +511,6 @@ function Classes() {
         onCancel={handleCancel}
         width={1000}
         bodyStyle={{ height: 440 }}
-        destroyOnClose={true}
       >
         {selectedRecord && (
           <>
@@ -440,18 +527,17 @@ function Classes() {
                 </div>
               </Col>
               <Col span={6}>
-                <div className="author-info">
-                  <Title level={5}>Lecturer</Title>
-                  <Input value={lecturer} disabled={true} />
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className="author-info">
-                  <Title level={5}>Subject</Title>
-                  <Input value={subject} disabled={true} />
-                </div>
-              </Col>
-              <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Content</Title>
+                <Input
+                  value={content}
+                  onChange={(event) => {
+                    handleChangeName(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={6}>
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
@@ -467,23 +553,87 @@ function Classes() {
                   </Select>
                 </div>
               </Col>
-              <Col span={12}>
+              <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Room</Title>
+                <Select
+                  style={{ width: 120 }}
+                  onChange={(value) => {
+                    handleChange1(value);
+                  }}
+                  value={room}
+                >
+                  {dataArrayE.map((item) => {
+                    if (item.status === "empty") {
+                      return (
+                        <Option key={item.ID} value={item.ID}>
+                          {item.name}
+                        </Option>
+                      );
+                    }
+                    return null; // Trả về null nếu item.status không phải 'active'
+                  })}
+                </Select>
+              </div>
+            </Col>
+              <Col span={6}>
                 <div className="author-info">
-                  <Title level={5}>Pupils</Title>
-                  <Space style={{ width: "100%" }} direction="vertical">
-                    <Select
-                      mode="multiple"
-                      allowClear
-                      style={{ width: "100%" }}
-                      placeholder="Please select"
-                      // defaultValue={["a10", "c12"]}
-                      onChange={handleChangeSelect}
-                      options={optionsUpdateFinal}
-                    />
-                  </Space>
+                  <Title level={5}>Lecturer</Title>
+                  <Input value={lecturer} disabled={true} />
                 </div>
               </Col>
-              <Col span={12}>
+              {/* <Col span={6}>
+                <div className="author-info">
+                  <Title level={5}>Subject</Title>
+                  <Input value={subject} disabled={true} />
+                </div>
+              </Col> */}
+              <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Class</Title>
+                <Input
+                  // value={name}
+                  // onChange={(event) => {
+                  //   handleChangeName1(event.target.value);
+                  // }}
+                  value={classname}
+                  disabled
+                />
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Time Start</Title>
+                <DatePicker
+                  // onChange={(value) => {
+                  //   handleChangeBirthAdd(value);
+                  // }}
+                  showTime={{
+                    format: "HH:mm",
+                  }}
+                  format="YYYY-MM-DD HH:mm"
+                  onChange={onChange123}
+                  onOk={onOk123}
+                />
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Time Finish</Title>
+                <DatePicker
+                  // onChange={(value) => {
+                  //   handleChangeBirthAdd(value);
+                  // }}
+                  showTime={{
+                    format: "HH:mm",
+                  }}
+                  format="YYYY-MM-DD HH:mm"
+                  onChange={onChange123}
+                  onOk={onOk123}
+                />
+              </div>
+            </Col>
+              <Col span={24}>
                 <div className="author-info">
                   <Title level={5}>List Pupil</Title>
                   <div className="table-responsive">
@@ -514,7 +664,80 @@ function Classes() {
       >
         <>
           <Row gutter={[16, 16]}>
-            <Col span={12}>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Name</Title>
+                <Input
+                  // value={name}
+                  onChange={(event) => {
+                    handleChangeName1(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Content</Title>
+                <Input
+                  // value={name}
+                  onChange={(event) => {
+                    handleChangeName1(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Status</Title>
+                <Select
+                  style={{ width: 120 }}
+                  // onChange={(value) => {
+                  //   handleChange1(value);
+                  // }}
+                  value={"started"}
+                  disabled
+                >
+                  <Option value="started">started</Option>
+                  <Option value="finished">finished</Option>
+                  <Option value="canceled">canceled</Option>
+                </Select>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Room</Title>
+                <Select
+                  style={{ width: 120 }}
+                  onChange={(value) => {
+                    handleChange1(value);
+                  }}
+                  // value={statusStates}
+                >
+                  {dataArrayE.map((item) => {
+                    if (item.status === "empty") {
+                      return (
+                        <Option key={item.ID} value={item.ID}>
+                          {item.name}
+                        </Option>
+                      );
+                    }
+                    return null; // Trả về null nếu item.status không phải 'active'
+                  })}
+                </Select>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Lecturer</Title>
+                <Input
+                  // value={name}
+                  onChange={(event) => {
+                    handleChangeName1(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={6}>
               <div className="author-info">
                 <Title level={5}>Class</Title>
                 <Input
@@ -525,37 +748,53 @@ function Classes() {
                 />
               </div>
             </Col>
-            <Col span={12}>
+
+            <Col span={6}>
               <div className="author-info">
-                <Title level={5}>Status</Title>
-                <Select
-                  style={{ width: 120 }}
-                  onChange={(value) => {
-                    handleChange1(value);
+                <Title level={5}>Time Start</Title>
+                <DatePicker
+                  // onChange={(value) => {
+                  //   handleChangeBirthAdd(value);
+                  // }}
+                  showTime={{
+                    format: "HH:mm",
                   }}
-                  value={statusStates1 || "started"}
-                  disabled
-                >
-                  <Option value="started">started</Option>
-                  <Option value="finished">finished</Option>
-                  <Option value="canceled">canceled</Option>
-                </Select>
+                  format="YYYY-MM-DD HH:mm"
+                  onChange={onChange123}
+                  onOk={onOk123}
+                />
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className="author-info">
+                <Title level={5}>Time Finish</Title>
+                <DatePicker
+                  // onChange={(value) => {
+                  //   handleChangeBirthAdd(value);
+                  // }}
+                  showTime={{
+                    format: "HH:mm",
+                  }}
+                  format="YYYY-MM-DD HH:mm"
+                  onChange={onChange123}
+                  onOk={onOk123}
+                />
               </div>
             </Col>
             <Col span={24}>
               <div className="author-info">
-                <Title level={5}>Pupils</Title>
-                <Space style={{ width: "100%" }} direction="vertical">
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    style={{ width: "100%" }}
-                    placeholder="Please select"
-                    // defaultValue={["a10", "c12"]}
-                    onChange={handleChangeSelect}
-                    options={options}
+                <Title level={5}>List Pupil</Title>
+                <div className="table-responsive">
+                  <Table
+                    columns={columnsDetail}
+                    dataSource={newArrayPupil}
+                    pagination={false}
+                    className="ant-border-space"
+                    loading={isLoading}
+                    bordered
+                    scroll={{ y: 240 }}
                   />
-                </Space>
+                </div>
               </div>
             </Col>
           </Row>
@@ -565,4 +804,4 @@ function Classes() {
   );
 }
 
-export default observer(Classes);
+export default observer(Lessons);

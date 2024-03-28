@@ -91,7 +91,7 @@ const CreateAccount = () => {
             form={form}
           >
             <Row gutter={[16, 16]}>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="name"
                   label="Name"
@@ -105,35 +105,7 @@ const CreateAccount = () => {
                   <Input placeholder="Name" />
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="email"
-                  label="E-mail"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input email!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Email" />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="phone"
-                  label="Phone Number"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input phone number!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Phone Number" />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="username"
                   label="Username"
@@ -147,31 +119,36 @@ const CreateAccount = () => {
                   <Input placeholder="Username" />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
-                  name="password"
-                  label="Password"
-                  rules={[
-                    { required: true, message: "Please input password!" },
-                  ]}
-                >
-                  <Input.Password placeholder="Password" />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="confirmPassword"
-                  label="Confirm Password"
+                  name="email"
+                  label="E-mail"
                   rules={[
                     {
                       required: true,
-                      message: "Please input confirm password!",
+                      message: "Please input email!",
                     },
                   ]}
                 >
-                  <Input.Password placeholder="Confirm Password" />
+                  <Input placeholder="Email" />
                 </Form.Item>
               </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="phone"
+                  label="Phone Number"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input phone number!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Phone Number" />
+                </Form.Item>
+              </Col>
+              
+              
               <Col span={8}>
                 <Form.Item
                   name="address"
@@ -197,7 +174,7 @@ const CreateAccount = () => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={4}>
                 <Form.Item
                   label="Birth"
                   name="birth"
@@ -206,7 +183,7 @@ const CreateAccount = () => {
                   <DatePicker />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={4}>
                 <Form.Item
                   name="subjectId"
                   label="Subject"
@@ -231,7 +208,31 @@ const CreateAccount = () => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={16}></Col>
+              <Col span={12}>
+                <Form.Item
+                  name="password"
+                  label="Password"
+                  rules={[
+                    { required: true, message: "Please input password!" },
+                  ]}
+                >
+                  <Input.Password placeholder="Password" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input confirm password!",
+                    },
+                  ]}
+                >
+                  <Input.Password placeholder="Confirm Password" />
+                </Form.Item>
+              </Col>
               <Col span={8}></Col>
               <Col span={4}>
                 <Form.Item>

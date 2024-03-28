@@ -12,6 +12,7 @@ import {
   Input,
   Switch,
 } from "antd";
+import Kite from "../assets/images/Kite.png";
 import KiteEduLgo from "../assets/images/KiteEduLogo.jpg";
 import {
   DribbbleOutlined,
@@ -62,7 +63,6 @@ const SignIn = () => {
   // const onChange = (checked) => {
   //   console.log(`switch to ${checked}`);
   // };
-
 
   return (
     <>

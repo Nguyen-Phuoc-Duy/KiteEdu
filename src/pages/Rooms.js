@@ -46,6 +46,7 @@ function Rooms() {
     roomList,
     getAllRooms,
     createRoom,
+    currentUserInfo,
   } = accountStore;
 
   const handleOk = () => {
@@ -70,6 +71,7 @@ function Rooms() {
   const handleCancel = () => {
     setIsModalVisible(false);
     setIsModalVisible1(false);
+    console.log("currentUserInfo", currentUserInfo.role);
   };
 
   const handleChange = (value) => {
@@ -138,7 +140,39 @@ function Rooms() {
       ),
     },
   ];
-
+  const columnsEmployee = [
+    {
+      title: "NAME",
+      dataIndex: "name",
+      key: "name",
+      render: (name) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{name}</Title>
+            <p>{name}</p>
+          </div>
+        </>
+      ),
+    },
+    {
+      title: "STATUS",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <>
+          {status === "empty" ? (
+            <Tag color="green">{status}</Tag>
+          ) : status === "fix" ? (
+            <Tag color="red">{status}</Tag>
+          ) : status === "full" ? (
+            <Tag color="blue">{status}</Tag>
+          ) : (
+            <Tag color="orange">{status}</Tag>
+          )}
+        </>
+      ),
+    },
+  ];
   useEffect(
     () => {
       getAllRooms();
@@ -163,39 +197,66 @@ function Rooms() {
 
   return (
     <>
-      <div className="tabled">
-        <Row gutter={[24, 0]}>
-          <Col xs="24" xl={24}>
-            <Card
-              bordered={true}
-              className="criclebox tablespace mb-24"
-              title="INFORMATION ROOMS"
-              extra={
-                <Button
-                  type="primary"
-                  className="tag-primary"
-                  // onClick={() => history.push("/create-room")}
-                  onClick={(record) => showModal1(record)}
-                  style={{ align: "right" }}
-                >
-                  Add Room
-                </Button>
-              }
-            >
-              <div className="table-responsive">
-                <Table
-                  columns={columns}
-                  dataSource={dataArray}
-                  pagination={false}
-                  className="ant-border-space"
-                  loading={isLoading}
-                  bordered
-                />
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+      {currentUserInfo.role == "manager" ? (
+        <div className="tabled">
+          <Row gutter={[24, 0]}>
+            <Col xs="24" xl={24}>
+              <Card
+                bordered={true}
+                className="criclebox tablespace mb-24"
+                title="INFORMATION ROOMS"
+                extra={
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    // onClick={() => history.push("/create-room")}
+                    onClick={(record) => showModal1(record)}
+                    style={{ align: "right" }}
+                  >
+                    Add Room
+                  </Button>
+                }
+              >
+                <div className="table-responsive">
+                  <Table
+                    columns={columns}
+                    dataSource={dataArray}
+                    pagination={false}
+                    className="ant-border-space"
+                    loading={isLoading}
+                    bordered
+                    scroll={{ y: 420 }}
+                  />
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <div className="tabled">
+          <Row gutter={[24, 0]}>
+            <Col xs="24" xl={24}>
+              <Card
+                bordered={true}
+                className="criclebox tablespace mb-24"
+                title="INFORMATION ROOMS"
+              >
+                <div className="table-responsive">
+                  <Table
+                    columns={columnsEmployee}
+                    dataSource={dataArray}
+                    pagination={false}
+                    className="ant-border-space"
+                    loading={isLoading}
+                    bordered
+                    scroll={{ y: 420 }}
+                  />
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      )}
 
       <Modal
         title="EDIT"
@@ -272,7 +333,7 @@ function Rooms() {
                     handleChange1(value);
                   }}
                   rules={[{ required: true, message: "Please input status!" }]}
-                  value={statusStates1  || 'empty'}
+                  value={statusStates1 || "empty"}
                   disabled
                 >
                   <Option value="empty">empty</Option>

@@ -31,7 +31,7 @@ const AccountInformation = () => {
       ...values,
       ID: currentUserInfo.id,
     });
-    console.log("update vales", values, 'hhhhhhhhhh', currentUserInfo);
+    console.log("update vales", values, "hhhhhhhhhh", currentUserInfo);
     // updateUserInfo({
     //   ID: currentUserInfo.id,
     //   name: currentUserInfo.name,
@@ -57,7 +57,7 @@ const AccountInformation = () => {
             initialValues={{
               name: currentUserInfo.name,
               username: currentUserInfo.username,
-              gender: currentUserInfo.gender == true ? 'Nam' : 'Nữ',
+              gender: currentUserInfo.gender == true ? "Nam" : "Nữ",
               email: currentUserInfo.email,
               phone: currentUserInfo.phone,
               birth: dayjs(currentUserInfo.birth, "YYYY-MM-DD"),
@@ -67,7 +67,7 @@ const AccountInformation = () => {
             onFinishFailed={onFinishFailed}
           >
             <Row gutter={[16, 16]}>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="name"
                   label="Name"
@@ -81,7 +81,7 @@ const AccountInformation = () => {
                   <Input />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="username"
                   label="Username"
@@ -95,19 +95,7 @@ const AccountInformation = () => {
                   <Input />
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <Form.Item name="gender" label="Gender">
-                  <Select
-                    placeholder="Gender"
-                    onChange={onGenderChange}
-                    rules={[{ required: true }]}
-                  >
-                    <Option value='true'>Nam</Option>
-                    <Option value='false'>Nữ</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="email"
                   label="E-mail"
@@ -121,7 +109,7 @@ const AccountInformation = () => {
                   <Input />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="phone"
                   label="Phone Number"
@@ -135,16 +123,7 @@ const AccountInformation = () => {
                   <Input />
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="Birth"
-                  name="birth"
-                  rules={[{ required: true, message: "Please input!" }]}
-                >
-                  <DatePicker />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="address"
                   label="Address"
@@ -158,6 +137,29 @@ const AccountInformation = () => {
                   <Input />
                 </Form.Item>
               </Col>
+              <Col span={6}>
+                <Form.Item name="gender" label="Gender">
+                  <Select
+                    placeholder="Gender"
+                    onChange={onGenderChange}
+                    rules={[{ required: true }]}
+                  >
+                    <Option value="true">Nam</Option>
+                    <Option value="false">Nữ</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item
+                  label="Birth"
+                  name="birth"
+                  rules={[{ required: true, message: "Please input!" }]}
+                >
+                  <DatePicker />
+                </Form.Item>
+              </Col>
+              
+              
               {/* <Col span={8}>
                 <Form.Item
                   name="password"
@@ -183,7 +185,6 @@ const AccountInformation = () => {
                   <Input.Password placeholder="Confirm Password" />
                 </Form.Item>
               </Col> */}
-              <Col span={16}></Col>
               <Col span={8}></Col>
               <Col span={4}>
                 <Form.Item>

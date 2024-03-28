@@ -105,6 +105,12 @@ const ClassAction = {
     return request.post(`/class/getPupilByClass`, body);
   },
 };
+
+const LessonAction = {
+  getLessonByClass: (body) => {
+    return request.post(`/lesson/getLessonByClass`, body);
+  },
+};
 const axiosAgents = {
   AuthAction,
   AdminAction,
@@ -112,6 +118,7 @@ const axiosAgents = {
   RoomAction,
   PupilAction,
   ClassAction,
+  LessonAction,
 };
 
 export default axiosAgents;

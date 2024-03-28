@@ -13,8 +13,25 @@
 // import { useState } from "react";
 import { Menu, Button } from "antd";
 import { NavLink, useLocation } from "react-router-dom";
-import Kite from "../../assets/images/Kite.png"
-
+import Kite from "../../assets/images/Kite.png";
+import {
+  CalendarFilled,
+  AppstoreFilled,
+  TagsFilled,
+  ContactsFilled,
+  ContainerFilled,
+  RedditCircleFilled,
+  DatabaseFilled,
+  SmileFilled,
+  TeamOutlined,
+  UserAddOutlined,
+  UserOutlined,
+  TagsOutlined,
+  TableOutlined,
+  SolutionOutlined,
+  ProfileOutlined,
+  LineChartOutlined,
+} from "@ant-design/icons";
 function Sidenav({ color }) {
   const { pathname } = useLocation();
   const page = pathname.replace("/", "");
@@ -202,12 +219,13 @@ function Sidenav({ color }) {
                 background: page === "dashboard" ? color : "",
               }}
             >
-              {dashboard}
+              {/* {dashboard} */}
+              <LineChartOutlined />
             </span>
             <span className="label">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2">
+        {/* <Menu.Item key="2">
           <NavLink to="/tables">
             <span
               className="icon"
@@ -245,11 +263,58 @@ function Sidenav({ color }) {
             </span>
             <span className="label">RTL</span>
           </NavLink>
+        </Menu.Item> */}
+        <Menu.Item key="12">
+          <NavLink to="/subjects">
+            <span className="icon">
+              <TagsOutlined />
+            </span>
+            <span className="label">Subjects</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="13">
+          <NavLink to="/rooms">
+            <span className="icon">
+              <TableOutlined />
+            </span>
+            <span className="label">Rooms</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="14">
+          <NavLink to="/pupils">
+            <span className="icon">
+              {/* <RedditCircleFilled /> */}
+              {/* <SmileFilled /> */}
+              <UserOutlined />
+            </span>
+            <span className="label">Pupils</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="15">
+          <NavLink to="/classes">
+            <span
+              className="icon"
+              style={{
+                background: page === "tables" ? color : "",
+              }}
+            >
+              <ProfileOutlined />
+            </span>
+            <span className="label">Classes</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="17">
+          <NavLink to="/lessons">
+            <span className="icon">
+              <SolutionOutlined />
+            </span>
+            <span className="label">Lesson</span>
+          </NavLink>
         </Menu.Item>
         <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item>
-        <Menu.Item key="6">
+        {/* <Menu.Item key="6">
           <NavLink to="/profile">
             <span
               className="icon"
@@ -273,97 +338,37 @@ function Sidenav({ color }) {
             <span className="icon">{signup}</span>
             <span className="label">Sign Up</span>
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item key="9">
           <NavLink to="/accounts">
-            <span
-              className="icon"
-            >
-              {profile1}
+            <span className="icon">
+              {/* <ContactsFilled /> */}
+              <TeamOutlined />
             </span>
             <span className="label">Accounts</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="10">
           <NavLink to="/create-account">
-            <span
-              className="icon"
-            >
-              {profile}
+            <span className="icon">
+              <UserAddOutlined />
             </span>
             <span className="label">Create Account</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="11">
+        {/* <Menu.Item key="11">
           <NavLink to="/account-information">
-            <span
-              className="icon"
-            >
-              {profile}
-            </span>
+            <span className="icon">{profile}</span>
             <span className="label">Profile</span>
           </NavLink>
-        </Menu.Item>
-        <Menu.Item key="12">
-          <NavLink to="/subjects">
-            <span
-              className="icon"
-            >
-              {profile}
-            </span>
-            <span className="label">Subjects</span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="13">
-          <NavLink to="/rooms">
-            <span
-              className="icon"
-            >
-              {profile}
-            </span>
-            <span className="label">Rooms</span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="14">
-          <NavLink to="/pupils">
-            <span
-              className="icon"
-            >
-              {profile}
-            </span>
-            <span className="label">Pupils</span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="15">
-          <NavLink to="/classes">
-            <span
-              className="icon"
-            >
-              {profile}
-            </span>
-            <span className="label">Classes</span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="16">
+        </Menu.Item> */}
+
+        {/* <Menu.Item key="16">
           <NavLink to="/pupils2">
-            <span
-              className="icon"
-            >
-              {profile}
-            </span>
+            <span className="icon">{profile}</span>
             <span className="label">My Class</span>
           </NavLink>
-        </Menu.Item>
-        <Menu.Item key="17">
-          <NavLink to="/pupils3">
-            <span
-              className="icon"
-            >
-              {profile}
-            </span>
-            <span className="label">Lesson</span>
-          </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
       {/* <div className="aside-footer">
         <div

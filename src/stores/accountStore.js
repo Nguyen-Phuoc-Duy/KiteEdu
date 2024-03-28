@@ -11,9 +11,11 @@ export default class AccountStore {
   roomList = {};
   pupilList = {};
   classList = {};
-  detailClass = [];
-  ClassByUser = [];
-  PupilByClass = []
+  detailClass = {};
+  ClassByUser = {};
+  PupilByClass = {};
+  LessonByClass = {};
+  testMsg = {}
   isLoading = false;
 
   constructor() {
@@ -122,18 +124,31 @@ export default class AccountStore {
 
   getPupilByClass = async (body) => {
     await axiosAgents.ClassAction.getPupilByClass(body).then((response) => {
-      console.log('getPupilByClass', body)
+      // console.log("getPupilByClass", body);
       if (response.errCode === 200) {
         runInAction(() => {
           this.PupilByClass = response.data;
         });
       } else {
-        console.log("Failed", response.errMsg);
+        console.log(response.errMsg);
       }
     });
   };
 
-
+  getLessonByClass = async (body) => {
+    await axiosAgents.LessonAction.getLessonByClass(body).then((response) => {
+      // console.log('oooooooooooooooo', body)
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.LessonByClass = response.data; 
+          this.testMsg = response
+          // console.log("hhhhhhhhhhhhhhh", response, 'jjj', response.data);
+        });
+      } else {
+        console.log("q", response.errMsg);
+      }
+    });
+  };
   updateUserInfo = async (newUserInfo) => {
     await axiosAgents.AuthAction.updateUserInfo(newUserInfo).then(
       (response) => {

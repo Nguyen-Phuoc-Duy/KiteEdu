@@ -28,20 +28,25 @@ function Subjects() {
   const [nameAdd, setNameAdd] = useState(null);
   const history = useHistory();
 
-  
   const showModal = (record) => {
     setSelectedRecord(record);
     setStatusStates(record.status);
     setName(record.name);
     setIsModalVisible(true);
   };
- 
+
   const showModalAdd = (record) => {
-    setIsModalVisibleAdd(true)
-  }
+    setIsModalVisibleAdd(true);
+  };
   const { accountStore } = useStore();
-  const { isLoading, subjectList, getAllSubjects, updateSubject, createSubject } =
-    accountStore;
+  const {
+    isLoading,
+    subjectList,
+    getAllSubjects,
+    updateSubject,
+    createSubject,
+    currentUserInfo,
+  } = accountStore;
 
   const handleOk = () => {
     updateSubject({
@@ -59,13 +64,13 @@ function Subjects() {
     });
     setIsModalVisibleAdd(false);
     setNameAdd(null);
-    setStatusStatesAdd(null)
-    getAllSubjects()
+    setStatusStatesAdd(null);
+    getAllSubjects();
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    setIsModalVisibleAdd(false)
+    setIsModalVisibleAdd(false);
   };
 
   const handleChange = (value) => {
@@ -131,11 +136,38 @@ function Subjects() {
       ),
     },
   ];
-
+  const columnsEmployee = [
+    {
+      title: "NAME",
+      dataIndex: "name",
+      key: "name",
+      render: (name) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{name}</Title>
+            <p>{name}</p>
+          </div>
+        </>
+      ),
+    },
+    {
+      title: "STATUS",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <>
+          {status === "active" ? (
+            <Tag color="green">{status}</Tag>
+          ) : (
+            <Tag color="red">{status}</Tag>
+          )}
+        </>
+      ),
+    },
+  ];
   useEffect(() => {
     getAllSubjects();
-  }, [isModalVisible, isModalVisibleAdd]
-  );
+  }, [isModalVisible, isModalVisibleAdd]);
 
   const dataA = Array.from(subjectList);
   const dataArray = dataA.map((user) => {
@@ -153,37 +185,65 @@ function Subjects() {
 
   return (
     <>
-      <div className="tabled">
-        <Row gutter={[24, 0]}>
-          <Col xs="24" xl={24}>
-            <Card
-              bordered={true}
-              className="criclebox tablespace mb-24"
-              title="INFORMATION SUBJECTS"
-             extra={<Button
-              type="primary"
-              className="tag-primary"
-              onClick={(record) => showModalAdd(record)}
-              style={{align: "right"}}
-            >
-              Add Subject
-            </Button>}
-            >
-              <div className="table-responsive">
-                <Table
-                  columns={columns}
-                  dataSource={dataArray}
-                  pagination={false}
-                  className="ant-border-space"
-                  loading={isLoading}
-                  bordered
-                  
-                />
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+      {currentUserInfo.role == "manager" ? (
+        <div className="tabled">
+          <Row gutter={[24, 0]}>
+            <Col xs="24" xl={24}>
+              <Card
+                bordered={true}
+                className="criclebox tablespace mb-24"
+                title="INFORMATION SUBJECTS"
+                extra={
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    onClick={(record) => showModalAdd(record)}
+                    style={{ align: "right" }}
+                  >
+                    Add Subject
+                  </Button>
+                }
+              >
+                <div className="table-responsive">
+                  <Table
+                    columns={columns}
+                    dataSource={dataArray}
+                    pagination={false}
+                    className="ant-border-space"
+                    loading={isLoading}
+                    bordered
+                    scroll={{ y: 420 }}
+                  />
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <div className="tabled">
+          <Row gutter={[24, 0]}>
+            <Col xs="24" xl={24}>
+              <Card
+                bordered={true}
+                className="criclebox tablespace mb-24"
+                title="INFORMATION SUBJECTS"
+              >
+                <div className="table-responsive">
+                  <Table
+                    columns={columnsEmployee}
+                    dataSource={dataArray}
+                    pagination={false}
+                    className="ant-border-space"
+                    loading={isLoading}
+                    bordered
+                    scroll={{ y: 420 }}
+                  />
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      )}
 
       <Modal
         title="EDIT"
@@ -233,42 +293,42 @@ function Subjects() {
         destroyOnClose={true}
       >
         <>
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <div className="author-info">
-                  <Title level={5}>Subject</Title>
-                  <Input
-                   rules={[
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Subject</Title>
+                <Input
+                  rules={[
                     {
                       required: true,
                       message: "Please input name!",
                     },
                   ]}
-                    onChange={(event) => {
-                      handleChangeNameAdd(event.target.value);
-                    }}
-                  />
-                </div>
-              </Col>
-              <Col span={12}>
-                <div className="author-info">
-                  <Title level={5}>Status</Title>
-                  <Select
-                    style={{ width: 120 }}
-                    onChange={(value) => {
-                      handleChangeAdd(value);
-                    }}
-                    rules={[{ required: true, message: "Please input status!" }]}
-                    value={statusStatesAdd || 'active'}
-                    disabled
-                  >
-                    <Option value="active">active</Option>
-                    <Option value="inactive">inactive</Option>
-                  </Select>
-                </div>
-              </Col>
-            </Row>
-          </>
+                  onChange={(event) => {
+                    handleChangeNameAdd(event.target.value);
+                  }}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Status</Title>
+                <Select
+                  style={{ width: 120 }}
+                  onChange={(value) => {
+                    handleChangeAdd(value);
+                  }}
+                  rules={[{ required: true, message: "Please input status!" }]}
+                  value={statusStatesAdd || "active"}
+                  disabled
+                >
+                  <Option value="active">active</Option>
+                  <Option value="inactive">inactive</Option>
+                </Select>
+              </div>
+            </Col>
+          </Row>
+        </>
       </Modal>
     </>
   );

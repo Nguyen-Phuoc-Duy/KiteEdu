@@ -304,6 +304,16 @@ function Accounts() {
               bordered={false}
               className="criclebox tablespace mb-24"
               title="INFORMATION ACCOUNTS"
+              extra={
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={() => history.push("/create-account")}
+                  style={{ align: "right" }}
+                >
+                  Create Account
+                </Button>
+              }
             >
               <div className="table-responsive">
                 <Table
@@ -312,17 +322,18 @@ function Accounts() {
                   pagination={false}
                   className="ant-border-space"
                   loading={isLoading}
-                  // bordered
-                  title={() => (
-                    <Button
-                      type="primary"
-                      className="tag-primary"
-                      onClick={() => history.push("/create-account")}
-                      style={{ align: "right" }}
-                    >
-                      Create Account
-                    </Button>
-                  )}
+                  bordered
+                  scroll={{x:1600, y: 415 }}
+                  // title={() => (
+                  //   <Button
+                  //     type="primary"
+                  //     className="tag-primary"
+                  //     onClick={() => history.push("/create-account")}
+                  //     style={{ align: "right" }}
+                  //   >
+                  //     Create Account
+                  //   </Button>
+                  // )}
                 />
               </div>
             </Card>
