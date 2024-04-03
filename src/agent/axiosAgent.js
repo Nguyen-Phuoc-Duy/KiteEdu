@@ -104,11 +104,35 @@ const ClassAction = {
   getPupilByClass: (body) => {
     return request.post(`/class/getPupilByClass`, body);
   },
+  removePupilInClass: (body) => {
+    return request.post(`/class/removePupilInClass`, body);
+  },
+  addPupilInClass: (body) => {
+    return request.post(`/class/addPupilInClass`, body);
+  },
 };
 
 const LessonAction = {
+  getPupilByLesson: (body) => {
+    return request.post(`/lesson/getPupilByLesson`, body);
+  },
   getLessonByClass: (body) => {
     return request.post(`/lesson/getLessonByClass`, body);
+  },
+  createLesson: (body) => {
+    return request.post(`/lesson/createLesson`, body);
+  },
+  presentPupilInClass: (body) => {
+    return request.post(`/lesson/presentPupilInClass`, body);
+  },
+  absentPupilInClass: (body) => {
+    return request.post(`/lesson/absentPupilInClass`, body);
+  },
+};
+
+const ListPupilAction = {
+  updatePupilStatusInClass: (body) => {
+    return request.post(`/listpupil/updatePupilStatusInClass`, body);
   },
 };
 const axiosAgents = {
@@ -119,6 +143,7 @@ const axiosAgents = {
   PupilAction,
   ClassAction,
   LessonAction,
+  ListPupilAction,
 };
 
 export default axiosAgents;

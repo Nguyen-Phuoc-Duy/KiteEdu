@@ -14,8 +14,9 @@ export default class AccountStore {
   detailClass = {};
   ClassByUser = {};
   PupilByClass = {};
+  PupilByLesson = {};
   LessonByClass = {};
-  testMsg = {}
+  testMsg = {};
   isLoading = false;
 
   constructor() {
@@ -124,13 +125,24 @@ export default class AccountStore {
 
   getPupilByClass = async (body) => {
     await axiosAgents.ClassAction.getPupilByClass(body).then((response) => {
-      // console.log("getPupilByClass", body);
       if (response.errCode === 200) {
         runInAction(() => {
           this.PupilByClass = response.data;
         });
       } else {
-        console.log(response.errMsg);
+        // console.log(response.errMsg);
+      }
+    });
+  };
+
+  getPupilByLesson = async (body) => {
+    await axiosAgents.LessonAction.getPupilByLesson(body).then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.PupilByLesson = response.data;
+        });
+      } else {
+        console.log("lololo", response);
       }
     });
   };
@@ -140,8 +152,8 @@ export default class AccountStore {
       // console.log('oooooooooooooooo', body)
       if (response.errCode === 200) {
         runInAction(() => {
-          this.LessonByClass = response.data; 
-          this.testMsg = response
+          this.LessonByClass = response.data;
+          this.testMsg = response;
           // console.log("hhhhhhhhhhhhhhh", response, 'jjj', response.data);
         });
       } else {
@@ -198,7 +210,13 @@ export default class AccountStore {
   updateClass = async (body) => {
     this.setIsLoading(true);
     await axiosAgents.ClassAction.updateClass(body).then((response) => {
-      console.log("theResponse", response);
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.detailClass = response;
+        });
+      } else {
+        console.log(response.errMsg);
+      }
     });
     await this.getAllClasses();
     this.setIsLoading(false);
@@ -269,14 +287,59 @@ export default class AccountStore {
 
   createPupil = async (body) => {
     await axiosAgents.PupilAction.createPupil(body).then((response) => {
-      console.log("theResponse", response);
+      // console.log("theResponse", response);
     });
   };
 
   createClass = async (body) => {
+    await axiosAgents.ClassAction.createClass(body).then((response) => {});
+  };
+  createLesson = async (body) => {
+    await axiosAgents.LessonAction.createLesson(body).then((response) => {
+      console.log("bbbbbbbbbbbbbbbbbbbbb", response);
+    });
+  };
+  removePupilInClass = async (body) => {
     console.log("body", body);
-    await axiosAgents.ClassAction.createClass(body).then((response) => {
+    this.setIsLoading(true);
+    await axiosAgents.ClassAction.removePupilInClass(body).then((response) => {
       console.log("theResponse456", response, "ggg", body);
     });
+    await this.getPupilByClass(body);
+    this.setIsLoading(false);
+  };
+  addPupilInClass = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.ClassAction.addPupilInClass(body).then((response) => {});
+    await this.getPupilByClass(body);
+    this.setIsLoading(false);
+  };
+  presentPupilInClass = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.LessonAction.presentPupilInClass(body).then(
+      (response) => {}
+    );
+    await this.getPupilByClass(body);
+    this.setIsLoading(false);
+  };
+  absentPupilInClass = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.LessonAction.absentPupilInClass(body).then(
+      (response) => {}
+    );
+    await this.getPupilByClass(body);
+    this.setIsLoading(false);
+  };
+  updatePupilStatusInClass = async (body) => {
+    this.setIsLoading(true);
+    console.log("fffffffffffffffffffffffffffffffffff", body);
+    await axiosAgents.ListPupilAction.updatePupilStatusInClass(body).then(
+      (response) => {
+        // console.log("first", response);
+      }
+    );
+
+    await this.getPupilByClass(body);
+    this.setIsLoading(false);
   };
 }

@@ -28,8 +28,11 @@ function Classes() {
   const [subject, setSubject] = useState(null);
   const [statusStates1, setStatusStates1] = useState(null);
   const [name1, setName1] = useState(null);
+  const [statusPupil, setStatusPupil] = useState(null);
   const [classPupils, setClassPupils] = useState([]);
+  const [classPupilsUpdate, setClassPupilsUpdate] = useState([]);
   const [idClass, setIdClass] = useState();
+  const [idPupil, setIdPupil] = useState();
   const history = useHistory();
   const { accountStore } = useStore();
   const {
@@ -48,11 +51,18 @@ function Classes() {
     getClassByUser,
     PupilByClass,
     getPupilByClass,
+    removePupilInClass,
+    addPupilInClass,
+    detailClass
   } = accountStore;
 
   const handleChangeSelect = (value) => {
     // const result = value.split(' ').pop();
     setClassPupils(value);
+  };
+  const handleChangeSelectUpdate = (value) => {
+    // const result = value.split(' ').pop();
+    setClassPupilsUpdate(value);
     // console.log(`selected ${value}`);
   };
 
@@ -63,6 +73,7 @@ function Classes() {
     setSubject(record.subjectId);
     setLecturer(record.userId);
     setIdClass(record.ID);
+    setStatusPupil(newArrayPupil.status);
     // console.log("fff", record.name);
     setIsModalVisible(true);
   };
@@ -72,16 +83,30 @@ function Classes() {
   };
 
   const handleOk = () => {
+    const regex = /[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}/i;
+
+    const uuidArrayUpdate = classPupilsUpdate.map((item) => {
+      const match = item.match(regex);
+      return match ? match[0] : null;
+    });
+    const transformedArrayUpdate = uuidArrayUpdate.map((id) => ({ id }));
     updateClass({
       ID: selectedRecord.ID,
       status: statusStates,
       name: name,
+      listPupil: transformedArrayUpdate,
+      userId: currentUserInfo.id,
     });
-    getPupilByClass({
-      ID: idClass,
-      // role: currentUserInfo.role,
-    });
-    console.log("PupilByClass", PupilByClass, selectedRecord);
+
+    // removePupilInClass({
+    //   classId: selectedRecord.ID,
+    //   pupilId: idPupil,
+    // });
+    // addPupilInClass({
+    //   classId: selectedRecord.ID,
+    //   pupilId: idPupil,
+    // });
+     getPupilByClass({ ID: idClass });
     setIsModalVisible(false);
   };
 
@@ -116,11 +141,24 @@ function Classes() {
   const handleCancel = () => {
     setIsModalVisible(false);
     setIsModalVisible1(false);
-    console.log("ggggggggggggggggggggggggg", listPupilByClass);
-    // console.log("jkjkxxxxxxx", currentUserInfo.subjectId, currentUserInfo);
-    // console.log(`bbbbbbbbbbbbbbbbbbbbb`, classPupils);
   };
 
+  const handleRemovePupil = async (value) => {
+    await removePupilInClass({
+      classId: selectedRecord.ID,
+      pupilId: value,
+    });
+    await getPupilByClass({ ID: idClass });
+    // setIdPupil(value)
+  };
+  const handleAddPupil = async (value) => {
+    await addPupilInClass({
+      classId: selectedRecord.ID,
+      pupilId: value,
+    });
+    await getPupilByClass({ ID: idClass });
+    // setIdPupil(value)
+  };
   const handleChange = (value) => {
     // console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
     setStatusStates(value);
@@ -217,12 +255,11 @@ function Classes() {
           >
             Edit
             {/* {record.ID} */}
-          </Button>
-          {' '}
+          </Button>{" "}
           <Button
             type="primary"
             className="tag-primary"
-            onClick={() => history.push("/lessons")}
+            onClick={() => history.push("/lessons", record.ID)}
           >
             Detail
           </Button>
@@ -234,8 +271,9 @@ function Classes() {
   const columnsDetail = [
     {
       title: "NAME PUPIL",
-      dataIndex: "pupilId",
-      key: "pupilId",
+      dataIndex: "pupilName",
+      key: "pupilName",
+      width: "40%",
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -250,6 +288,8 @@ function Classes() {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      width: "20%",
+      align: 'center',
       render: (status) => (
         <>
           {status === "present" ? (
@@ -261,6 +301,7 @@ function Classes() {
           ) : (
             <Tag color="orange">{status}</Tag>
           )}
+          {/* {statusPupil} */}
         </>
       ),
     },
@@ -268,16 +309,23 @@ function Classes() {
     {
       title: "ACTION",
       key: "action",
-      // align: 'center',
+      width: "40%",
+      align: 'center',
       render: (text, record) => (
         <>
           <Button
             type="primary"
             className="tag-primary"
-            onClick={() => showModal1(record)}
+            onClick={() => handleAddPupil(record.pupilId)}
+          >
+            Add
+          </Button>{" "}
+          <Button
+            type="danger"
+            className="tag-primary"
+            onClick={() => handleRemovePupil(record.pupilId)}
           >
             Remove
-            {/* {record.username} */}
           </Button>
         </>
       ),
@@ -311,31 +359,26 @@ function Classes() {
   const listPupilByClass = Array.from(PupilByClass);
 
   let newArrayPupil = listPupilByClass.map((item1) => {
-    console.log("oooooooooooooooooo", dataArrayD, listPupilByClass);
+    // console.log("oooooooooooooooooo", dataArrayD, listPupilByClass);
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayD.find((item2) => {
       return item2.ID === item1.pupilId;
     });
     return {
       ...item1,
-      pupilId: correspondingItem1 ? correspondingItem1.name : null,
+      // pupilId: correspondingItem1.pupilId,
+      pupilName: correspondingItem1 ? correspondingItem1.name : null,
     };
   });
   let options = [];
   let optionsUpdate = [];
   let optionsUpdateFinal = [];
-  // for (let i = 10; i < 36; i++) {
-  //   options.push({
-  //     label: i.toString(36) + i,
-  //     value: i.toString(36) + i,
-  //   });
-  // }
 
   const arrayPupils = dataArrayD.map((itemB) => ({
     label: itemB.name,
     value: itemB.name + " " + itemB.ID,
   }));
-  
+
   options = arrayPupils;
 
   for (const itemA of dataArrayD) {
@@ -356,7 +399,8 @@ function Classes() {
     value: itemB.name + " " + itemB.ID,
   }));
 
-  optionsUpdateFinal = arrayPupilsUpdate
+  optionsUpdateFinal = arrayPupilsUpdate;
+
   useEffect(() => {
     getAllClasses();
     getAllSubjects();
@@ -369,6 +413,7 @@ function Classes() {
     getPupilByClass({
       ID: idClass,
     });
+  console.log('detailClass', detailClass)
   }, [isModalVisible1, isModalVisible]);
   return (
     <>
@@ -477,7 +522,7 @@ function Classes() {
                       style={{ width: "100%" }}
                       placeholder="Please select"
                       // defaultValue={["a10", "c12"]}
-                      onChange={handleChangeSelect}
+                      onChange={handleChangeSelectUpdate}
                       options={optionsUpdateFinal}
                     />
                   </Space>

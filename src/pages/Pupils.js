@@ -611,6 +611,7 @@ function Pulpils() {
                     handleChangeAdd(value);
                   }}
                   value={statusStatesAdd || "active"}
+                  disabled
                 >
                   <Option value="active">active</Option>
                   <Option value="inactive">inactive</Option>

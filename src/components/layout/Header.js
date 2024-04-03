@@ -345,7 +345,7 @@ function Header({
             </Dropdown>
           </Badge>
           {/* <Button type="link" 
-          // onClick={showDrawer}
+           onClick={showDrawer}
           >
             {logsetting}
           </Button> */}
@@ -362,7 +362,7 @@ function Header({
           <Button
             type="link"
             className="sidebar-toggler"
-            // onClick={() => onPress()}
+            onClick={() => onPress()}
           >
             {toggler}
           </Button>
