@@ -33,28 +33,26 @@ function Lessons() {
   const [name, setName] = useState(null);
   const [timeStart, setTimeStart] = useState(moment()); // Khởi tạo với thời gian hiện tại
   const [timeFinish, setTimeFinish] = useState(moment()); // Khởi tạo với thời gian hiện tại
-
+  const [timeStartCreate, setTimeStartCreate] = useState(moment()); // Khởi tạo với thời gian hiện tại
+  const [timeFinishCreate, setTimeFinishCreate] = useState(moment()); // Khởi tạo với thời gian hiện tại
   const [classname, setClassName] = useState(null);
   const [content, setContent] = useState(null);
   const [contentCreate, setContentCreate] = useState(null);
-  // const [lecturer, setLecturer] = useState(null);
+
   const [subject, setSubject] = useState(null);
-  const [statusStates1, setStatusStates1] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [name1, setName1] = useState(null);
-  const [classPupils, setClassPupils] = useState([]);
   const [idLesson, setIdLesson] = useState();
-  const [nameOfClass, setnameOfClass] = useState(null);
+  const [idClass, setIdClass] = useState();
   const history = useHistory();
-  const { RangePicker } = DatePicker;
-
-  const handleChangeSelect = (value) => {
-    // const result = value.split(' ').pop();
-    setClassPupils(value);
-    // console.log(`selected ${value}`);
-  };
 
   const showModal = (record, text) => {
+    setIdClass(record?.ID);
+    console.log(
+      "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+      record?.ID,
+      idClass
+    );
     console.log("record", JSON.parse(JSON.stringify(record?.pupils)));
     setSelectedRecord(record);
     setArr(JSON.parse(JSON.stringify(record?.pupils)));
@@ -70,23 +68,27 @@ function Lessons() {
     setIdLesson(JSON.parse(JSON.stringify(record?.ID)));
 
     setClassName(record.classId);
-    setTimeStart(record.timeStart);
-    setTimeFinish(record.timeFinish);
+    setTimeStart(moment.parseZone(record.timeStart));
+    setTimeFinish(moment.parseZone(record.timeFinish));
     setIsModalVisible(true);
-    // getPupilByClass({
-    //   ID: location.state,
-    //   lessonId: idLesson,
-    // });
-    console.log("record.ID", record.ID, idLesson);
+    getPupilByClass({
+      ID: location.state,
+      // lessonId: idLesson,
+    });
+    getPupilByLesson({
+      classId: location.state,
+      lessonId: record?.ID,
+    });
+    console.log("recordbfdbfhtrfh", record, timeFinish);
   };
   const showModal1 = (record) => {
     newArrayPupil = [...arr];
 
-
     console.log(newArrayPupil, arr);
-    // getPupilByClass({
-    //   ID: idClass,
-    // });
+    getPupilByClass({
+      ID: location.state,
+      // lessonId: idLesson,
+    });
     setIsModalVisible1(true);
   };
   const { accountStore } = useStore();
@@ -119,19 +121,26 @@ function Lessons() {
     updatePupilStatusInClass,
     createLesson,
     PupilByLesson,
+    updateLesson,
     getPupilByLesson,
+    LessonByUser,
+    getLessonByUser,
   } = accountStore;
 
   const handleOk = () => {
-    updateClass({
-      ID: selectedRecord.ID,
-      status: statusStates,
+    updateLesson({
+      lessonId: idLesson,
       name: name,
+      status: statusStates,
+      content: content,
+      timeFinish: timeFinish,
+      timeStart: timeStart,
     });
-    // getPupilByClass({
-    //   ID: location.state,
-    //   lessonId: idLesson,
-    // });
+    getLessonByClass({ ID: location.state });
+    getPupilByClass({
+      ID: location.state,
+      // lessonId: idLesson,
+    });
     getPupilByLesson({
       classId: location.state,
       lessonId: idLesson,
@@ -140,29 +149,16 @@ function Lessons() {
   };
 
   const handleOk1 = () => {
-    const regex = /[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}/i;
-
-    const uuidArray = classPupils.map((item) => {
-      const match = item.match(regex);
-      return match ? match[0] : null;
-    });
-    const transformedArrayA = uuidArray.map((id) => ({ id }));
-    // console.log("réult", uuidArray, transformedArrayA);
-    // createClass({
-    //   name: name1,
-    //   status: statusStates1,
-    //   userId: currentUserInfo.id,
-    //   subjectId: currentUserInfo.subjectId,
-    //   listPupil: transformedArrayA,
-    // });
     createLesson({
       name: name1,
       status: "started",
       userId: currentUserInfo.id,
-      listPupil: transformedArrayA,
+      // listPupil: transformedArrayA,
       roomId: roomId,
       classId: location.state,
       content: contentCreate,
+      timeFinish: timeFinishCreate,
+      timeStart: timeStartCreate,
     });
     getClassByUser({
       ID: currentUserInfo.id,
@@ -176,36 +172,83 @@ function Lessons() {
   };
 
   const handlePresentPupil = async (value) => {
-    // await presentPupilInClass({
-    //   classId: location.state,
-    //   pupilId: value,
-    //   lessonId: idLesson
-    // });
-    console.log("value", value);
-    await updatePupilStatusInClass({
+    await presentPupilInClass({
       classId: location.state,
-      pupilId: value.ID,
-      status: "present",
+      pupilId: value?.pupilId,
       lessonId: idLesson,
-      userId: currentUserInfo.id,
+      userId: value?.userId,
+      status: "present",
     });
-    // await getPupilByClass({ ID: location.state, lessonId: idLesson });
-    await getPupilByLesson({ classId: location.state, lessonId: idLesson });
+    console.log("value7777777777777777777777777777777", value);
+    // await updatePupilStatusInClass({
+    //   classId: location.state,
+    //   pupilId: value.ID,
+    //   status: "present",
+    //   lessonId: idLesson,
+    //   userId: currentUserInfo.id,
+    // });
+    await getPupilByClass({
+      ID: location.state,
+      //  lessonId: idLesson
+    });
+    await getPupilByLesson({
+      classId: location.state,
+      lessonId: idLesson,
+    });
   };
   const handleAbsentPupil = async (value) => {
-    // await absentPupilInClass({
-    //   classId: location.state,
-    //   pupilId: value,
-    // });
-    await updatePupilStatusInClass({
+    console.log("1111111111111111111111111111111", value);
+
+    await presentPupilInClass({
       classId: location.state,
-      pupilId: value.ID,
-      status: "absent",
+      pupilId: value?.pupilId,
       lessonId: idLesson,
-      userId: currentUserInfo.id,
+      userId: value?.userId,
+      status: "absent",
     });
-    // await getPupilByClass({ ID: location.state, lessonId: idLesson });
-    await getPupilByLesson({ classId: location.state, lessonId: idLesson });
+    await getPupilByClass({
+      ID: location.state,
+    });
+    await getPupilByLesson({
+      classId: location.state,
+      lessonId: idLesson,
+    });
+  };
+  const handleTardyPupil = async (value) => {
+    console.log("1111111111111111111111111111111", value);
+
+    await presentPupilInClass({
+      classId: location.state,
+      pupilId: value?.pupilId,
+      lessonId: idLesson,
+      userId: value?.userId,
+      status: "tardy",
+    });
+    await getPupilByClass({
+      ID: location.state,
+    });
+    await getPupilByLesson({
+      classId: location.state,
+      lessonId: idLesson,
+    });
+  };
+  const handleExcusedPupil = async (value) => {
+    console.log("1111111111111111111111111111111", value);
+
+    await presentPupilInClass({
+      classId: location.state,
+      pupilId: value?.pupilId,
+      lessonId: idLesson,
+      userId: value?.userId,
+      status: "excused",
+    });
+    await getPupilByClass({
+      ID: location.state,
+    });
+    await getPupilByLesson({
+      classId: location.state,
+      lessonId: idLesson,
+    });
   };
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -213,7 +256,6 @@ function Lessons() {
   };
 
   const handleChange = (value) => {
-    // console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
     setStatusStates(value);
   };
 
@@ -222,19 +264,17 @@ function Lessons() {
   };
 
   const handleChange1 = (value) => {
-    // console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
     setRoomId(value);
   };
 
   const handleChangeName1 = (value) => {
-    // console.log("aaaaaaaaa", value);
     setName1(value);
-    // console.log("name", name);
   };
   const handleChangeContent = (value) => {
-    // console.log("aaaaaaaaa", value);
+    setContent(value);
+  };
+  const handleChangeContent1 = (value) => {
     setContentCreate(value);
-    // console.log("name", name);
   };
   const columns = [
     {
@@ -311,7 +351,7 @@ function Lessons() {
       render: (timeStart) => (
         <>
           <div className="semibold">
-            {moment.parseZone(timeStart).format("DD-MM-YYYY HH:mm")}
+            {moment.parseZone(timeStart).format("HH:mm DD-MM-YYYY")}
           </div>
           {/* {timeStart} */}
         </>
@@ -324,7 +364,8 @@ function Lessons() {
       render: (timeFinish) => (
         <>
           <div className="semibold">
-            {moment.parseZone(timeFinish).format("DD-MM-YYYY HH:mm")}
+            {moment.parseZone(timeFinish).format("HH:mm DD-MM-YYYY")}
+            {/* {timeFinish} */}
           </div>
         </>
       ),
@@ -387,6 +428,8 @@ function Lessons() {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      width: "20%",
+      align: "center",
       render: (status) => (
         <>
           {status === "present" ? (
@@ -405,30 +448,171 @@ function Lessons() {
     {
       title: "ACTION",
       key: "action",
-      // align: 'center',
+      width: "40%",
+      align: "center",
       render: (text, record) => (
         <>
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => handlePresentPupil(record)}
-          >
-            Present
-          </Button>{" "}
-          <Button
-            type="danger"
-            className="tag-primary"
-            onClick={() => handleAbsentPupil(record)}
-          >
-            Absent
-          </Button>
+          {record?.status === "not attend" ? (
+            <>
+              <Button type="primary" className="tag-primary" disabled>
+                Present
+              </Button>{" "}
+              <Button type="danger" className="tag-primary" disabled>
+                Absent
+              </Button>{" "}
+            </>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "0.5em",
+                }}
+              >
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={() => handlePresentPupil(record)}
+                  size={"small"}
+                  style={{
+                    flex: 1,
+                    background: "green",
+                    borderColor: "green",
+                    color: "white",
+                    marginRight: "0.5em",
+                  }}
+                >
+                  Present
+                </Button>{" "}
+                <Button
+                  type="danger"
+                  className="tag-primary"
+                  onClick={() => handleAbsentPupil(record)}
+                  size={"small"}
+                  style={{
+                    flex: 1,
+                    background: "red",
+                    borderColor: "red",
+                    color: "white",
+                  }}
+                >
+                  Absent
+                </Button>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  size={"small"}
+                  onClick={() => handleTardyPupil(record)}
+                  style={{
+                    flex: 1,
+                    background: "orange",
+                    borderColor: "orange",
+                    color: "white",
+                    marginRight: "0.5em",
+                  }}
+                >
+                  Tardy
+                </Button>{" "}
+                <Button
+                  type="danger"
+                  className="tag-primary"
+                  size={"small"}
+                  onClick={() => handleExcusedPupil(record)}
+                  style={{
+                    flex: 1,
+                    background: "blue",
+                    borderColor: "blue",
+                    color: "white",
+                  }}
+                >
+                  Excused
+                </Button>
+              </div>
+            </div>
+          )}
         </>
       ),
     },
   ];
+  const columnsDetail1 = [
+    {
+      title: "NAME PUPIL",
+      dataIndex: "pupilName",
+      key: "pupilName",
+      render: (name) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{name}</Title>
+            <p>{name}</p>
+          </div>
+        </>
+      ),
+    },
 
+    {
+      title: "STATUS",
+      dataIndex: "status",
+      key: "status",
+      width: "30%",
+      align: "center",
+      render: (status) => (
+        <>
+          {status === "present" ? (
+            <Tag color="green">{status}</Tag>
+          ) : status === "absent" ? (
+            <Tag color="red">{status}</Tag>
+          ) : status === "excused" ? (
+            <Tag color="blue">{status}</Tag>
+          ) : (
+            <Tag color="orange">{status}</Tag>
+          )}
+        </>
+      ),
+    },
+
+    // {
+    //   title: "ACTION",
+    //   key: "action",
+    //   width: "40%",
+    //   align: "center",
+    //   render: (text, record) => (
+    //     <>
+    //       {record?.status === "not attend" ? (
+    //         <>
+    //           <Button type="primary" className="tag-primary" disabled>
+    //             Present
+    //           </Button>{" "}
+    //           <Button type="danger" className="tag-primary" disabled>
+    //             Absent
+    //           </Button>{" "}
+    //         </>
+    //       ) : (
+    //         <>
+    //           <Button
+    //             type="primary"
+    //             className="tag-primary"
+    //             onClick={() => handlePresentPupil(record)}
+    //           >
+    //             Present
+    //           </Button>{" "}
+    //           <Button
+    //             type="danger"
+    //             className="tag-primary"
+    //             onClick={() => handleAbsentPupil(record)}
+    //           >
+    //             Absent
+    //           </Button>
+    //         </>
+    //       )}
+    //     </>
+    //   ),
+    // },
+  ];
   const dataArray = Array.from(ClassByUser);
-
+  console.log("dataArraydataArray", dataArray);
   const dataArrayB = Array.from(subjectList);
 
   const dataArrayC = Array.from(userList);
@@ -453,13 +637,34 @@ function Lessons() {
   const dataArrayE = Array.from(roomList);
 
   const listPupilByClass = Array.from(PupilByClass);
-
+  let listPupilByClassArray = listPupilByClass.map((item1) => {
+    let correspondingItem1 = dataArrayD.find((item2) => {
+      return item2.ID === item1.pupilId;
+    });
+    return {
+      ...item1,
+      pupilName: correspondingItem1 ? correspondingItem1.name : null,
+    };
+  });
+  console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", location.state);
   const listPupilByClass1 = Array.from(PupilByLesson);
 
   const arrayPupils = dataArrayD.map((itemB) => ({
     label: itemB.name,
     value: itemB.name + " " + itemB.ID,
   }));
+
+  let newArrayPupil1 = listPupilByClass1.map((item1) => {
+    // Tìm phần tử tương ứng trong Array2
+    let correspondingItem1 = dataArrayD.find((item2) => {
+      return item2.ID === item1.pupilId;
+    });
+    return {
+      ...item1,
+      pupilName: correspondingItem1 ? correspondingItem1.name : null,
+    };
+  });
+  console.log("newArrayPupilnewArrayPupil", newArrayPupil1, listPupilByClass1);
   let newArrayPupil = listPupilByClass1.map((item1) => {
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayD.find((item2) => {
@@ -470,7 +675,6 @@ function Lessons() {
       pupilName: correspondingItem1 ? correspondingItem1.name : null,
     };
   });
-  console.log("newArrayPupilnewArrayPupil", newArrayPupil, listPupilByClass1);
 
   console.log(" arr1111111111111", arr);
   let temp = []; // Khởi tạo một mảng temp để lưu trữ các phần tử từ mảng newArrayPupil.
@@ -552,11 +756,42 @@ function Lessons() {
   // Loại bỏ các phần tử trùng lặp từ mảng check và lưu kết quả vào mảng newArrayPupil.
   console.log("newArrayPupil22222222222222", newArrayPupil);
   // console.log("hhhhhhhhhhhhhhhhh", check, newArrayPupil);
-  let obj = {};
-  obj = testMsg.errMsg;
+  // let obj = {};
+  // obj = testMsg.errMsg;
+  // console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ", obj);
+  let listPupilByClassAdd = listPupilByClass.map((item1) => {
+    let correspondingItem1 = dataArrayD.find((item2) => {
+      return item2.ID === item1.pupilId;
+    });
+    return {
+      ...item1,
+      pupilName: correspondingItem1 ? correspondingItem1.name : null,
+    };
+  });
+
+  const dataArrayAll = Array.from(LessonByUser);
+  let newArrayLessonAll = dataArrayAll.map((item1) => {
+    // Tìm phần tử tương ứng trong Array2
+    let correspondingItem1 = dataArrayC.find((item2) => {
+      return item2.ID === item1.userId;
+    });
+    let correspondingItem2 = dataArray.find((item2) => {
+      return item2.ID === item1.classId;
+    });
+    let correspondingItem3 = dataArrayE.find((item2) => {
+      return item2.ID === item1.roomId;
+    });
+
+    return {
+      ...item1,
+      userId: correspondingItem1 ? correspondingItem1.name : null,
+      classId: correspondingItem2 ? correspondingItem2.name : null,
+      roomId: correspondingItem3 ? correspondingItem3.name : null,
+    };
+  });
 
   const dataArray0 = Array.from(LessonByClass);
-  // console.log("dataArray0", LessonByClass);
+
   let newArrayLesson = dataArray0.map((item1) => {
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayC.find((item2) => {
@@ -577,14 +812,35 @@ function Lessons() {
     };
   });
   // console.log("first", newArrayLesson);
-  const onChange123 = (value, dateString) => {
-    console.log("Selected Time: ", value);
-    console.log("Formatted Selected Time: ", dateString);
+  const onChange123S = (value, dateString) => {
+    setTimeStart(moment.parseZone(dateString).format("HH:mm DD-MM-YYYY"));
   };
-  const onOk123 = (value) => {
-    console.log("onOk: ", value);
+  const onChange123F = (value, dateString) => {
+    setTimeFinish(moment.parseZone(dateString).format("HH:mm DD-MM-YYYY"));
   };
 
+  const onChangeCreateS = (value, dateString) => {
+    setTimeStartCreate(moment.parseZone(dateString).format("HH:mm DD-MM-YYYY"));
+  };
+  const onChangeCreateF = (value, dateString) => {
+    setTimeFinishCreate(
+      moment.parseZone(dateString).format("HH:mm DD-MM-YYYY")
+    );
+  };
+  ///////////
+  const onOkCreateS = (value) => {
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", value);
+    setTimeStartCreate(value);
+  };
+  const onOkCreateF = (value) => {
+    setTimeFinishCreate(value);
+  };
+  const onOk123S = (value) => {
+    setTimeStart(value);
+  };
+  const onOk123F = (value) => {
+    setTimeFinish(value);
+  };
   const dataArrayF = Array.from(ClassByUser);
   // Sử dụng phương thức find để tìm phần tử trong mảng có thuộc tính id bằng giá trị của biến a
   let foundElement = dataArrayF.find(
@@ -603,64 +859,133 @@ function Lessons() {
       ID: currentUserInfo.id,
       role: currentUserInfo.role,
     });
+    getLessonByUser();
     // getPupilByClass({
     //   // ID: idClass,
     //   ID: location.state,
     //   lessonId: idLesson,
     // });
-    getPupilByLesson({
-      classId: location.state,
-      lessonId: idLesson,
-    });
+    // getPupilByLesson({
+    //   classId: location.state,
+    //   lessonId: idLesson,
+    // });
     getLessonByClass({ ID: location.state });
     console.log("hohohoho", PupilByLesson);
-  }, [isModalVisible1, isModalVisible]);
+  }, [
+    isModalVisible1,
+    isModalVisible,
+    getAllRooms,
+    getAllSubjects,
+    getAllUsers,
+    getAllPupils,
+    getClassByUser,
+    currentUserInfo.id,
+    currentUserInfo.role,
+    getLessonByClass,
+    location.state,
+    PupilByLesson,
+    getLessonByUser,
+  ]);
 
   return (
     <>
-      <div className="tabled">
-        <Row gutter={[24, 0]}>
-          <Col xs="24" xl={24}>
-            <Card
-              bordered={true}
-              className="criclebox tablespace mb-24"
-              title="INFORMATION LESSON"
-              extra={
-                <Button
-                  type="primary"
-                  className="tag-primary"
-                  onClick={(record) => showModal1(record)}
-                  style={{ align: "right" }}
-                >
-                  Add Lesson
-                </Button>
-              }
-            >
-              <div className="table-responsive">
-                <Table
-                  columns={columns}
-                  dataSource={newArrayLesson}
-                  pagination={false}
-                  className="ant-border-space"
-                  loading={isLoading}
-                  bordered
-                  scroll={{ x: 1600, y: 415 }}
-                  // title={() => (
-                  //   <Button
-                  //     type="primary"
-                  //     className="tag-primary"
-                  //     onClick={(record) => showModal1(record)}
-                  //     style={{ align: "right" }}
-                  //   >
-                  //     Add Class
-                  //   </Button>
-                  // )}
-                />
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+      {currentUserInfo.id !== "employee" ? (
+        <div className="tabled">
+          <Row gutter={[24, 0]}>
+            <Col xs="24" xl={24}>
+              <Card
+                bordered={true}
+                className="criclebox tablespace mb-24"
+                title="INFORMATION LESSON"
+                extra={
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    onClick={(record) => showModal1(record)}
+                    style={{ align: "right" }}
+                  >
+                    Add Lesson
+                  </Button>
+                }
+              >
+                <div className="table-responsive">
+                  <Table
+                    columns={columns}
+                    dataSource={
+                      location.state == null
+                        ? newArrayLessonAll
+                        : newArrayLesson
+                    }
+                    pagination={false}
+                    className="ant-border-space"
+                    loading={isLoading}
+                    bordered
+                    scroll={{ x: 1600, y: 415 }}
+                    // title={() => (
+                    //   <Button
+                    //     type="primary"
+                    //     className="tag-primary"
+                    //     onClick={(record) => showModal1(record)}
+                    //     style={{ align: "right" }}
+                    //   >
+                    //     Add Class
+                    //   </Button>
+                    // )}
+                  />
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <div className="tabled">
+          <Row gutter={[24, 0]}>
+            <Col xs="24" xl={24}>
+              <Card
+                bordered={true}
+                className="criclebox tablespace mb-24"
+                title="INFORMATION LESSON"
+                extra={
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    onClick={(record) => showModal1(record)}
+                    style={{ align: "right" }}
+                  >
+                    Add Lesson
+                  </Button>
+                }
+              >
+                <div className="table-responsive">
+                  <Table
+                    columns={columns}
+                    dataSource={
+                      location.state == null
+                        ? newArrayLessonAll
+                        : newArrayLesson
+                    }
+                    pagination={false}
+                    className="ant-border-space"
+                    loading={isLoading}
+                    bordered
+                    scroll={{ x: 1600, y: 415 }}
+                    // title={() => (
+                    //   <Button
+                    //     type="primary"
+                    //     className="tag-primary"
+                    //     onClick={(record) => showModal1(record)}
+                    //     style={{ align: "right" }}
+                    //   >
+                    //     Add Class
+                    //   </Button>
+                    // )}
+                  />
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      )}
 
       <Modal
         title="DETAIL"
@@ -687,7 +1012,7 @@ function Lessons() {
                 <div className="author-info">
                   <Title level={5}>Content</Title>
                   <Input
-                    value={contentCreate}
+                    value={content}
                     onChange={(event) => {
                       handleChangeContent(event.target.value);
                     }}
@@ -748,30 +1073,22 @@ function Lessons() {
               <Col span={6}>
                 <div className="author-info">
                   <Title level={5}>Class</Title>
-                  <Input
-                    // value={name}
-                    // onChange={(event) => {
-                    //   handleChangeName1(event.target.value);
-                    // }}
-                    value={classname}
-                    disabled
-                  />
+                  <Input value={classname} disabled />
                 </div>
               </Col>
               <Col span={6}>
                 <div className="author-info">
                   <Title level={5}>Time Start</Title>
                   <DatePicker
-                    // onChange={(value) => {
-                    //   handleChangeBirthAdd(value);
-                    // }}
                     showTime={{
                       format: "HH:mm",
                     }}
-                    format="YYYY-MM-DD HH:mm"
-                    onChange={onChange123}
-                    onOk={onOk123}
-                    // defaultValue={timeStart}
+                    format="HH:mm DD-MM-YYYY"
+                    onChange={onChange123S}
+                    onOk={onOk123S}
+                    allowClear={true}
+                    showNow={false}
+                    value={timeStart}
                   />
                 </div>
               </Col>
@@ -779,26 +1096,41 @@ function Lessons() {
                 <div className="author-info">
                   <Title level={5}>Time Finish</Title>
                   <DatePicker
-                    // onChange={(value) => {
-                    //   handleChangeBirthAdd(value);
-                    // }}
                     showTime={{
                       format: "HH:mm",
                     }}
-                    format="YYYY-MM-DD HH:mm"
-                    // onChange={onChange123}
-                    // onOk={onOk123}
-                    // value={timeFinish}
+                    format="HH:mm DD-MM-YYYY"
+                    onChange={onChange123F}
+                    onOk={onOk123F}
+                    allowClear={true}
+                    value={timeFinish}
+                    showNow={false}
                   />
                 </div>
               </Col>
-              <Col span={24}>
+              <Col span={15}>
                 <div className="author-info">
-                  <Title level={5}>List Pupil</Title>
+                  <Title level={5}>List Pupil Class</Title>
                   <div className="table-responsive">
                     <Table
                       columns={columnsDetail}
-                      dataSource={newArrayPupil}
+                      dataSource={listPupilByClassArray}
+                      pagination={false}
+                      className="ant-border-space"
+                      loading={isLoading}
+                      bordered
+                      scroll={{ y: 240 }}
+                    />
+                  </div>
+                </div>
+              </Col>
+              <Col span={9}>
+                <div className="author-info">
+                  <Title level={5}>List Pupil Lesson</Title>
+                  <div className="table-responsive">
+                    <Table
+                      columns={columnsDetail1}
+                      dataSource={newArrayPupil1}
                       pagination={false}
                       className="ant-border-space"
                       loading={isLoading}
@@ -819,11 +1151,11 @@ function Lessons() {
         onOk={handleOk1}
         onCancel={handleCancel}
         destroyOnClose={true}
-        width={1000}
+        // width={1000}
       >
         <>
           <Row gutter={[16, 16]}>
-            <Col span={6}>
+            <Col span={12}>
               <div className="author-info">
                 <Title level={5}>Name</Title>
                 <Input
@@ -834,18 +1166,70 @@ function Lessons() {
                 />
               </div>
             </Col>
-            <Col span={6}>
+            <Col span={12}>
               <div className="author-info">
                 <Title level={5}>Content</Title>
                 <Input
                   // value={name}
                   onChange={(event) => {
-                    handleChangeContent(event.target.value);
+                    handleChangeContent1(event.target.value);
                   }}
                 />
               </div>
             </Col>
-            <Col span={6}>
+
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Lecturer</Title>
+                <Input value={currentUserInfo.name} disabled />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Class</Title>
+                <Input value={b} disabled />
+              </div>
+            </Col>
+
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Time Start</Title>
+                <DatePicker
+                  // onChange={(value) => {
+                  //   handleChangeBirthAdd(value);
+                  // }}
+                  showTime={{
+                    format: "HH:mm",
+                  }}
+                  format="YYYY-MM-DD HH:mm"
+                  onChange={onChangeCreateS}
+                  onOk={onOkCreateS}
+                  allowClear={true}
+                  value={timeStartCreate}
+                  showNow={false}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Time Finish</Title>
+                <DatePicker
+                  // onChange={(value) => {
+                  //   handleChangeBirthAdd(value);
+                  // }}
+                  showTime={{
+                    format: "HH:mm",
+                  }}
+                  format="YYYY-MM-DD HH:mm"
+                  onChange={onChangeCreateF}
+                  onOk={onOkCreateF}
+                  allowClear={true}
+                  value={timeFinishCreate}
+                  showNow={false}
+                />
+              </div>
+            </Col>
+            <Col span={12}>
               <div className="author-info">
                 <Title level={5}>Status</Title>
                 <Select
@@ -862,7 +1246,7 @@ function Lessons() {
                 </Select>
               </div>
             </Col>
-            <Col span={6}>
+            <Col span={12}>
               <div className="author-info">
                 <Title level={5}>Room</Title>
                 <Select
@@ -870,7 +1254,6 @@ function Lessons() {
                   onChange={(value) => {
                     handleChange1(value);
                   }}
-                  // value={statusStates}
                 >
                   {dataArrayE.map((item) => {
                     if (item.status === "empty") {
@@ -885,70 +1268,13 @@ function Lessons() {
                 </Select>
               </div>
             </Col>
-            <Col span={6}>
-              <div className="author-info">
-                <Title level={5}>Lecturer</Title>
-                <Input
-                  value={currentUserInfo.name}
-                  // onChange={(event) => {
-                  //   handleChangeName1(event.target.value);
-                  // }}
-                  disabled
-                />
-              </div>
-            </Col>
-            <Col span={6}>
-              <div className="author-info">
-                <Title level={5}>Class</Title>
-                <Input
-                  value={b}
-                  disabled
-                  // onChange={(event) => {
-                  //   handleChangeName1(event.target.value);
-                  // }}
-                />
-              </div>
-            </Col>
-
-            <Col span={6}>
-              <div className="author-info">
-                <Title level={5}>Time Start</Title>
-                <DatePicker
-                  // onChange={(value) => {
-                  //   handleChangeBirthAdd(value);
-                  // }}
-                  showTime={{
-                    format: "HH:mm",
-                  }}
-                  format="YYYY-MM-DD HH:mm"
-                  onChange={onChange123}
-                  onOk={onOk123}
-                />
-              </div>
-            </Col>
-            <Col span={6}>
-              <div className="author-info">
-                <Title level={5}>Time Finish</Title>
-                <DatePicker
-                  // onChange={(value) => {
-                  //   handleChangeBirthAdd(value);
-                  // }}
-                  showTime={{
-                    format: "HH:mm",
-                  }}
-                  format="YYYY-MM-DD HH:mm"
-                  onChange={onChange123}
-                  onOk={onOk123}
-                />
-              </div>
-            </Col>
-            <Col span={24}>
+            {/* <Col span={24}>
               <div className="author-info">
                 <Title level={5}>List Pupil</Title>
                 <div className="table-responsive">
                   <Table
                     columns={columnsDetail}
-                    dataSource={newArrayPupil}
+                    dataSource={listPupilByClassAdd}
                     pagination={false}
                     className="ant-border-space"
                     loading={isLoading}
@@ -957,7 +1283,7 @@ function Lessons() {
                   />
                 </div>
               </div>
-            </Col>
+            </Col> */}
           </Row>
         </>
       </Modal>

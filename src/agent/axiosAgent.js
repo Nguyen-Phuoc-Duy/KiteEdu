@@ -51,6 +51,9 @@ const AdminAction = {
   createUser: (body) => {
     return request.post(`/admin/createUser`, body);
   },
+  getInforUser: (userID) => {
+    return request.get(`/getInforUser/${userID}`);
+  }
 };
 
 const SubjectAction = {
@@ -119,8 +122,14 @@ const LessonAction = {
   getLessonByClass: (body) => {
     return request.post(`/lesson/getLessonByClass`, body);
   },
+  getLessonByUser: (body) => {
+    return request.post(`/lesson/getLessonByUser`, body);
+  },
   createLesson: (body) => {
     return request.post(`/lesson/createLesson`, body);
+  },
+  updateLesson: (body) => {
+    return request.post(`/lesson/updateLesson`, body);
   },
   presentPupilInClass: (body) => {
     return request.post(`/lesson/presentPupilInClass`, body);

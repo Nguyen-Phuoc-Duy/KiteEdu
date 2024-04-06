@@ -86,7 +86,7 @@ function Accounts() {
       }
       // )
     );
-    console.log("hhhhhhhhhhhhhhhh", selectedRecord.ID, subjectState, roleState);
+    // console.log("hhhhhhhhhhhhhhhh", selectedRecord.ID, subjectState, roleState);
     setIsModalVisible(false);
   };
 
@@ -226,7 +226,113 @@ function Accounts() {
       ),
     },
   ];
-
+  const columnsEmployee = [
+    {
+      title: "NAME",
+      dataIndex: "name",
+      key: "name",
+      fixed: "left",
+      width: "15%",
+      render: (name) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{name}</Title>
+            <p>{name}</p>
+          </div>
+        </>
+      ),
+    },
+    {
+      title: "SUBJECT",
+      dataIndex: "subjectId",
+      key: "subjectId",
+      render: (subjectId) => (
+        <>
+          <div className="semibold">{subjectId}</div>
+        </>
+      ),
+    },
+    {
+      title: "EMAIL",
+      dataIndex: "email",
+      key: "email",
+      width: "15%",
+      render: (email) => <Title level={5}>{email}</Title>,
+    },
+    {
+      title: "PHONE",
+      dataIndex: "phone",
+      key: "phone",
+      render: (phone) => <div className="semibold">{phone}</div>,
+    },
+    {
+      title: "ADDRESS",
+      dataIndex: "address",
+      key: "address",
+      width: "15%",
+      render: (address) => (
+        <>
+          <div className="semibold">{address}</div>
+        </>
+      ),
+    },
+    {
+      title: "GENDER",
+      dataIndex: "gender",
+      key: "gender",
+      render: (gender) => (
+        <div className="semibold">{gender === 1 ? "Nam" : "Nữ"}</div>
+      ),
+    },
+    {
+      title: "BIRTH",
+      dataIndex: "birth",
+      key: "birth",
+      render: (birth) => (
+        <div className="semibold">{moment(birth).format("DD-MM-YYYY")}</div>
+      ),
+    },
+    {
+      title: "ROLE",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => (
+        <>
+          {role === "employee" ? (
+            <Tag color="green">{role}</Tag>
+          ) : (
+            <Tag color="red">{role}</Tag>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "LOCKED",
+      dataIndex: "locked",
+      key: "locked",
+      render: (locked) => (
+        <div className="semibold">
+          <Switch
+            checked={locked}
+            // onChange={(value) => handleSwitchChange(value, locked)}
+            disabled
+          />
+        </div>
+      ),
+    },
+    {
+      title: "ACTION",
+      key: "action",
+      fixed: "right",
+      render: (text, record) => (
+        <>
+          <Button type="primary" className="tag-primary" disabled>
+            Edit
+          </Button>
+        </>
+      ),
+    },
+  ];
   useEffect(() => {
     getAllUsers();
     getAllSubjects();
@@ -317,13 +423,17 @@ function Accounts() {
             >
               <div className="table-responsive">
                 <Table
-                  columns={columns}
+                  columns={
+                    currentUserInfo.role == "employee"
+                      ? columnsEmployee
+                      : columns
+                  }
                   dataSource={filteredArray}
                   pagination={false}
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
-                  scroll={{x:1600, y: 415 }}
+                  scroll={{ x: 1600, y: 415 }}
                   // title={() => (
                   //   <Button
                   //     type="primary"

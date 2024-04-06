@@ -180,7 +180,12 @@ function Pulpils() {
     setGenderStatesAdd(value);
   };
   const handleChangeBirthAdd = (value) => {
-    console.log("llllllllllllllll", value, moment(value).format("DD-MM-YYYY"), dayjs(value, "YYYY-MM-DD"));
+    console.log(
+      "llllllllllllllll",
+      value,
+      moment(value).format("DD-MM-YYYY"),
+      dayjs(value, "YYYY-MM-DD")
+    );
     setBirthAdd(moment(value).format("DD-MM-YYYY"));
   };
   const handleChangeNameAdd = (value) => {
@@ -211,6 +216,7 @@ function Pulpils() {
       dataIndex: "name",
       key: "name",
       fixed: "left",
+      width: "10%",
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -224,6 +230,7 @@ function Pulpils() {
       title: "EMAIL",
       dataIndex: "email",
       key: "email",
+      width: "15%",
       render: (email) => <Title level={5}>{email}</Title>,
     },
     {
@@ -236,6 +243,7 @@ function Pulpils() {
       title: "PARENT'S NAME",
       dataIndex: "parent_name",
       key: "parent_name",
+      width: "10%",
       render: (parent_name) => (
         <>
           <div className="avatar-info">
@@ -249,6 +257,7 @@ function Pulpils() {
       title: "PARENT'S EMAIL",
       dataIndex: "parent_email",
       key: "parent_email",
+      width: "15%",
       render: (parent_email) => <Title level={5}>{parent_email}</Title>,
     },
     {
@@ -281,6 +290,7 @@ function Pulpils() {
       title: "ADDRESS",
       dataIndex: "address",
       key: "address",
+      width: "10%",
       render: (address) => (
         <>
           <div className="semibold">{address}</div>
@@ -291,6 +301,7 @@ function Pulpils() {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      width: "6%",
       render: (status) => (
         <>
           {status === "active" ? (
@@ -306,6 +317,7 @@ function Pulpils() {
       title: "ACTION",
       key: "action",
       fixed: "right",
+      width: "6%",
       render: (text, record) => (
         <>
           <Button
@@ -352,7 +364,7 @@ function Pulpils() {
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
-                  scroll={{x:1600, y: 415 }}
+                  scroll={{ x: 1600, y: 415 }}
                 />
               </div>
             </Card>

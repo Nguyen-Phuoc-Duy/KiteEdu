@@ -16,7 +16,9 @@ export default class AccountStore {
   PupilByClass = {};
   PupilByLesson = {};
   LessonByClass = {};
-  testMsg = {};
+  LessonByUser = {};
+  InforUser = {};
+  testMsg = undefined;
   isLoading = false;
 
   constructor() {
@@ -31,13 +33,14 @@ export default class AccountStore {
     });
   }
 
+  /* The above code appears to be a comment block in JavaScript. It is not performing any specific
+  action in the code. */
   setIsLoading = (value) => {
-    runInAction(() => {
-      this.isLoading = value;
-    });
+    this.isLoading = value;
   };
 
   login = async (credentials) => {
+    this.setIsLoading(true);
     await axiosAgents.AuthAction.login(credentials).then((response) => {
       if (response.errCode === 200) {
         localStorage.setItem("userInfo", response.data.token);
@@ -48,9 +51,11 @@ export default class AccountStore {
         });
       }
     });
+    this.setIsLoading(false);
   };
 
   getAllUsers = async () => {
+    this.setIsLoading(true);
     await axiosAgents.AuthAction.getAllUsers().then((response) => {
       if (response.errCode === 200) {
         runInAction(() => {
@@ -60,9 +65,11 @@ export default class AccountStore {
         console.log(response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
 
   getAllSubjects = async () => {
+    this.setIsLoading(true);
     await axiosAgents.SubjectAction.getAllSubjects().then((response) => {
       if (response.errCode === 200) {
         runInAction(() => {
@@ -72,9 +79,11 @@ export default class AccountStore {
         console.log(response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
 
   getAllRooms = async () => {
+    this.setIsLoading(true);
     await axiosAgents.RoomAction.getAllRooms().then((response) => {
       if (response.errCode === 200) {
         runInAction(() => {
@@ -84,9 +93,11 @@ export default class AccountStore {
         console.log(response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
 
   getAllPupils = async () => {
+    this.setIsLoading(true);
     await axiosAgents.PupilAction.getAllPupils().then((response) => {
       if (response.errCode === 200) {
         runInAction(() => {
@@ -96,9 +107,11 @@ export default class AccountStore {
         console.log(response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
 
   getAllClasses = async () => {
+    this.setIsLoading(true);
     await axiosAgents.ClassAction.getAllClasses().then((response) => {
       if (response.errCode === 200) {
         runInAction(() => {
@@ -108,9 +121,11 @@ export default class AccountStore {
         console.log("getAllClassFailed", response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
 
   getClassByUser = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.ClassAction.getClassByUser(body).then((response) => {
       // console.log('oooooooooooooooo', body)
       if (response.errCode === 200) {
@@ -121,9 +136,27 @@ export default class AccountStore {
         console.log("getAllClassByUserFailed", response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
 
+  // getInforUser = async (userID) => {
+  //   this.setIsLoading(true);
+  //   await axiosAgents.AdminAction.getInforUser(userID)
+  //     .then((response) => {
+  //       runInAction(() => {
+  //         this.InforUser = response;
+          
+  //       });
+  //       console.log("Info of User", response.data);
+  //     })
+  //     .catch(() => {
+  //       console.log("Infor User Failed");
+  //     });
+  //   this.setIsLoading(false);
+  // };
+
   getPupilByClass = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.ClassAction.getPupilByClass(body).then((response) => {
       if (response.errCode === 200) {
         runInAction(() => {
@@ -133,9 +166,11 @@ export default class AccountStore {
         // console.log(response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
 
   getPupilByLesson = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.LessonAction.getPupilByLesson(body).then((response) => {
       if (response.errCode === 200) {
         runInAction(() => {
@@ -145,56 +180,102 @@ export default class AccountStore {
         console.log("lololo", response);
       }
     });
+    this.setIsLoading(false);
   };
 
   getLessonByClass = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.LessonAction.getLessonByClass(body).then((response) => {
-      // console.log('oooooooooooooooo', body)
       if (response.errCode === 200) {
         runInAction(() => {
           this.LessonByClass = response.data;
-          this.testMsg = response;
-          // console.log("hhhhhhhhhhhhhhh", response, 'jjj', response.data);
         });
       } else {
         console.log("q", response.errMsg);
       }
     });
+    this.setIsLoading(false);
   };
+  getLessonByUser = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.LessonAction.getLessonByUser(body).then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.LessonByUser = response.data;
+          console.log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq123", response);
+        });
+      } else {
+        console.log("q", response.errMsg);
+      }
+    });
+    this.setIsLoading(false);
+  };
+
   updateUserInfo = async (newUserInfo) => {
+    this.setIsLoading(true);
     await axiosAgents.AuthAction.updateUserInfo(newUserInfo).then(
       (response) => {
-        if (response.errCode === 200) {
-          runInAction(() => {
-            console.log(response.errMsg);
-          });
-        } else {
-          console.log(response.errMsg);
-        }
+        // console.log("Update log", response.token);
+        localStorage.setItem("userInfo", response.token)
+        // runInAction(() => {
+          this.currentUserToken = response.token
+        // })
       }
     );
+    // await this.getInforUser();
+    this.setIsLoading(false);
   };
 
   lockAndUnlockUser = async (id, body) => {
+    this.setIsLoading(true);
     await axiosAgents.AdminAction.lockAndUnlockUser(id, body).then(
       (response) => {
         console.log("theResponse", response);
       }
     );
+    this.setIsLoading(false);
   };
 
   updateRole = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.AdminAction.updateRole(body).then((response) => {
       console.log("theResponse", response);
     });
+    this.setIsLoading(false);
   };
 
+  // updateSubject = async (body) => {
+  //   this.setIsLoading(true);
+  //   await axiosAgents.SubjectAction.updateSubject(body).then((response) => {
+  //     console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzze", response);
+  //     if (response.errCode === 200) {
+  //       runInAction(() => {
+  //         this.testMsg = response;
+  //       });
+  //     } else {
+  //       this.testMsg = response;
+  //     }
+  //   });
+  //   await this.getAllSubjects();
+  //   this.setIsLoading(false);
+  // };
   updateSubject = async (body) => {
     this.setIsLoading(true);
-    await axiosAgents.SubjectAction.updateSubject(body).then((response) => {
-      console.log("theResponse", response);
-    });
-    await this.getAllSubjects();
+    try {
+      const response = await axiosAgents.SubjectAction.updateSubject(body);
+      console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzze", response);
+      if (response && response.errCode === 200) {
+        runInAction(() => {
+          this.testMsg = response;
+        });
+      } else {
+        this.testMsg = response;
+      }
+      await this.getAllSubjects();
+    } catch (error) {
+      console.error("Error updating subject:", error);
+      this.testMsg = { errCode: 500, errMsg: "System error!" };
+    }
     this.setIsLoading(false);
   };
 
@@ -209,16 +290,15 @@ export default class AccountStore {
 
   updateClass = async (body) => {
     this.setIsLoading(true);
-    await axiosAgents.ClassAction.updateClass(body).then((response) => {
-      if (response.errCode === 200) {
-        runInAction(() => {
-          this.detailClass = response;
-        });
-      } else {
-        console.log(response.errMsg);
-      }
-    });
+    await axiosAgents.ClassAction.updateClass(body).then((response) => {});
     await this.getAllClasses();
+    this.setIsLoading(false);
+  };
+
+  updateLesson = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.LessonAction.updateLesson(body).then((response) => {});
+    await this.getLessonByClass();
     this.setIsLoading(false);
   };
 
@@ -267,37 +347,49 @@ export default class AccountStore {
   //   );
   // }
   createUser = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.AdminAction.createUser(body).then((response) => {
       console.log("theResponse", response);
     });
+    this.setIsLoading(false);
   };
 
   createSubject = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.SubjectAction.createSubject(body).then((response) => {
       console.log("theResponse", response);
+      // this.testMsg = response;
     });
+    this.setIsLoading(false);
   };
 
   createRoom = async (body) => {
-    console.log("body", body);
+    this.setIsLoading(true);
     await axiosAgents.RoomAction.createRoom(body).then((response) => {
       console.log("theResponse123", response, body);
     });
+    this.setIsLoading(false);
   };
 
   createPupil = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.PupilAction.createPupil(body).then((response) => {
       // console.log("theResponse", response);
     });
+    this.setIsLoading(false);
   };
 
   createClass = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.ClassAction.createClass(body).then((response) => {});
+    this.setIsLoading(false);
   };
   createLesson = async (body) => {
+    this.setIsLoading(true);
     await axiosAgents.LessonAction.createLesson(body).then((response) => {
       console.log("bbbbbbbbbbbbbbbbbbbbb", response);
     });
+    this.setIsLoading(false);
   };
   removePupilInClass = async (body) => {
     console.log("body", body);
@@ -330,16 +422,31 @@ export default class AccountStore {
     await this.getPupilByClass(body);
     this.setIsLoading(false);
   };
-  updatePupilStatusInClass = async (body) => {
-    this.setIsLoading(true);
-    console.log("fffffffffffffffffffffffffffffffffff", body);
-    await axiosAgents.ListPupilAction.updatePupilStatusInClass(body).then(
-      (response) => {
-        // console.log("first", response);
-      }
-    );
+  // updatePupilStatusInClass = async (body) => {
+  //   this.setIsLoading(true);
+  //   console.log("fffffffffffffffffffffffffffffffffff", body);
+  //   await axiosAgents.ListPupilAction.updatePupilStatusInClass(body).then(
+  //     (response) => {
+  //       // console.log("first", response);
+  //     }
+  //   );
 
-    await this.getPupilByClass(body);
-    this.setIsLoading(false);
+  //   await this.getPupilByClass(body);
+  //   this.setIsLoading(false);
+  // };
+
+  // Hàm gửi yêu cầu để lấy thông tin người dùng hiện tại từ server
+  loadCurrentUserInfo = async () => {
+    try {
+      // Gửi yêu cầu HTTP đến backend để lấy thông tin người dùng hiện tại
+      const response = await fetch("/api/getCurrentUserInfo"); // Đây là endpoint cần được định nghĩa trên server
+      const data = await response.json();
+
+      // Cập nhật thông tin người dùng hiện tại trong store với dữ liệu nhận được từ server
+      this.currentUserInfo = data.user; // Giả sử server trả về dữ liệu người dùng trong đối tượng user
+    } catch (error) {
+      console.error("Error loading current user info:", error);
+      // Xử lý lỗi nếu cần
+    }
   };
 }

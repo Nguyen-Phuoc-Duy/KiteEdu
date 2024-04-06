@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from "react";
 import {
   Row,
@@ -10,6 +12,8 @@ import {
   Select,
   Tag,
   Input,
+  message,
+  notification,
 } from "antd";
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
@@ -26,18 +30,10 @@ function Subjects() {
   const [statusStatesAdd, setStatusStatesAdd] = useState(null);
   const [name, setName] = useState(null);
   const [nameAdd, setNameAdd] = useState(null);
+  const [initialRender, setInitialRender] = useState(true); // Biến state để theo dõi render lần đầu
   const history = useHistory();
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const showModal = (record) => {
-    setSelectedRecord(record);
-    setStatusStates(record.status);
-    setName(record.name);
-    setIsModalVisible(true);
-  };
-
-  const showModalAdd = (record) => {
-    setIsModalVisibleAdd(true);
-  };
   const { accountStore } = useStore();
   const {
     isLoading,
@@ -46,17 +42,62 @@ function Subjects() {
     updateSubject,
     createSubject,
     currentUserInfo,
+    testMsg,
   } = accountStore;
 
-  const handleOk = () => {
-    updateSubject({
-      ID: selectedRecord.ID,
-      status: statusStates,
-      name: name,
-    });
-    setIsModalVisible(false);
+
+  // Hiển thị modal chỉnh sửa thông tin môn học
+  const showModal = (record) => {
+    setSelectedRecord(record);
+    setStatusStates(record.status);
+    setName(record.name);
+    setIsModalVisible(true);
   };
 
+  // Hiển thị modal thêm môn học
+  const showModalAdd = (record) => {
+    setIsModalVisibleAdd(true);
+  };
+
+
+  // Xử lý khi nhấn nút OK trên modal chỉnh sửa
+  const handleOk = async () => {
+    try {
+      await updateSubject({
+        ID: selectedRecord.ID,
+        status: statusStates,
+        name: name,
+      });
+      setIsModalVisible(false);
+
+      // Lấy thông báo từ testMsg
+      let { errCode, errMsg } = testMsg;
+      console.log(
+        "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",
+        errCode,
+        errMsg,
+        testMsg
+      );
+
+      // Hiển thị thông báo
+      const handleNotification = (code, msg) => {
+        if (code === 200) {
+          messageApi.success(msg); // Thay đổi ở đây
+        } else {
+          messageApi.error(msg); // Thay đổi ở đây
+        }
+      };
+      handleNotification(errCode, errMsg);
+    } catch (error) {
+      console.error("Error updating subject:", error);
+      // Xử lý lỗi khi cập nhật môn học
+      messageApi.error({
+        content: "An error occurred while updating the subject.",
+      });
+    }
+  };
+
+  // Xử lý khi nhấn nút OK trên modal thêm
   const handleOkAdd = () => {
     createSubject({
       status: statusStatesAdd,
@@ -68,27 +109,42 @@ function Subjects() {
     getAllSubjects();
   };
 
+  // Xử lý khi nhấn nút Cancel
   const handleCancel = () => {
     setIsModalVisible(false);
     setIsModalVisibleAdd(false);
   };
 
+  // Xử lý thay đổi trạng thái môn học
   const handleChange = (value) => {
     setStatusStates(value);
   };
 
+  // Xử lý thay đổi tên môn học
   const handleChangeName = (value) => {
     setName(value);
   };
 
+  // Xử lý thay đổi trạng thái khi thêm môn học
   const handleChangeAdd = (value) => {
     setStatusStatesAdd(value);
   };
 
+  // Xử lý thay đổi tên môn học khi thêm môn học
   const handleChangeNameAdd = (value) => {
     setNameAdd(value);
   };
 
+  // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
+  useEffect(() => {
+    // Chỉ gọi hàm getAllSubjects khi render lần đầu hoặc có sự thay đổi từ tạo hoặc cập nhật môn học
+    if (initialRender) {
+      getAllSubjects();
+      setInitialRender(false); // Đánh dấu đã render lần đầu
+    }
+  }, [createSubject, getAllSubjects, initialRender, updateSubject]);
+
+  // Cấu hình cột cho Table
   const columns = [
     {
       title: "NAME",
@@ -121,7 +177,6 @@ function Subjects() {
     {
       title: "ACTION",
       key: "action",
-      // align: 'center',
       render: (text, record) => (
         <>
           <Button
@@ -130,12 +185,13 @@ function Subjects() {
             onClick={() => showModal(record)}
           >
             Edit
-            {/* {record.username} */}
           </Button>
         </>
       ),
     },
   ];
+
+  // Cấu hình cột cho Table khi người dùng là nhân viên
   const columnsEmployee = [
     {
       title: "NAME",
@@ -164,36 +220,35 @@ function Subjects() {
         </>
       ),
     },
+
+    {
+      title: "ACTION",
+      key: "action",
+      render: (text, record) => (
+        <>
+          <Button type="primary" className="tag-primary" disabled>
+            Edit
+          </Button>
+        </>
+      ),
+    },
   ];
-  useEffect(() => {
-    getAllSubjects();
-  }, [isModalVisible, isModalVisibleAdd]);
 
+  // Chuyển đổi dữ liệu thành mảng và sắp xếp lại theo thứ tự
   const dataA = Array.from(subjectList);
-  const dataArray = dataA.map((user) => {
-    const order = ["ID", "name", "status", "createdAt", "updatedAt"];
-
-    const sortedUser = {};
-    order.forEach((key) => {
-      if (user.hasOwnProperty(key)) {
-        sortedUser[key] = user[key];
-      }
-    });
-
-    return sortedUser;
-  });
 
   return (
     <>
-      {currentUserInfo.role == "manager" ? (
-        <div className="tabled">
-          <Row gutter={[24, 0]}>
-            <Col xs="24" xl={24}>
-              <Card
-                bordered={true}
-                className="criclebox tablespace mb-24"
-                title="INFORMATION SUBJECTS"
-                extra={
+      {contextHolder}
+      <div className="tabled">
+        <Row gutter={[24, 0]}>
+          <Col xs="24" xl={24}>
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="INFORMATION SUBJECTS"
+              extra={
+                <>
                   <Button
                     type="primary"
                     className="tag-primary"
@@ -202,49 +257,32 @@ function Subjects() {
                   >
                     Add Subject
                   </Button>
-                }
-              >
-                <div className="table-responsive">
-                  <Table
-                    columns={columns}
-                    dataSource={dataArray}
-                    pagination={false}
-                    className="ant-border-space"
-                    loading={isLoading}
-                    bordered
-                    scroll={{ y: 420 }}
-                  />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      ) : (
-        <div className="tabled">
-          <Row gutter={[24, 0]}>
-            <Col xs="24" xl={24}>
-              <Card
-                bordered={true}
-                className="criclebox tablespace mb-24"
-                title="INFORMATION SUBJECTS"
-              >
-                <div className="table-responsive">
-                  <Table
-                    columns={columnsEmployee}
-                    dataSource={dataArray}
-                    pagination={false}
-                    className="ant-border-space"
-                    loading={isLoading}
-                    bordered
-                    scroll={{ y: 420 }}
-                  />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      )}
+  
+                </>
+              }
+            >
+              <div className="table-responsive">
+                <Table
+                  columns={
+                    currentUserInfo.role === "employee"
+                      ? columnsEmployee
+                      : columns
+                  }
+                  dataSource={dataA}
+                  pagination={false}
+                  rowKey={(record) => record.ID}
+                  className="ant-border-space"
+                  loading={isLoading}
+                  bordered
+                  scroll={{ y: 420 }}
+                />
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
 
+      {/* Modal chỉnh sửa */}
       <Modal
         title="EDIT"
         visible={isModalVisible}

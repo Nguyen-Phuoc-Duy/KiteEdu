@@ -53,7 +53,7 @@ function Classes() {
     getPupilByClass,
     removePupilInClass,
     addPupilInClass,
-    detailClass
+    detailClass,
   } = accountStore;
 
   const handleChangeSelect = (value) => {
@@ -73,8 +73,12 @@ function Classes() {
     setSubject(record.subjectId);
     setLecturer(record.userId);
     setIdClass(record.ID);
-    setStatusPupil(newArrayPupil.status);
-    // console.log("fff", record.name);
+    // setStatusPupil(newArrayPupil.status);
+    getClassByUser({
+      ID: currentUserInfo.id,
+      role: currentUserInfo.role,
+    });
+
     setIsModalVisible(true);
   };
 
@@ -106,7 +110,7 @@ function Classes() {
     //   classId: selectedRecord.ID,
     //   pupilId: idPupil,
     // });
-     getPupilByClass({ ID: idClass });
+    getPupilByClass({ ID: idClass });
     setIsModalVisible(false);
   };
 
@@ -289,7 +293,7 @@ function Classes() {
       dataIndex: "status",
       key: "status",
       width: "20%",
-      align: 'center',
+      align: "center",
       render: (status) => (
         <>
           {status === "present" ? (
@@ -310,7 +314,7 @@ function Classes() {
       title: "ACTION",
       key: "action",
       width: "40%",
-      align: 'center',
+      align: "center",
       render: (text, record) => (
         <>
           <Button
@@ -413,8 +417,10 @@ function Classes() {
     getPupilByClass({
       ID: idClass,
     });
-  console.log('detailClass', detailClass)
-  }, [isModalVisible1, isModalVisible]);
+    createClass();
+    updateClass()
+    console.log("detailClass", detailClass);
+  }, [isModalVisible1, isModalVisible, getAllClasses, getAllSubjects, getAllUsers, getAllPupils, getClassByUser, currentUserInfo.id, currentUserInfo.role, getPupilByClass, idClass, detailClass, createClass, updateClass]);
   return (
     <>
       <div className="tabled">

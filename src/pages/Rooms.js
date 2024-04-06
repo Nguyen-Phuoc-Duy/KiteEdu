@@ -172,14 +172,23 @@ function Rooms() {
         </>
       ),
     },
-  ];
-  useEffect(
-    () => {
-      getAllRooms();
+
+    {
+      title: "ACTION",
+      key: "action",
+      // align: 'center',
+      render: (text, record) => (
+        <>
+          <Button type="primary" className="tag-primary" disabled>
+            Edit
+          </Button>
+        </>
+      ),
     },
-    [isModalVisible1, isModalVisible]
-    // [subjectList]
-  );
+  ];
+  useEffect(() => {
+    getAllRooms();
+  }, [isModalVisible1, isModalVisible, getAllRooms]);
 
   const dataA = Array.from(roomList);
   const dataArray = dataA.map((user) => {
@@ -197,66 +206,44 @@ function Rooms() {
 
   return (
     <>
-      {currentUserInfo.role == "manager" ? (
-        <div className="tabled">
-          <Row gutter={[24, 0]}>
-            <Col xs="24" xl={24}>
-              <Card
-                bordered={true}
-                className="criclebox tablespace mb-24"
-                title="INFORMATION ROOMS"
-                extra={
-                  <Button
-                    type="primary"
-                    className="tag-primary"
-                    // onClick={() => history.push("/create-room")}
-                    onClick={(record) => showModal1(record)}
-                    style={{ align: "right" }}
-                  >
-                    Add Room
-                  </Button>
-                }
-              >
-                <div className="table-responsive">
-                  <Table
-                    columns={columns}
-                    dataSource={dataArray}
-                    pagination={false}
-                    className="ant-border-space"
-                    loading={isLoading}
-                    bordered
-                    scroll={{ y: 420 }}
-                  />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      ) : (
-        <div className="tabled">
-          <Row gutter={[24, 0]}>
-            <Col xs="24" xl={24}>
-              <Card
-                bordered={true}
-                className="criclebox tablespace mb-24"
-                title="INFORMATION ROOMS"
-              >
-                <div className="table-responsive">
-                  <Table
-                    columns={columnsEmployee}
-                    dataSource={dataArray}
-                    pagination={false}
-                    className="ant-border-space"
-                    loading={isLoading}
-                    bordered
-                    scroll={{ y: 420 }}
-                  />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      )}
+      <div className="tabled">
+        <Row gutter={[24, 0]}>
+          <Col xs="24" xl={24}>
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="INFORMATION ROOMS"
+              extra={
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  // onClick={() => history.push("/create-room")}
+                  onClick={(record) => showModal1(record)}
+                  style={{ align: "right" }}
+                >
+                  Add Room
+                </Button>
+              }
+            >
+              <div className="table-responsive">
+                <Table
+                  columns={
+                    currentUserInfo.role == "employee"
+                      ? columnsEmployee
+                      : columns
+                  }
+                  dataSource={dataArray}
+                  pagination={false}
+                  className="ant-border-space"
+                  loading={isLoading}
+                  bordered
+                  scroll={{ y: 420 }}
+                />
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
 
       <Modal
         title="EDIT"

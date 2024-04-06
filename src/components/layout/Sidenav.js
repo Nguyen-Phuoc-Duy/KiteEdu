@@ -30,12 +30,16 @@ import {
   TableOutlined,
   SolutionOutlined,
   ProfileOutlined,
+  PieChartOutlined,
   LineChartOutlined,
 } from "@ant-design/icons";
+import { useStore } from "../../stores/store";
+import { observer } from "mobx-react-lite";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 function Sidenav({ color }) {
   const { pathname } = useLocation();
   const page = pathname.replace("/", "");
-
+  // const idUsser = useLocation();
   const dashboard = [
     <svg
       width="20"
@@ -203,6 +207,9 @@ function Sidenav({ color }) {
       ></path>
     </svg>,
   ];
+  const history = useHistory();
+  const { accountStore } = useStore();
+  const { currentUserInfo } = accountStore;
   return (
     <>
       <div className="brand">
@@ -220,7 +227,8 @@ function Sidenav({ color }) {
               }}
             >
               {/* {dashboard} */}
-              <LineChartOutlined />
+              {/* <LineChartOutlined /> */}
+              <PieChartOutlined />
             </span>
             <span className="label">Dashboard</span>
           </NavLink>
@@ -298,17 +306,34 @@ function Sidenav({ color }) {
                 background: page === "tables" ? color : "",
               }}
             >
-              <ProfileOutlined />
+              <SolutionOutlined />
             </span>
             <span className="label">Classes</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="17">
-          <NavLink to="/lessons">
-            <span className="icon">
-              <SolutionOutlined />
-            </span>
-            <span className="label">Lesson</span>
+        {currentUserInfo.role !== "employee" ? (
+          <Menu.Item key="17">
+            <NavLink
+              to="/lessons"
+              // to={{
+              //   pathname: "/lessons",
+              //   state: { idUser: currentUserInfo.id }, // Truyền userId vào state
+              // }}
+            >
+              <span className="icon">
+              <ProfileOutlined />
+              </span>
+              <span className="label">Lesson</span>
+            </NavLink>
+          </Menu.Item>
+        ) : (
+          ""
+        )}
+
+        <Menu.Item key="11">
+          <NavLink to="/account-information">
+            <span className="icon">{profile}</span>
+            <span className="label">Profile</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item className="menu-item-header" key="5">
@@ -356,12 +381,6 @@ function Sidenav({ color }) {
             <span className="label">Create Account</span>
           </NavLink>
         </Menu.Item>
-        {/* <Menu.Item key="11">
-          <NavLink to="/account-information">
-            <span className="icon">{profile}</span>
-            <span className="label">Profile</span>
-          </NavLink>
-        </Menu.Item> */}
 
         {/* <Menu.Item key="16">
           <NavLink to="/pupils2">
@@ -391,4 +410,4 @@ function Sidenav({ color }) {
   );
 }
 
-export default Sidenav;
+export default observer(Sidenav);

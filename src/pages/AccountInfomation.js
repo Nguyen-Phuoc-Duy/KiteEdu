@@ -12,7 +12,6 @@
 import React from "react";
 import { Button, Card, Form, Input, Row, Col, Select, DatePicker } from "antd";
 import dayjs from "dayjs";
-
 import "dayjs/locale/zh-cn"; //en_US
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
@@ -22,45 +21,49 @@ const { Option } = Select;
 
 const AccountInformation = () => {
   const { accountStore } = useStore();
-  const { currentUserInfo, updateUserInfo } = accountStore;
-  // useEffect(() => {
-  //   console.log(currentUserInfo.birth);
-  // }, []);
+  const {
+    currentUserInfo,
+    updateUserInfo,
+    isLoading,
+  } = accountStore;
+  const [gender, setGender] = useState(currentUserInfo.gender === true ? "Nam" : "Nữ");
+  useEffect(() => {
+    setGender(currentUserInfo.gender)
+  }, [currentUserInfo]);
   const onFinish = (values) => {
+    console.log("VVVVVVVVVVVVVVVVVVVVVV", values);
     updateUserInfo({
       ...values,
       ID: currentUserInfo.id,
+      
     });
-    console.log("update vales", values, "hhhhhhhhhh", currentUserInfo);
-    // updateUserInfo({
-    //   ID: currentUserInfo.id,
-    //   name: currentUserInfo.name,
-    // });
+
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
-  const onGenderChange = (value) => {};
-
+  const onGenderChange = (value) => {setGender(value)};
+  
   return (
     <>
       <div className="layout-default  layout-sign-up">
         <Card
+          loading={isLoading}
           className=" header-solid h-full ant-card pt-0"
           title={<h5>ACCOUNT INFORMATION</h5>}
-          bordered={false}
+          bordered={true}
         >
           <Form
             name="basic"
             initialValues={{
               name: currentUserInfo.name,
               username: currentUserInfo.username,
-              gender: currentUserInfo.gender == true ? "Nam" : "Nữ",
+              gender: gender,
               email: currentUserInfo.email,
               phone: currentUserInfo.phone,
-              birth: dayjs(currentUserInfo.birth, "YYYY-MM-DD"),
+              birth: dayjs(currentUserInfo.birth),
               address: currentUserInfo.address,
             }}
             onFinish={onFinish}
@@ -139,11 +142,7 @@ const AccountInformation = () => {
               </Col>
               <Col span={6}>
                 <Form.Item name="gender" label="Gender">
-                  <Select
-                    placeholder="Gender"
-                    onChange={onGenderChange}
-                    rules={[{ required: true }]}
-                  >
+                  <Select placeholder="Gender" onChange={onGenderChange} >
                     <Option value="true">Nam</Option>
                     <Option value="false">Nữ</Option>
                   </Select>
@@ -153,13 +152,24 @@ const AccountInformation = () => {
                 <Form.Item
                   label="Birth"
                   name="birth"
-                  rules={[{ required: true, message: "Please input!" }]}
+                  rules={[
+                    { required: true, message: "Please input!" },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (value && getFieldValue("birth")) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error("Please choose a birth date!")
+                        );
+                      },
+                    }),
+                  ]}
                 >
                   <DatePicker />
                 </Form.Item>
               </Col>
-              
-              
+
               {/* <Col span={8}>
                 <Form.Item
                   name="password"

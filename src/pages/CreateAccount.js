@@ -34,7 +34,8 @@ const { RangePicker } = DatePicker;
 const CreateAccount = () => {
   const history = useHistory();
   const { accountStore } = useStore();
-  const { createUser, subjectList, getAllSubjects } = accountStore;
+  const { createUser, subjectList, getAllSubjects, currentUserInfo } =
+    accountStore;
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
@@ -147,8 +148,7 @@ const CreateAccount = () => {
                   <Input placeholder="Phone Number" />
                 </Form.Item>
               </Col>
-              
-              
+
               <Col span={8}>
                 <Form.Item
                   name="address"
@@ -193,7 +193,7 @@ const CreateAccount = () => {
                     placeholder="Subject"
                     // onChange={onGenderChange}
                     allowClear
-                    defaultValue={''}
+                    defaultValue={""}
                   >
                     {dataArray.map((item) => {
                       if (item.status === "active") {
@@ -234,24 +234,54 @@ const CreateAccount = () => {
                 </Form.Item>
               </Col>
               <Col span={8}></Col>
-              <Col span={4}>
-                <Form.Item>
-                  <Button htmlType="reset" style={{ width: "100%" }}>
-                    Cancel
-                  </Button>
-                </Form.Item>
-              </Col>
-              <Col span={4}>
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    style={{ width: "100%" }}
-                  >
-                    Create
-                  </Button>
-                </Form.Item>
-              </Col>
+              {currentUserInfo.role == "employee" ? (
+                <>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button
+                        htmlType="reset"
+                        style={{ width: "100%" }}
+                        disabled
+                      >
+                        Cancel
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        style={{ width: "100%" }}
+                        disabled
+                      >
+                        Create
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </>
+              ) : (
+                <>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button htmlType="reset" style={{ width: "100%" }}>
+                        Cancel
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        style={{ width: "100%" }}
+                      >
+                        Create
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </>
+              )}
             </Row>
           </Form>
         </Card>

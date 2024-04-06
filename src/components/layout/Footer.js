@@ -80,7 +80,7 @@ function Footer() {
           // direction="right"
           // loop=""
           >
-            I love you ❤
+            Knowledge is power ❤
           </marquee>
         </Col>
       </Row>
