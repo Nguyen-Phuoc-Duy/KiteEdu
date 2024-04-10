@@ -126,6 +126,10 @@ const CreateAccount = () => {
                   label="E-mail"
                   rules={[
                     {
+                      pattern: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/,
+                      message: "The input is not a valid email!",
+                    },
+                    {
                       required: true,
                       message: "Please input email!",
                     },
@@ -140,6 +144,10 @@ const CreateAccount = () => {
                   label="Phone Number"
                   rules={[
                     {
+                      pattern: /^[0-9]{10}$/,
+                      message: "The input is not a valid phone number!",
+                    },
+                    {
                       required: true,
                       message: "Please input phone number!",
                     },
@@ -149,7 +157,7 @@ const CreateAccount = () => {
                 </Form.Item>
               </Col>
 
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="address"
                   label="Address"
@@ -158,7 +166,7 @@ const CreateAccount = () => {
                   <Input placeholder="Address" />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={4}>
                 <Form.Item
                   name="gender"
                   label="Gender"
@@ -234,7 +242,7 @@ const CreateAccount = () => {
                 </Form.Item>
               </Col>
               <Col span={8}></Col>
-              {currentUserInfo.role == "employee" ? (
+              {/* {currentUserInfo.role == "employee" ? (
                 <>
                   <Col span={4}>
                     <Form.Item>
@@ -281,7 +289,25 @@ const CreateAccount = () => {
                     </Form.Item>
                   </Col>
                 </>
-              )}
+              )} */}
+              <Col span={4}>
+                <Form.Item>
+                  <Button htmlType="reset" style={{ width: "100%" }}>
+                    Cancel
+                  </Button>
+                </Form.Item>
+              </Col>
+              <Col span={4}>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    style={{ width: "100%" }}
+                  >
+                    Create
+                  </Button>
+                </Form.Item>
+              </Col>
             </Row>
           </Form>
         </Card>

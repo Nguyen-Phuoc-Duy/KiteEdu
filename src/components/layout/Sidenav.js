@@ -311,7 +311,7 @@ function Sidenav({ color }) {
             <span className="label">Classes</span>
           </NavLink>
         </Menu.Item>
-        {currentUserInfo.role !== "employee" ? (
+        {/* {currentUserInfo.role == "employee" ? (
           <Menu.Item key="17">
             <NavLink
               to="/lessons"
@@ -321,15 +321,22 @@ function Sidenav({ color }) {
               // }}
             >
               <span className="icon">
-              <ProfileOutlined />
+                <ProfileOutlined />
               </span>
               <span className="label">Lesson</span>
             </NavLink>
           </Menu.Item>
         ) : (
           ""
-        )}
-
+        )} */}
+        <Menu.Item key="17">
+          <NavLink to="/lessons">
+            <span className="icon">
+              <ProfileOutlined />
+            </span>
+            <span className="label">Lesson</span>
+          </NavLink>
+        </Menu.Item>
         <Menu.Item key="11">
           <NavLink to="/account-information">
             <span className="icon">{profile}</span>

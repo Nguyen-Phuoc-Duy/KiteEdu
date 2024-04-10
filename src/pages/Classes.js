@@ -33,6 +33,7 @@ function Classes() {
   const [classPupilsUpdate, setClassPupilsUpdate] = useState([]);
   const [idClass, setIdClass] = useState();
   const [idPupil, setIdPupil] = useState();
+  const [visible, setVisible] = useState(false);
   const history = useHistory();
   const { accountStore } = useStore();
   const {
@@ -54,6 +55,7 @@ function Classes() {
     removePupilInClass,
     addPupilInClass,
     detailClass,
+    errorMessage,
   } = accountStore;
 
   const handleChangeSelect = (value) => {
@@ -70,8 +72,8 @@ function Classes() {
     setSelectedRecord(record);
     setStatusStates(record.status);
     setName(record.name);
-    setSubject(record.subjectId);
-    setLecturer(record.userId);
+    setSubject(record.subjectName);
+    setLecturer(record.userName);
     setIdClass(record.ID);
     // setStatusPupil(newArrayPupil.status);
     getClassByUser({
@@ -111,7 +113,18 @@ function Classes() {
     //   pupilId: idPupil,
     // });
     getPupilByClass({ ID: idClass });
+    getClassByUser({
+      ID: currentUserInfo.id,
+      role: currentUserInfo.role,
+    });
     setIsModalVisible(false);
+    if (errorMessage) {
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+    }
   };
 
   const handleOk1 = () => {
@@ -140,6 +153,13 @@ function Classes() {
     setIsModalVisible1(false);
     setStatusStates(null);
     // console.log("jkjk", currentUserInfo);
+    if (errorMessage) {
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+    }
   };
 
   const handleCancel = () => {
@@ -202,7 +222,7 @@ function Classes() {
 
     {
       title: "LECTURER",
-      dataIndex: "userId",
+      dataIndex: "userName",
       key: "userId",
       render: (userId) => (
         <>
@@ -215,7 +235,7 @@ function Classes() {
     },
     {
       title: "SUBJECT",
-      dataIndex: "subjectId",
+      dataIndex: "subjectName",
       key: "subjectId",
       render: (subjectId) => (
         <>
@@ -226,7 +246,21 @@ function Classes() {
         </>
       ),
     },
-
+    {
+      title: "SC",
+      dataIndex: "studentsCount",
+      key: "studentsCount",
+      width: "8%",
+      align: "center",
+      render: (studentsCount) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{studentsCount}</Title>
+            <p>{studentsCount}</p>
+          </div>
+        </>
+      ),
+    },
     {
       title: "STATUS",
       dataIndex: "status",
@@ -317,20 +351,33 @@ function Classes() {
       align: "center",
       render: (text, record) => (
         <>
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => handleAddPupil(record.pupilId)}
-          >
-            Add
-          </Button>{" "}
-          <Button
-            type="danger"
-            className="tag-primary"
-            onClick={() => handleRemovePupil(record.pupilId)}
-          >
-            Remove
-          </Button>
+          {currentUserInfo.role === "employee" ? (
+            <>
+              <Button
+                type="primary"
+                className="tag-primary"
+                onClick={() => handleAddPupil(record.pupilId)}
+              >
+                Add
+              </Button>{" "}
+              <Button
+                type="danger"
+                className="tag-primary"
+                onClick={() => handleRemovePupil(record.pupilId)}
+              >
+                Remove
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button type="primary" className="tag-primary" disabled>
+                Add
+              </Button>{" "}
+              <Button type="danger" className="tag-primary" disabled>
+                Remove
+              </Button>
+            </>
+          )}
         </>
       ),
     },
@@ -353,11 +400,21 @@ function Classes() {
     });
     return {
       ...item1,
-      userId: correspondingItem1 ? correspondingItem1.name : null,
-      subjectId: correspondingItem ? correspondingItem.name : null,
+      userName: correspondingItem1 ? correspondingItem1.name : null,
+      subjectName: correspondingItem ? correspondingItem.name : null,
     };
   });
-
+  newArray1.forEach((item) => {
+    console.log("itemitemitemitem", item);
+    if (item.pupils) {
+      const attendedStudents = item.pupils.filter(
+        (pupil) => pupil.status === "attended"
+      );
+      item.studentsCount = attendedStudents.length;
+    } else {
+      item.studentsCount = 0; // Nếu không có mảng pupils, gán studentsCount là 0
+    }
+  });
   const dataArrayD = Array.from(pupilList);
 
   const listPupilByClass = Array.from(PupilByClass);
@@ -378,14 +435,15 @@ function Classes() {
   let optionsUpdate = [];
   let optionsUpdateFinal = [];
 
-  const arrayPupils = dataArrayD.map((itemB) => ({
+  const B = dataArrayD.filter(item => item.status === 'active');
+  const arrayPupils = B.map((itemB) => ({
     label: itemB.name,
     value: itemB.name + " " + itemB.ID,
   }));
 
   options = arrayPupils;
 
-  for (const itemA of dataArrayD) {
+  for (const itemA of B) {
     let found = false;
     for (const itemB of listPupilByClass) {
       if (itemA.ID === itemB.pupilId) {
@@ -404,7 +462,8 @@ function Classes() {
   }));
 
   optionsUpdateFinal = arrayPupilsUpdate;
-
+  console.log('arrayPupilsarrayPupils', arrayPupils, options, optionsUpdate)
+  // console.log("errorMessageerrorMessage", errorMessage);
   useEffect(() => {
     getAllClasses();
     getAllSubjects();
@@ -417,10 +476,23 @@ function Classes() {
     getPupilByClass({
       ID: idClass,
     });
-    createClass();
-    updateClass()
     console.log("detailClass", detailClass);
-  }, [isModalVisible1, isModalVisible, getAllClasses, getAllSubjects, getAllUsers, getAllPupils, getClassByUser, currentUserInfo.id, currentUserInfo.role, getPupilByClass, idClass, detailClass, createClass, updateClass]);
+  }, [
+    isModalVisible1,
+    isModalVisible,
+    getAllClasses,
+    getAllSubjects,
+    getAllUsers,
+    getAllPupils,
+    getClassByUser,
+    currentUserInfo.id,
+    currentUserInfo.role,
+    getPupilByClass,
+    idClass,
+    detailClass,
+    createClass,
+    updateClass,
+  ]);
   return (
     <>
       <div className="tabled">
@@ -431,14 +503,30 @@ function Classes() {
               className="criclebox tablespace mb-24"
               title="INFORMATION CLASSES"
               extra={
-                <Button
-                  type="primary"
-                  className="tag-primary"
-                  onClick={(record) => showModal1(record)}
-                  style={{ align: "right" }}
-                >
-                  Add Class
-                </Button>
+                <>
+                  {errorMessage && (
+                    <Modal
+                      title="Notification"
+                      visible={visible}
+                      footer={null}
+                      onCancel={() => setVisible(false)}
+                    >
+                      <h3>{errorMessage}</h3>
+                    </Modal>
+                  )}
+                  {currentUserInfo.role === "employee" ? (
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      onClick={(record) => showModal1(record)}
+                      style={{ align: "right" }}
+                    >
+                      Add Class
+                    </Button>
+                  ) : (
+                    ""
+                  )}
+                </>
               }
             >
               <div className="table-responsive">
@@ -470,7 +558,7 @@ function Classes() {
       <Modal
         title="DETAIL"
         visible={isModalVisible}
-        onOk={handleOk}
+        onOk={currentUserInfo.role === "employee" ? handleOk : handleCancel}
         onCancel={handleCancel}
         width={1000}
         bodyStyle={{ height: 440 }}

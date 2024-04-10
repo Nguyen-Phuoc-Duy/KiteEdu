@@ -6,6 +6,7 @@ export default class AccountStore {
   currentUserToken = localStorage.getItem("userInfo") || undefined;
   currentUserInfo = undefined;
   errorMessage = undefined;
+  errorCode = undefined;
   userList = {};
   subjectList = {};
   roomList = {};
@@ -17,6 +18,7 @@ export default class AccountStore {
   PupilByLesson = {};
   LessonByClass = {};
   LessonByUser = {};
+  detailLesson = {};
   InforUser = {};
   testMsg = undefined;
   isLoading = false;
@@ -36,7 +38,9 @@ export default class AccountStore {
   /* The above code appears to be a comment block in JavaScript. It is not performing any specific
   action in the code. */
   setIsLoading = (value) => {
-    this.isLoading = value;
+    runInAction(() => {
+      this.isLoading = value;
+    });
   };
 
   login = async (credentials) => {
@@ -145,7 +149,7 @@ export default class AccountStore {
   //     .then((response) => {
   //       runInAction(() => {
   //         this.InforUser = response;
-          
+
   //       });
   //       console.log("Info of User", response.data);
   //     })
@@ -210,19 +214,50 @@ export default class AccountStore {
     });
     this.setIsLoading(false);
   };
-
+  getDetailLesson = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.LessonAction.getDetailLesson(body).then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.detailLesson = response.data;
+          console.log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq123", response);
+        });
+      } else {
+        console.log("q", response.errMsg);
+      }
+    });
+    this.setIsLoading(false);
+  };
+  getDetailClass = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.ClassAction.getDetailClass(body).then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.detailClass = response.data;
+          console.log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq123", response);
+        });
+      } else {
+        console.log("q", response.errMsg);
+      }
+    });
+    this.setIsLoading(false);
+  };
   updateUserInfo = async (newUserInfo) => {
     this.setIsLoading(true);
-    await axiosAgents.AuthAction.updateUserInfo(newUserInfo).then(
-      (response) => {
-        // console.log("Update log", response.token);
-        localStorage.setItem("userInfo", response.token)
-        // runInAction(() => {
-          this.currentUserToken = response.token
-        // })
-      }
-    );
-    // await this.getInforUser();
+    try {
+      await axiosAgents.AuthAction.updateUserInfo(newUserInfo).then(
+        (response) => {
+          console.log("ddddddddddddđ", response);
+          localStorage.setItem("userInfo", response.token);
+          this.errorMessage = response.errMsg;
+          runInAction(() => {
+            this.currentUserToken = response.token;
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Error updating", error);
+    }
     this.setIsLoading(false);
   };
 
@@ -266,32 +301,59 @@ export default class AccountStore {
       console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzze", response);
       if (response && response.errCode === 200) {
         runInAction(() => {
-          this.testMsg = response;
+          this.errorMessage = response.errMsg;
+          this.errorCode = response.errCode;
         });
       } else {
-        this.testMsg = response;
+        runInAction(() => {
+          this.errorMessage = response.errMsg;
+          this.errorCode = response.errCode;
+        });
       }
       await this.getAllSubjects();
     } catch (error) {
       console.error("Error updating subject:", error);
-      this.testMsg = { errCode: 500, errMsg: "System error!" };
     }
     this.setIsLoading(false);
   };
 
   updateRoom = async (body) => {
     this.setIsLoading(true);
-    await axiosAgents.RoomAction.updateRoom(body).then((response) => {
-      console.log("theResponse", response);
-    });
-    await this.getAllRooms();
+    try {
+      const response = await axiosAgents.RoomAction.updateRoom(body);
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
+      await this.getAllRooms();
+    } catch (error) {
+      console.error("Error updating", error);
+    }
     this.setIsLoading(false);
   };
-
+  updatePupil = async (body) => {
+    this.setIsLoading(true);
+    try {
+      const response = await axiosAgents.PupilAction.updatePupil(body);
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
+      await this.getAllPupils();
+    } catch (error) {
+      console.error("Error updating", error);
+    }
+    this.setIsLoading(false);
+  };
   updateClass = async (body) => {
     this.setIsLoading(true);
-    await axiosAgents.ClassAction.updateClass(body).then((response) => {});
-    await this.getAllClasses();
+    try {
+      const response = await axiosAgents.ClassAction.updateClass(body);
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
+      await this.getClassByUser()
+    } catch (error) {
+      console.error("Error updating", error);
+    }
     this.setIsLoading(false);
   };
 
@@ -302,14 +364,6 @@ export default class AccountStore {
     this.setIsLoading(false);
   };
 
-  updatePupil = async (body) => {
-    this.setIsLoading(true);
-    await axiosAgents.PupilAction.updatePupil(body).then((response) => {
-      console.log("theResponse", response);
-    });
-    await this.getAllPupils();
-    this.setIsLoading(false);
-  };
   adminUpdate = async (
     id,
     updateLockedBody,
@@ -358,7 +412,7 @@ export default class AccountStore {
     this.setIsLoading(true);
     await axiosAgents.SubjectAction.createSubject(body).then((response) => {
       console.log("theResponse", response);
-      // this.testMsg = response;
+      this.errorMessage = response.errMsg;
     });
     this.setIsLoading(false);
   };
@@ -367,21 +421,34 @@ export default class AccountStore {
     this.setIsLoading(true);
     await axiosAgents.RoomAction.createRoom(body).then((response) => {
       console.log("theResponse123", response, body);
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
     });
+    await this.getAllRooms();
     this.setIsLoading(false);
   };
 
   createPupil = async (body) => {
     this.setIsLoading(true);
     await axiosAgents.PupilAction.createPupil(body).then((response) => {
-      // console.log("theResponse", response);
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
     });
+    await this.getAllPupils();
     this.setIsLoading(false);
   };
 
   createClass = async (body) => {
     this.setIsLoading(true);
-    await axiosAgents.ClassAction.createClass(body).then((response) => {});
+    await axiosAgents.ClassAction.createClass(body).then((response) => {
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
+    });
+    await this.getClassByUser()
+    await this.getAllClasses()
     this.setIsLoading(false);
   };
   createLesson = async (body) => {

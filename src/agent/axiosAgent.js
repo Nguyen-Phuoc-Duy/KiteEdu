@@ -113,6 +113,9 @@ const ClassAction = {
   addPupilInClass: (body) => {
     return request.post(`/class/addPupilInClass`, body);
   },
+  getDetailClass: (body) => {
+    return request.post(`/class/getDetailClass`, body);
+  },
 };
 
 const LessonAction = {
@@ -124,6 +127,9 @@ const LessonAction = {
   },
   getLessonByUser: (body) => {
     return request.post(`/lesson/getLessonByUser`, body);
+  },
+  getDetailLesson: (body) => {
+    return request.post(`/lesson/getDetailLesson`, body);
   },
   createLesson: (body) => {
     return request.post(`/lesson/createLesson`, body);

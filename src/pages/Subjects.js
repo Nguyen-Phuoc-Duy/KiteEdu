@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import {
   Row,
@@ -24,15 +22,14 @@ const { Option } = Select;
 
 function Subjects() {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [isModalVisibleAdd, setIsModalVisibleAdd] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [statusStates, setStatusStates] = useState(null);
   const [statusStatesAdd, setStatusStatesAdd] = useState(null);
   const [name, setName] = useState(null);
   const [nameAdd, setNameAdd] = useState(null);
-  const [initialRender, setInitialRender] = useState(true); // Biến state để theo dõi render lần đầu
   const history = useHistory();
-  const [messageApi, contextHolder] = message.useMessage();
 
   const { accountStore } = useStore();
   const {
@@ -43,8 +40,9 @@ function Subjects() {
     createSubject,
     currentUserInfo,
     testMsg,
+    errorMessage,
+    errorCode,
   } = accountStore;
-
 
   // Hiển thị modal chỉnh sửa thông tin môn học
   const showModal = (record) => {
@@ -59,41 +57,21 @@ function Subjects() {
     setIsModalVisibleAdd(true);
   };
 
-
   // Xử lý khi nhấn nút OK trên modal chỉnh sửa
   const handleOk = async () => {
-    try {
-      await updateSubject({
-        ID: selectedRecord.ID,
-        status: statusStates,
-        name: name,
-      });
-      setIsModalVisible(false);
-
-      // Lấy thông báo từ testMsg
-      let { errCode, errMsg } = testMsg;
-      console.log(
-        "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",
-        errCode,
-        errMsg,
-        testMsg
-      );
-
-      // Hiển thị thông báo
-      const handleNotification = (code, msg) => {
-        if (code === 200) {
-          messageApi.success(msg); // Thay đổi ở đây
-        } else {
-          messageApi.error(msg); // Thay đổi ở đây
-        }
-      };
-      handleNotification(errCode, errMsg);
-    } catch (error) {
-      console.error("Error updating subject:", error);
-      // Xử lý lỗi khi cập nhật môn học
-      messageApi.error({
-        content: "An error occurred while updating the subject.",
-      });
+    await updateSubject({
+      ID: selectedRecord.ID,
+      status: statusStates,
+      name: name,
+    });
+    setIsModalVisible(false);
+    console.log("errorMessage0", errorMessage);
+    if (errorMessage) {
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
     }
   };
 
@@ -107,6 +85,13 @@ function Subjects() {
     setNameAdd(null);
     setStatusStatesAdd(null);
     getAllSubjects();
+    if (errorMessage) {
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+    }
   };
 
   // Xử lý khi nhấn nút Cancel
@@ -137,12 +122,16 @@ function Subjects() {
 
   // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
   useEffect(() => {
-    // Chỉ gọi hàm getAllSubjects khi render lần đầu hoặc có sự thay đổi từ tạo hoặc cập nhật môn học
-    if (initialRender) {
-      getAllSubjects();
-      setInitialRender(false); // Đánh dấu đã render lần đầu
-    }
-  }, [createSubject, getAllSubjects, initialRender, updateSubject]);
+    getAllSubjects();
+    // if (errorMessage) {
+    //   console.log("errorMessage0", errorMessage);
+    //   setVisible(true); // Hiển thị modal
+    //   const timer = setTimeout(() => {
+    //     setVisible(false); // Ẩn modal sau 3 giây
+    //   }, 1000);
+    //   return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+    // }
+  }, [createSubject, errorMessage, getAllSubjects, updateSubject]);
 
   // Cấu hình cột cho Table
   const columns = [
@@ -239,7 +228,6 @@ function Subjects() {
 
   return (
     <>
-      {contextHolder}
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -249,6 +237,17 @@ function Subjects() {
               title="INFORMATION SUBJECTS"
               extra={
                 <>
+                  {errorMessage && (
+                    <Modal
+                      title="Notification"
+                      visible={visible}
+                      footer={null}
+                      onCancel={() => setVisible(false)}
+                    >
+                      <h3>{errorMessage}</h3>
+                    </Modal>
+                  )}
+
                   <Button
                     type="primary"
                     className="tag-primary"
@@ -257,16 +256,16 @@ function Subjects() {
                   >
                     Add Subject
                   </Button>
-  
                 </>
               }
             >
               <div className="table-responsive">
                 <Table
                   columns={
-                    currentUserInfo.role === "employee"
-                      ? columnsEmployee
-                      : columns
+                    // currentUserInfo.role === "employee"
+                    //   ? columnsEmployee
+                    //   : 
+                      columns
                   }
                   dataSource={dataA}
                   pagination={false}

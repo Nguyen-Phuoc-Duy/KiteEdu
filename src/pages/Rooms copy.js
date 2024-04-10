@@ -17,63 +17,56 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Title } = Typography;
 const { Option } = Select;
 
-function Subjects() {
+function Rooms() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible1, setIsModalVisible1] = useState(false);
-  const [visible, setVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [statusStates, setStatusStates] = useState(null);
   const [name, setName] = useState(null);
   const [statusStates1, setStatusStates1] = useState(null);
   const [name1, setName1] = useState(null);
+  const [visible, setVisible] = useState(false);
   const history = useHistory();
 
-  const { accountStore } = useStore();
-  const {
-    isLoading,
-    getAllSubjects,
-    updateSubject,
-    createSubject,
-    currentUserInfo,
-    errorMessage,
-    updateRoom,
-    roomList,
-    getAllRooms,
-    createRoom,
-  } = accountStore;
-
-  // Hiển thị modal chỉnh sửa thông tin môn học
   const showModal = (record) => {
     setSelectedRecord(record);
     setStatusStates(record.status);
     setName(record.name);
     setIsModalVisible(true);
   };
-
-  // Hiển thị modal thêm môn học
   const showModal1 = (record) => {
     setIsModalVisible1(true);
   };
+  const { accountStore } = useStore();
+  const {
+    isLoading,
+    subjectList,
+    getAllSubjects,
+    updateSubject,
+    updateRoom,
+    roomList,
+    getAllRooms,
+    createRoom,
+    currentUserInfo,
+    errorMessageR,
+  } = accountStore;
 
-  // Xử lý khi nhấn nút OK trên modal chỉnh sửa
-  const handleOk = async () => {
-    await updateRoom({
+  const handleOk = () => {
+    updateRoom({
       ID: selectedRecord.ID,
       status: statusStates,
       name: name,
     });
     setIsModalVisible(false);
-    console.log("errorMessage0", errorMessage);
-    if (errorMessage) {
+    if (errorMessageR) {
+      console.log("errorMessage2", errorMessageR);
       setVisible(true); // Hiển thị modal
       const timer = setTimeout(() => {
         setVisible(false); // Ẩn modal sau 3 giây
       }, 1000);
-      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessageR thay đổi
     }
   };
-
-  // Xử lý khi nhấn nút OK trên modal thêm
   const handleOk1 = () => {
     createRoom({
       status: statusStates1,
@@ -82,57 +75,38 @@ function Subjects() {
     setIsModalVisible1(false);
     setName1(null);
     setStatusStates1(null);
-
-    if (errorMessage) {
+    getAllRooms();
+    console.log("errorMessage1", errorMessageR);
+    if (errorMessageR) {
       setVisible(true); // Hiển thị modal
       const timer = setTimeout(() => {
         setVisible(false); // Ẩn modal sau 3 giây
       }, 1000);
-      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessageR thay đổi
     }
   };
 
-  // Xử lý khi nhấn nút Cancel
   const handleCancel = () => {
     setIsModalVisible(false);
     setIsModalVisible1(false);
+    console.log("currentUserInfo", currentUserInfo.role);
   };
 
-  // Xử lý thay đổi trạng thái môn học
   const handleChange = (value) => {
     setStatusStates(value);
   };
 
-  // Xử lý thay đổi tên môn học
   const handleChangeName = (value) => {
     setName(value);
   };
 
-  // Xử lý thay đổi trạng thái khi thêm môn học
-  const handleChangeAdd = (value) => {
+  const handleChange1 = (value) => {
     setStatusStates1(value);
   };
 
-  // Xử lý thay đổi tên môn học khi thêm môn học
   const handleChangeName1 = (value) => {
     setName1(value);
   };
-
-  // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
-  useEffect(() => {
-    getAllRooms();
-  }, [
-    createSubject,
-    errorMessage,
-    getAllRooms,
-    getAllSubjects,
-    updateSubject,
-    createRoom,
-    updateRoom,
-    isModalVisible,
-    isModalVisible1,
-  ]);
-
   const columns = [
     {
       title: "NAME",
@@ -230,8 +204,18 @@ function Subjects() {
       ),
     },
   ];
+  useEffect(() => {
+    getAllRooms();
+    if (errorMessageR) {
+      console.log("errorMessage0", errorMessageR);
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessageR thay đổi
+    }
+  }, [isModalVisible1, isModalVisible, getAllRooms, errorMessageR]);
 
-  // Chuyển đổi dữ liệu thành mảng và sắp xếp lại theo thứ tự
   const dataA = Array.from(roomList);
   const dataArray = dataA.map((user) => {
     const order = ["ID", "name", "status", "createdAt", "updatedAt"];
@@ -245,6 +229,7 @@ function Subjects() {
 
     return sortedUser;
   });
+
   return (
     <>
       <div className="tabled">
@@ -256,20 +241,21 @@ function Subjects() {
               title="INFORMATION ROOMS"
               extra={
                 <>
-                  {errorMessage && (
+                {errorMessageR && (
                     <Modal
                       title="Notification"
                       visible={visible}
                       footer={null}
                       onCancel={() => setVisible(false)}
                     >
-                      <h3>{errorMessage}</h3>
+                      <p>{errorMessageR}</p>
                     </Modal>
                   )}
-
+                  
                   <Button
                     type="primary"
                     className="tag-primary"
+                    // onClick={() => history.push("/create-room")}
                     onClick={(record) => showModal1(record)}
                     style={{ align: "right" }}
                   >
@@ -281,14 +267,12 @@ function Subjects() {
               <div className="table-responsive">
                 <Table
                   columns={
-                    // currentUserInfo.role === "employee"
-                    //   ? columnsEmployee
-                    //   : 
-                      columns
+                    currentUserInfo.role == "employee"
+                      ? columnsEmployee
+                      : columns
                   }
                   dataSource={dataArray}
                   pagination={false}
-                  rowKey={(record) => record.ID}
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
@@ -300,7 +284,6 @@ function Subjects() {
         </Row>
       </div>
 
-      {/* Modal chỉnh sửa */}
       <Modal
         title="EDIT"
         visible={isModalVisible}
@@ -341,7 +324,6 @@ function Subjects() {
           </>
         )}
       </Modal>
-
       <Modal
         title="ADD"
         visible={isModalVisible1}
@@ -355,6 +337,7 @@ function Subjects() {
               <div className="author-info">
                 <Title level={5}>Room</Title>
                 <Input
+                  // value={name1}
                   rules={[
                     {
                       required: true,
@@ -373,10 +356,10 @@ function Subjects() {
                 <Select
                   style={{ width: 120 }}
                   onChange={(value) => {
-                    handleChangeAdd(value);
+                    handleChange1(value);
                   }}
                   rules={[{ required: true, message: "Please input status!" }]}
-                  value={statusStates1 || "active"}
+                  value={statusStates1 || "empty"}
                   disabled
                 >
                   <Option value="empty">empty</Option>
@@ -392,4 +375,4 @@ function Subjects() {
   );
 }
 
-export default observer(Subjects);
+export default observer(Rooms);

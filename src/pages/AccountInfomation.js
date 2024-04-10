@@ -10,50 +10,86 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 import React from "react";
-import { Button, Card, Form, Input, Row, Col, Select, DatePicker } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Row,
+  Col,
+  Select,
+  DatePicker,
+  Modal,
+  Typography,
+} from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn"; //en_US
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../stores/store";
-
+const { Title } = Typography;
 const { Option } = Select;
 
 const AccountInformation = () => {
   const { accountStore } = useStore();
-  const {
-    currentUserInfo,
-    updateUserInfo,
-    isLoading,
-  } = accountStore;
-  const [gender, setGender] = useState(currentUserInfo.gender === true ? "Nam" : "Nữ");
+  const [visible, setVisible] = useState(false);
+  const { currentUserInfo, updateUserInfo, isLoading, errorMessage } =
+    accountStore;
+  const [gender, setGender] = useState(
+    currentUserInfo.gender === true ? "Nam" : "Nữ"
+  );
   useEffect(() => {
-    setGender(currentUserInfo.gender)
-  }, [currentUserInfo]);
+    if (currentUserInfo) {
+      setGender(currentUserInfo.gender);
+    }
+
+    // Kiểm tra errorMessage chỉ khi dữ liệu đã tải lần đầu tiên và không đang trong quá trình tải
+    if (errorMessage && isLoading && currentUserInfo) {
+      setVisible(true);
+      const timer = setTimeout(() => {
+        setVisible(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentUserInfo, errorMessage, isLoading]);
+
   const onFinish = (values) => {
-    console.log("VVVVVVVVVVVVVVVVVVVVVV", values);
     updateUserInfo({
       ...values,
       ID: currentUserInfo.id,
-      
     });
-
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
-  const onGenderChange = (value) => {setGender(value)};
-  
+  const onGenderChange = (value) => {
+    setGender(value);
+  };
+
   return (
     <>
       <div className="layout-default  layout-sign-up">
         <Card
           loading={isLoading}
           className=" header-solid h-full ant-card pt-0"
-          title={<h5>ACCOUNT INFORMATION</h5>}
+          title={<h1>ACCOUNT INFORMATION</h1>}
           bordered={true}
+          extra={
+            <>
+              {errorMessage && (
+                <Modal
+                  title="Notification"
+                  visible={visible}
+                  footer={null}
+                  onCancel={() => setVisible(false)}
+                >
+                  <h3>{errorMessage}</h3>
+                </Modal>
+              )}
+            </>
+          }
         >
           <Form
             name="basic"
@@ -104,6 +140,10 @@ const AccountInformation = () => {
                   label="E-mail"
                   rules={[
                     {
+                      pattern: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/,
+                      message: "The input is not a valid email!",
+                    },
+                    {
                       required: true,
                       message: "Please input email!",
                     },
@@ -142,7 +182,7 @@ const AccountInformation = () => {
               </Col>
               <Col span={6}>
                 <Form.Item name="gender" label="Gender">
-                  <Select placeholder="Gender" onChange={onGenderChange} >
+                  <Select placeholder="Gender" onChange={onGenderChange}>
                     <Option value="true">Nam</Option>
                     <Option value="false">Nữ</Option>
                   </Select>
@@ -169,32 +209,43 @@ const AccountInformation = () => {
                   <DatePicker />
                 </Form.Item>
               </Col>
+              <Col span={24} style={{ display: "flex", alignItems: "center" }}>
+                <Title
+                  level={4}
+                  style={{ marginRight: "10px", marginBottom: "0" }}
+                >
+                  Change Password
+                </Title>
+                <p style={{ color: "red", marginBottom: "0" }}>
+                  *Leave blank to keep the same password
+                </p>
+              </Col>
 
-              {/* <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="password"
                   label="Password"
-                  rules={[
-                    { required: true, message: "Please input password!" },
-                  ]}
+                  // rules={[
+                  //   { required: true, message: "Please input password!" },
+                  // ]}
                 >
                   <Input.Password placeholder="Password" />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="confirmPassword"
                   label="Confirm Password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input confirm password!",
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: "Please input confirm password!",
+                  //   },
+                  // ]}
                 >
                   <Input.Password placeholder="Confirm Password" />
                 </Form.Item>
-              </Col> */}
+              </Col>
               <Col span={8}></Col>
               <Col span={4}>
                 <Form.Item>

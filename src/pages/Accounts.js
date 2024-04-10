@@ -77,13 +77,13 @@ function Accounts() {
       {
         ID: selectedRecord.ID,
         role: roleState,
-      },
-      // updateUserSubject(
-      {
-        ID: selectedRecord.ID,
-        subjectId: subjectState,
-        role: selectedRecord.role,
       }
+      // updateUserSubject(
+      // {
+      //   ID: selectedRecord.ID,
+      //   subjectId: subjectState,
+      //   role: selectedRecord.role,
+      // }
       // )
     );
     // console.log("hhhhhhhhhhhhhhhh", selectedRecord.ID, subjectState, roleState);
@@ -112,6 +112,7 @@ function Accounts() {
       dataIndex: "name",
       key: "name",
       fixed: "left",
+      width: "15%",
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -135,6 +136,7 @@ function Accounts() {
       title: "EMAIL",
       dataIndex: "email",
       key: "email",
+      width: "15%",
       render: (email) => <Title level={5}>{email}</Title>,
     },
     {
@@ -424,9 +426,10 @@ function Accounts() {
               <div className="table-responsive">
                 <Table
                   columns={
-                    currentUserInfo.role == "employee"
-                      ? columnsEmployee
-                      : columns
+                    // currentUserInfo.role == "employee"
+                    //   ? columnsEmployee
+                    //   : 
+                      columns
                   }
                   dataSource={filteredArray}
                   pagination={false}

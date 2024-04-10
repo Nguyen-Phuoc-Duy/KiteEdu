@@ -80,7 +80,9 @@ const SignIn = () => {
               lg={{ span: 6, offset: 2 }}
               md={{ span: 12 }}
             >
+              
               <Title className="mb-15">Sign In</Title>
+              
               <Form
                 onFinish={handleSubmit}
                 // onFinishFailed={onFinishFailed}
@@ -120,11 +122,8 @@ const SignIn = () => {
                   className="aligin-center"
                   valuePropName="checked"
                 >
-                  {/* <Switch defaultChecked onChange={onChange} />
-                  Remember me */}
+                  {errorMessage && <h3>{errorMessage}</h3>}
                 </Form.Item>
-
-                {errorMessage && <p>{errorMessage}</p>}
 
                 <Form.Item>
                   <Button

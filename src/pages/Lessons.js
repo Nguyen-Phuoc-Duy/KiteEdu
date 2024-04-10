@@ -38,7 +38,7 @@ function Lessons() {
   const [classname, setClassName] = useState(null);
   const [content, setContent] = useState(null);
   const [contentCreate, setContentCreate] = useState(null);
-
+  const [lecturer, setLecturer] = useState(null);
   const [subject, setSubject] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [name1, setName1] = useState(null);
@@ -46,13 +46,15 @@ function Lessons() {
   const [idClass, setIdClass] = useState();
   const history = useHistory();
 
-  const showModal = (record, text) => {
-    setIdClass(record?.ID);
+  const showModal = (record) => {
+    setIdClass(record?.classId);
     console.log(
       "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
       record?.ID,
-      idClass
+      idClass,
+      record.classId
     );
+    getDetailLesson({ ID: record.ID });
     console.log("record", JSON.parse(JSON.stringify(record?.pupils)));
     setSelectedRecord(record);
     setArr(JSON.parse(JSON.stringify(record?.pupils)));
@@ -63,20 +65,20 @@ function Lessons() {
     setName(record.name);
     setContent(record.content);
     setSubject(record.subjectId);
-    // setLecturer(record.userId);
-    setRoom(record.roomId);
+    setLecturer(record.userName);
+    setRoom(record.roomName);
     setIdLesson(JSON.parse(JSON.stringify(record?.ID)));
 
-    setClassName(record.classId);
+    setClassName(record.className);
     setTimeStart(moment.parseZone(record.timeStart));
     setTimeFinish(moment.parseZone(record.timeFinish));
     setIsModalVisible(true);
     getPupilByClass({
-      ID: location.state,
+      ID: record.classId || location.state,
       // lessonId: idLesson,
     });
     getPupilByLesson({
-      classId: location.state,
+      classId: record.classId || location.state,
       lessonId: record?.ID,
     });
     console.log("recordbfdbfhtrfh", record, timeFinish);
@@ -125,6 +127,8 @@ function Lessons() {
     getPupilByLesson,
     LessonByUser,
     getLessonByUser,
+    getDetailLesson,
+    detailLesson,
   } = accountStore;
 
   const handleOk = () => {
@@ -172,14 +176,15 @@ function Lessons() {
   };
 
   const handlePresentPupil = async (value) => {
+    console.log('idClassidClass', idClass)
     await presentPupilInClass({
-      classId: location.state,
+      classId: idClass || location.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "present",
     });
-    console.log("value7777777777777777777777777777777", value);
+    console.log("value7777777777777777777777777777777", value, idClass);
     // await updatePupilStatusInClass({
     //   classId: location.state,
     //   pupilId: value.ID,
@@ -188,11 +193,11 @@ function Lessons() {
     //   userId: currentUserInfo.id,
     // });
     await getPupilByClass({
-      ID: location.state,
+      ID: idClass || location.state,
       //  lessonId: idLesson
     });
     await getPupilByLesson({
-      classId: location.state,
+      classId: idClass || location.state,
       lessonId: idLesson,
     });
   };
@@ -200,17 +205,17 @@ function Lessons() {
     console.log("1111111111111111111111111111111", value);
 
     await presentPupilInClass({
-      classId: location.state,
+      classId: idClass ||location.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "absent",
     });
     await getPupilByClass({
-      ID: location.state,
+      ID: idClass ||location.state,
     });
     await getPupilByLesson({
-      classId: location.state,
+      classId: idClass ||location.state,
       lessonId: idLesson,
     });
   };
@@ -218,17 +223,17 @@ function Lessons() {
     console.log("1111111111111111111111111111111", value);
 
     await presentPupilInClass({
-      classId: location.state,
+      classId: idClass ||location.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "tardy",
     });
     await getPupilByClass({
-      ID: location.state,
+      ID: idClass ||location.state,
     });
     await getPupilByLesson({
-      classId: location.state,
+      classId: idClass ||location.state,
       lessonId: idLesson,
     });
   };
@@ -236,17 +241,17 @@ function Lessons() {
     console.log("1111111111111111111111111111111", value);
 
     await presentPupilInClass({
-      classId: location.state,
+      classId: idClass ||location.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "excused",
     });
     await getPupilByClass({
-      ID: location.state,
+      ID: idClass ||location.state,
     });
     await getPupilByLesson({
-      classId: location.state,
+      classId: idClass ||location.state,
       lessonId: idLesson,
     });
   };
@@ -306,7 +311,7 @@ function Lessons() {
     },
     {
       title: "LECTURER",
-      dataIndex: "userId",
+      dataIndex: "userName",
       key: "userId",
       render: (userId) => (
         <>
@@ -319,7 +324,7 @@ function Lessons() {
     },
     {
       title: "CLASS",
-      dataIndex: "classId",
+      dataIndex: "className",
       key: "classId",
       render: (classId) => (
         <>
@@ -332,7 +337,7 @@ function Lessons() {
     },
     {
       title: "ROOM",
-      dataIndex: "roomId",
+      dataIndex: "roomName",
       key: "roomId",
       render: (roomId) => (
         <>
@@ -343,7 +348,21 @@ function Lessons() {
         </>
       ),
     },
-
+    {
+      title: "SC",
+      dataIndex: "studentsCount",
+      key: "studentsCount",
+      width: "8%",
+      align: "center",
+      render: (studentsCount) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{studentsCount}</Title>
+            <p>{studentsCount}</p>
+          </div>
+        </>
+      ),
+    },
     {
       title: "TIME START",
       dataIndex: "timeStart",
@@ -402,7 +421,7 @@ function Lessons() {
             onClick={() => showModal(record, record?.pupils)}
           >
             Detail
-            {/* {record.ID} */}
+            {/* {record.classId} */}
           </Button>
         </>
       ),
@@ -454,84 +473,217 @@ function Lessons() {
         <>
           {record?.status === "not attend" ? (
             <>
-              <Button type="primary" className="tag-primary" disabled>
-                Present
-              </Button>{" "}
-              <Button type="danger" className="tag-primary" disabled>
-                Absent
-              </Button>{" "}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "0.5em",
+                  }}
+                >
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    disabled
+                    size={"small"}
+                    style={{
+                      flex: 1,
+                      marginRight: "0.5em",
+                    }}
+                  >
+                    Present
+                  </Button>{" "}
+                  <Button
+                    type="danger"
+                    className="tag-primary"
+                    disabled
+                    size={"small"}
+                    style={{
+                      flex: 1,
+                    }}
+                  >
+                    Absent
+                  </Button>
+                </div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    size={"small"}
+                    disabled
+                    style={{
+                      flex: 1,
+                      marginRight: "0.5em",
+                    }}
+                  >
+                    Tardy
+                  </Button>{" "}
+                  <Button
+                    type="danger"
+                    className="tag-primary"
+                    size={"small"}
+                    disabled
+                    style={{
+                      flex: 1,
+                    }}
+                  >
+                    Excused
+                  </Button>
+                </div>
+              </div>
             </>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "0.5em",
-                }}
-              >
-                <Button
-                  type="primary"
-                  className="tag-primary"
-                  onClick={() => handlePresentPupil(record)}
-                  size={"small"}
-                  style={{
-                    flex: 1,
-                    background: "green",
-                    borderColor: "green",
-                    color: "white",
-                    marginRight: "0.5em",
-                  }}
-                >
-                  Present
-                </Button>{" "}
-                <Button
-                  type="danger"
-                  className="tag-primary"
-                  onClick={() => handleAbsentPupil(record)}
-                  size={"small"}
-                  style={{
-                    flex: 1,
-                    background: "red",
-                    borderColor: "red",
-                    color: "white",
-                  }}
-                >
-                  Absent
-                </Button>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Button
-                  type="primary"
-                  className="tag-primary"
-                  size={"small"}
-                  onClick={() => handleTardyPupil(record)}
-                  style={{
-                    flex: 1,
-                    background: "orange",
-                    borderColor: "orange",
-                    color: "white",
-                    marginRight: "0.5em",
-                  }}
-                >
-                  Tardy
-                </Button>{" "}
-                <Button
-                  type="danger"
-                  className="tag-primary"
-                  size={"small"}
-                  onClick={() => handleExcusedPupil(record)}
-                  style={{
-                    flex: 1,
-                    background: "blue",
-                    borderColor: "blue",
-                    color: "white",
-                  }}
-                >
-                  Excused
-                </Button>
-              </div>
-            </div>
+            <>
+              {currentUserInfo.role == "employee" ? (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "0.5em",
+                    }}
+                  >
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      onClick={() => handlePresentPupil(record)}
+                      size={"small"}
+                      style={{
+                        flex: 1,
+                        background: "green",
+                        borderColor: "green",
+                        color: "white",
+                        marginRight: "0.5em",
+                      }}
+                    >
+                      Present
+                    </Button>{" "}
+                    <Button
+                      type="danger"
+                      className="tag-primary"
+                      onClick={() => handleAbsentPupil(record)}
+                      size={"small"}
+                      style={{
+                        flex: 1,
+                        background: "red",
+                        borderColor: "red",
+                        color: "white",
+                      }}
+                    >
+                      Absent
+                    </Button>
+                  </div>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      size={"small"}
+                      onClick={() => handleTardyPupil(record)}
+                      style={{
+                        flex: 1,
+                        background: "orange",
+                        borderColor: "orange",
+                        color: "white",
+                        marginRight: "0.5em",
+                      }}
+                    >
+                      Tardy
+                    </Button>{" "}
+                    <Button
+                      type="danger"
+                      className="tag-primary"
+                      size={"small"}
+                      onClick={() => handleExcusedPupil(record)}
+                      style={{
+                        flex: 1,
+                        background: "blue",
+                        borderColor: "blue",
+                        color: "white",
+                      }}
+                    >
+                      Excused
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "0.5em",
+                    }}
+                  >
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      disabled
+                      size={"small"}
+                      style={{
+                        flex: 1,
+                        background: "green",
+                        borderColor: "green",
+                        color: "white",
+                        marginRight: "0.5em",
+                      }}
+                    >
+                      Present
+                    </Button>{" "}
+                    <Button
+                      type="danger"
+                      className="tag-primary"
+                      disabled
+                      size={"small"}
+                      style={{
+                        flex: 1,
+                        background: "red",
+                        borderColor: "red",
+                        color: "white",
+                      }}
+                    >
+                      Absent
+                    </Button>
+                  </div>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      size={"small"}
+                      disabled
+                      style={{
+                        flex: 1,
+                        background: "orange",
+                        borderColor: "orange",
+                        color: "white",
+                        marginRight: "0.5em",
+                      }}
+                    >
+                      Tardy
+                    </Button>{" "}
+                    <Button
+                      type="danger"
+                      className="tag-primary"
+                      size={"small"}
+                      disabled
+                      style={{
+                        flex: 1,
+                        background: "blue",
+                        borderColor: "blue",
+                        color: "white",
+                      }}
+                    >
+                      Excused
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </>
       ),
@@ -635,7 +787,9 @@ function Lessons() {
   const dataArrayD = Array.from(pupilList);
 
   const dataArrayE = Array.from(roomList);
+  const dataArrayG = Array.from(detailLesson);
 
+  console.log("dataArrayG", JSON.parse(JSON.stringify(detailLesson)));
   const listPupilByClass = Array.from(PupilByClass);
   let listPupilByClassArray = listPupilByClass.map((item1) => {
     let correspondingItem1 = dataArrayD.find((item2) => {
@@ -664,6 +818,7 @@ function Lessons() {
       pupilName: correspondingItem1 ? correspondingItem1.name : null,
     };
   });
+
   console.log("newArrayPupilnewArrayPupil", newArrayPupil1, listPupilByClass1);
   let newArrayPupil = listPupilByClass1.map((item1) => {
     // Tìm phần tử tương ứng trong Array2
@@ -784,14 +939,67 @@ function Lessons() {
 
     return {
       ...item1,
-      userId: correspondingItem1 ? correspondingItem1.name : null,
-      classId: correspondingItem2 ? correspondingItem2.name : null,
-      roomId: correspondingItem3 ? correspondingItem3.name : null,
+      userName: correspondingItem1 ? correspondingItem1.name : null,
+      className: correspondingItem2 ? correspondingItem2.name : null,
+      roomName: correspondingItem3 ? correspondingItem3.name : null,
     };
   });
+  newArrayLessonAll.forEach((lesson) => {
+    if (
+      lesson &&
+      lesson.hasOwnProperty("pupils") &&
+      lesson.hasOwnProperty("pupilsSum")
+    ) {
+      const presentStudents = lesson.pupils.filter(
+        (pupil) => pupil.status === "present" || pupil.status === "tardy"
+      );
+      const attendedStudents = lesson.pupilsSum.filter(
+        (pupil) => pupil.status === "attended"
+      );
 
+      lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
+    } else {
+      const presentStudents = lesson.pupils.filter(
+        (pupil) => pupil.status === "present" || pupil.status === "tardy"
+      );
+      const attendedStudents = lesson.pupilsSum.filter(
+        (pupil) => pupil.status === "attended"
+      );
+      lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
+    }
+
+    console.log("Lesson:", lesson);
+  });
+  console.log("vv", newArrayLessonAll);
+  // newArrayLessonAll.forEach((lesson) => {
+  //   if (
+  //     lesson &&
+  //     lesson.hasOwnProperty("pupils") &&
+  //     lesson.hasOwnProperty("pupilsSum")
+  //   ) {
+
+  //     const presentStudents = lesson.pupils.filter(
+  //       (pupil) => pupil.status === "present" || pupil.status === "tardy"
+  //     );
+  //     const attendedStudents = lesson.pupilsSum.filter(
+  //       (pupil) => pupil.status === "attended"
+  //     );
+
+  //     lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
+  //   } else {
+  //     const presentStudents = lesson.pupils.filter(
+  //       (pupil) => pupil.status === "present" || pupil.status === "tardy"
+  //     );
+  //     const attendedStudents = lesson.pupilsSum.filter(
+  //       (pupil) => pupil.status === "attended"
+  //     );
+  //     lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
+  //   }
+
+  //   console.log("Lesson:", lesson);
+  // });
   const dataArray0 = Array.from(LessonByClass);
-
+  console.log("dataArray0dataArray0", dataArray0);
   let newArrayLesson = dataArray0.map((item1) => {
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayC.find((item2) => {
@@ -806,12 +1014,39 @@ function Lessons() {
 
     return {
       ...item1,
-      userId: correspondingItem1 ? correspondingItem1.name : null,
-      classId: correspondingItem2 ? correspondingItem2.name : null,
-      roomId: correspondingItem3 ? correspondingItem3.name : null,
+      userName: correspondingItem1 ? correspondingItem1.name : null,
+      className: correspondingItem2 ? correspondingItem2.name : null,
+      roomName: correspondingItem3 ? correspondingItem3.name : null,
     };
   });
-  // console.log("first", newArrayLesson);
+
+  newArrayLesson.forEach((lesson) => {
+    if (
+      lesson &&
+      lesson.hasOwnProperty("pupils") &&
+      lesson.hasOwnProperty("pupilsSum")
+    ) {
+      const presentStudents = lesson.pupils.filter(
+        (pupil) => pupil.status === "present" || pupil.status === "tardy"
+      );
+      const attendedStudents = lesson.pupilsSum.filter(
+        (pupil) => pupil.status === "attended"
+      );
+
+      lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
+    } else {
+      const presentStudents = lesson.pupils.filter(
+        (pupil) => pupil.status === "present" || pupil.status === "tardy"
+      );
+      const attendedStudents = lesson.pupilsSum.filter(
+        (pupil) => pupil.status === "attended"
+      );
+      lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
+    }
+
+    console.log("Lesson:", lesson);
+  });
+
   const onChange123S = (value, dateString) => {
     setTimeStart(moment.parseZone(dateString).format("HH:mm DD-MM-YYYY"));
   };
@@ -859,7 +1094,7 @@ function Lessons() {
       ID: currentUserInfo.id,
       role: currentUserInfo.role,
     });
-    getLessonByUser();
+    getLessonByUser({ ID: currentUserInfo.id });
     // getPupilByClass({
     //   // ID: idClass,
     //   ID: location.state,
@@ -889,108 +1124,62 @@ function Lessons() {
 
   return (
     <>
-      {currentUserInfo.id !== "employee" ? (
-        <div className="tabled">
-          <Row gutter={[24, 0]}>
-            <Col xs="24" xl={24}>
-              <Card
-                bordered={true}
-                className="criclebox tablespace mb-24"
-                title="INFORMATION LESSON"
-                extra={
-                  <Button
-                    type="primary"
-                    className="tag-primary"
-                    onClick={(record) => showModal1(record)}
-                    style={{ align: "right" }}
-                  >
-                    Add Lesson
-                  </Button>
-                }
-              >
-                <div className="table-responsive">
-                  <Table
-                    columns={columns}
-                    dataSource={
-                      location.state == null
-                        ? newArrayLessonAll
-                        : newArrayLesson
-                    }
-                    pagination={false}
-                    className="ant-border-space"
-                    loading={isLoading}
-                    bordered
-                    scroll={{ x: 1600, y: 415 }}
-                    // title={() => (
-                    //   <Button
-                    //     type="primary"
-                    //     className="tag-primary"
-                    //     onClick={(record) => showModal1(record)}
-                    //     style={{ align: "right" }}
-                    //   >
-                    //     Add Class
-                    //   </Button>
-                    // )}
-                  />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      ) : (
-        <div className="tabled">
-          <Row gutter={[24, 0]}>
-            <Col xs="24" xl={24}>
-              <Card
-                bordered={true}
-                className="criclebox tablespace mb-24"
-                title="INFORMATION LESSON"
-                extra={
-                  <Button
-                    type="primary"
-                    className="tag-primary"
-                    onClick={(record) => showModal1(record)}
-                    style={{ align: "right" }}
-                  >
-                    Add Lesson
-                  </Button>
-                }
-              >
-                <div className="table-responsive">
-                  <Table
-                    columns={columns}
-                    dataSource={
-                      location.state == null
-                        ? newArrayLessonAll
-                        : newArrayLesson
-                    }
-                    pagination={false}
-                    className="ant-border-space"
-                    loading={isLoading}
-                    bordered
-                    scroll={{ x: 1600, y: 415 }}
-                    // title={() => (
-                    //   <Button
-                    //     type="primary"
-                    //     className="tag-primary"
-                    //     onClick={(record) => showModal1(record)}
-                    //     style={{ align: "right" }}
-                    //   >
-                    //     Add Class
-                    //   </Button>
-                    // )}
-                  />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      )}
+      <div className="tabled">
+        <Row gutter={[24, 0]}>
+          <Col xs="24" xl={24}>
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="INFORMATION LESSON"
+              extra={
+                <>
+                  {currentUserInfo.role === "employee" ? (
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      onClick={(record) => showModal1(record)}
+                      style={{ align: "right" }}
+                    >
+                      Add Lesson
+                    </Button>
+                  ) : (
+                    ""
+                  )}
+                </>
+              }
+            >
+              <div className="table-responsive">
+                <Table
+                  columns={columns}
+                  dataSource={
+                    location.state == null ? newArrayLessonAll : newArrayLesson
+                  }
+                  pagination={false}
+                  className="ant-border-space"
+                  loading={isLoading}
+                  bordered
+                  scroll={{ x: 1600, y: 415 }}
+                  // title={() => (
+                  //   <Button
+                  //     type="primary"
+                  //     className="tag-primary"
+                  //     onClick={(record) => showModal1(record)}
+                  //     style={{ align: "right" }}
+                  //   >
+                  //     Add Class
+                  //   </Button>
+                  // )}
+                />
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
 
       <Modal
         title="DETAIL"
         visible={isModalVisible}
-        onOk={handleOk}
+        onOk={currentUserInfo.role === "employee" ? handleOk : handleCancel}
         onCancel={handleCancel}
         width={1000}
       >
@@ -1061,7 +1250,7 @@ function Lessons() {
               <Col span={6}>
                 <div className="author-info">
                   <Title level={5}>Lecturer</Title>
-                  <Input value={currentUserInfo.name} disabled={true} />
+                  <Input value={lecturer} disabled={true} />
                 </div>
               </Col>
               {/* <Col span={6}>

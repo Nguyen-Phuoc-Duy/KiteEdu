@@ -10,7 +10,7 @@
   * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 import { useState, useEffect } from "react";
-
+import { Pie } from '@ant-design/plots';
 import {
   Card,
   Col,
@@ -312,6 +312,31 @@ function Home() {
       ),
     },
   ];
+  const data = [
+    { type: '分类一', value: 27 },
+    { type: '分类二', value: 25 },
+    { type: '分类三', value: 18 },
+    { type: '分类四', value: 15 },
+    { type: '分类五', value: 10 },
+    { type: '其他', value: 5 },
+  ];
+  const config = {
+    data,
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.8,
+    label: {
+      text: (d) => `${d.type}\n ${d.value}`,
+      position: 'spider',
+    },
+    legend: {
+      color: {
+        title: false,
+        position: 'right',
+        rowPadding: 5,
+      },
+    },
+  };
 
   const timelineList = [
     {
@@ -363,6 +388,7 @@ function Home() {
 
   return (
     <>
+    {/* <Pie {...config} /> */}
       <div className="layout-content">
         <Row className="rowgap-vbox" gutter={[24, 0]}>
           {count.map((c, index) => (
