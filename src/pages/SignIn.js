@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "../stores/store";
 import { Link, useHistory } from "react-router-dom";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import {
   Layout,
   Menu,
@@ -11,6 +12,7 @@ import {
   Form,
   Input,
   Switch,
+  Modal,
 } from "antd";
 import Kite from "../assets/images/Kite.png";
 import KiteEduLgo from "../assets/images/KiteEduLogo.jpg";
@@ -25,18 +27,15 @@ import { observer } from "mobx-react-lite";
 const SignIn = () => {
   const { Title } = Typography;
   const { Header, Footer, Content } = Layout;
-
+  const [visible, setVisible] = useState(false);
+  const [visible1, setVisible1] = useState(false);
   const { accountStore } = useStore();
-  const { login, errorMessage } = accountStore;
-
+  const { login, errorMessageLogin } = accountStore;
+  const [errorMessage1, seterrorMessage1] = useState("");
   // const onFinish = async (values) => {
   //   console.log(values);
   //   //await axiosAgents.AuthAction.login({});
   // };
-
-  // useEffect(() => {
-  //   localStorage.removeItem("userInfo");
-  // }, []);
 
   const handleSubmit = async (values) => {
     const credentials = {
@@ -80,9 +79,8 @@ const SignIn = () => {
               lg={{ span: 6, offset: 2 }}
               md={{ span: 12 }}
             >
-              
               <Title className="mb-15">Sign In</Title>
-              
+
               <Form
                 onFinish={handleSubmit}
                 // onFinishFailed={onFinishFailed}
@@ -90,7 +88,7 @@ const SignIn = () => {
                 className="row-col"
               >
                 <Form.Item
-                  className="username"
+                  className="email"
                   label="Email"
                   name="email"
                   rules={[
@@ -100,11 +98,11 @@ const SignIn = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Email" />
+                  <Input size="small" placeholder="Email" />
                 </Form.Item>
 
-                <Form.Item
-                  className="username"
+                {/* <Form.Item
+                  className="password"
                   label="Password"
                   name="password"
                   rules={[
@@ -115,6 +113,28 @@ const SignIn = () => {
                   ]}
                 >
                   <Input placeholder="Password" />
+                </Form.Item> */}
+
+                <Form.Item
+                  className="password"
+                  label="Password"
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your password!",
+                    },
+                  ]}
+                >
+                  {/* <Input placeholder="Password" /> */}
+                  {/* <Input.Password placeholder="input password" /> */}
+                  <Input.Password
+                  size="small"
+                    placeholder="Password"
+                    iconRender={(visible) =>
+                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                    }
+                  />
                 </Form.Item>
 
                 <Form.Item
@@ -122,9 +142,8 @@ const SignIn = () => {
                   className="aligin-center"
                   valuePropName="checked"
                 >
-                  {errorMessage && <h3>{errorMessage}</h3>}
+                  {errorMessageLogin && <h3>{errorMessageLogin}</h3>}
                 </Form.Item>
-
                 <Form.Item>
                   <Button
                     type="primary"

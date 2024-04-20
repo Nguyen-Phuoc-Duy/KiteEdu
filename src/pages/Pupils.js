@@ -241,7 +241,8 @@ function Pulpils() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            <p>{name}</p>
+            {/* <p>{name}</p> */}
+            {/* <a>{name}</a> */}
           </div>
         </>
       ),
@@ -251,13 +252,13 @@ function Pulpils() {
       dataIndex: "email",
       key: "email",
       width: "15%",
-      render: (email) => <Title level={5}>{email}</Title>,
+      render: (email) => <a>{email}</a>,
     },
     {
       title: "PHONE",
       dataIndex: "phone",
       key: "phone",
-      render: (phone) => <div className="semibold">{phone}</div>,
+      render: (phone) => <div >{phone}</div>,
     },
     {
       title: "PARENT'S NAME",
@@ -267,8 +268,7 @@ function Pulpils() {
       render: (parent_name) => (
         <>
           <div className="avatar-info">
-            <Title level={5}>{parent_name}</Title>
-            <p>{parent_name}</p>
+            <div className="semibold">{parent_name}</div>
           </div>
         </>
       ),
@@ -278,13 +278,13 @@ function Pulpils() {
       dataIndex: "parent_email",
       key: "parent_email",
       width: "15%",
-      render: (parent_email) => <Title level={5}>{parent_email}</Title>,
+      render: (parent_email) => <a>{parent_email}</a>,
     },
     {
       title: "PARENT'S PHONE",
       dataIndex: "parent_phone",
       key: "parent_phone",
-      render: (parent_phone) => <div className="semibold">{parent_phone}</div>,
+      render: (parent_phone) => <div>{parent_phone}</div>,
     },
 
     {
@@ -292,7 +292,7 @@ function Pulpils() {
       dataIndex: "gender",
       key: "gender",
       render: (gender) => (
-        <div className="semibold">
+        <div>
           {gender == 1 ? "Nam" : "Nữ"}
           {gender}
         </div>
@@ -303,7 +303,7 @@ function Pulpils() {
       dataIndex: "birth",
       key: "birth",
       render: (birth) => (
-        <div className="semibold">{moment(birth).format("DD-MM-YYYY")}</div>
+        <div >{moment(birth).format("DD-MM-YYYY")}</div>
       ),
     },
     {
@@ -371,10 +371,10 @@ function Pulpils() {
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
-              title="INFORMATION PUPILS"
+              title="Pupil list"
               extra={
                 <>
-                  {errorMessage && (
+                  {/* {errorMessage && (
                     <Modal
                       title="Notification"
                       visible={visible}
@@ -383,7 +383,7 @@ function Pulpils() {
                     >
                       <h3>{errorMessage}</h3>
                     </Modal>
-                  )}
+                  )} */}
                   <Button
                     type="primary"
                     className="tag-primary"

@@ -107,6 +107,9 @@ const ClassAction = {
   getPupilByClass: (body) => {
     return request.post(`/class/getPupilByClass`, body);
   },
+  getAllPupilByClass: (body) => {
+    return request.post(`/class/getAllPupilByClass`, body);
+  },
   removePupilInClass: (body) => {
     return request.post(`/class/removePupilInClass`, body);
   },

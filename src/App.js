@@ -18,7 +18,7 @@ import { Switch, Route, Redirect, useHistory } from "react-router-dom";
 // import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./stores/store";
-import AccountInformation from "./pages/AccountInfomation";
+// import AccountInformation from "./pages/AccountInfomation";
 import Subjects from "./pages/Subjects";
 import CreateSubject from "./pages/CreateSubject";
 import Rooms from "./pages/Rooms";
@@ -114,14 +114,15 @@ function App() {
           {/* <Route exact path="/create-class" component={CreateClass} /> */}
           <PrivateRoute
             exact
-            path="/account-information"
-            component={AccountInformation}
+            path="/profile"
+            component={Profile}
           />
           <PrivateRoute exact path="/subjects" component={Subjects} />
           <PrivateRoute exact path="/rooms" component={Rooms} />
           <PrivateRoute exact path="/pupils" component={Pupils} />
           <PrivateRoute exact path="/classes" component={Classes} />
           <PrivateRoute exact path="/lessons" component={Lessons} />
+          {/* <Redirect from="*" to="/dashboard" /> */}
           {/* <PrivateRoute exact path="/profile" component={Profile} /> */}
           {/* <Redirect from="*" to="/dashboard" /> */}
           {/* Các Route khác chỉ hiển thị khi đã đăng nhập */}

@@ -142,7 +142,7 @@ function Subjects() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            <p>{name}</p>
+            {/* <p>{name}</p> */}
           </div>
         </>
       ),
@@ -176,6 +176,7 @@ function Subjects() {
             type="primary"
             className="tag-primary"
             onClick={() => showModal(record)}
+            disabled= {currentUserInfo.role == "employee" ? true : false}
           >
             Edit
             {/* {record.username} */}
@@ -253,10 +254,10 @@ function Subjects() {
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
-              title="INFORMATION ROOMS"
+              title="Room List"
               extra={
                 <>
-                  {errorMessage && (
+                  {/* {errorMessage && (
                     <Modal
                       title="Notification"
                       visible={visible}
@@ -265,13 +266,14 @@ function Subjects() {
                     >
                       <h3>{errorMessage}</h3>
                     </Modal>
-                  )}
+                  )} */}
 
                   <Button
                     type="primary"
                     className="tag-primary"
                     onClick={(record) => showModal1(record)}
                     style={{ align: "right" }}
+                    disabled= {currentUserInfo.role == "employee" ? true : false}
                   >
                     Add Room
                   </Button>

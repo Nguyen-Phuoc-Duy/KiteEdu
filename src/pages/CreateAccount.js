@@ -68,20 +68,10 @@ const CreateAccount = () => {
   return (
     <>
       <div
-        className="
-      layout-default 
-      
-      layout-sign-up
-      "
-      >
+        className="layout-default  layout-sign-up">
         <Card
-          className="
-          header-solid 
-          h-full 
-          ant-card 
-          pt-0
-          "
-          title={<h1>ACCOUNT INFORMATION</h1>}
+          className="header-solid h-full ant-card pt-0"
+          title={<h1>INFORMATION</h1>}
           bordered={false}
         >
           <Form
@@ -103,7 +93,7 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Name" />
+                  <Input placeholder="Name" disabled= {currentUserInfo.role == "employee" ? true : false}/>
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -117,7 +107,7 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Username" />
+                  <Input placeholder="Username" disabled= {currentUserInfo.role == "employee" ? true : false}/>
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -135,7 +125,7 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Email" />
+                  <Input placeholder="Email" disabled= {currentUserInfo.role == "employee" ? true : false}/>
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -153,7 +143,7 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Phone Number" />
+                  <Input placeholder="Phone Number" disabled= {currentUserInfo.role == "employee" ? true : false}/>
                 </Form.Item>
               </Col>
 
@@ -163,7 +153,7 @@ const CreateAccount = () => {
                   label="Address"
                   rules={[{ required: true, message: "Please input address!" }]}
                 >
-                  <Input placeholder="Address" />
+                  <Input placeholder="Address" disabled= {currentUserInfo.role == "employee" ? true : false}/>
                 </Form.Item>
               </Col>
               <Col span={4}>
@@ -176,6 +166,7 @@ const CreateAccount = () => {
                     placeholder="Gender"
                     // onChange={onGenderChange}
                     allowClear
+                    disabled= {currentUserInfo.role == "employee" ? true : false}
                   >
                     <Option value="1">Nam</Option>
                     <Option value="0">Nữ</Option>
@@ -188,7 +179,7 @@ const CreateAccount = () => {
                   name="birth"
                   rules={[{ required: true, message: "Please input!" }]}
                 >
-                  <DatePicker />
+                  <DatePicker disabled= {currentUserInfo.role == "employee" ? true : false}/>
                 </Form.Item>
               </Col>
               <Col span={4}>
@@ -200,6 +191,7 @@ const CreateAccount = () => {
                   <Select
                     placeholder="Subject"
                     // onChange={onGenderChange}
+                    disabled= {currentUserInfo.role == "employee" ? true : false}
                     allowClear
                     defaultValue={""}
                   >
@@ -224,7 +216,7 @@ const CreateAccount = () => {
                     { required: true, message: "Please input password!" },
                   ]}
                 >
-                  <Input.Password placeholder="Password" />
+                  <Input.Password placeholder="Password" disabled= {currentUserInfo.role == "employee" ? true : false}/>
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -238,7 +230,9 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input.Password placeholder="Confirm Password" />
+                  <Input.Password placeholder="Confirm Password" 
+                  disabled= {currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
               <Col span={8}></Col>
@@ -292,7 +286,7 @@ const CreateAccount = () => {
               )} */}
               <Col span={4}>
                 <Form.Item>
-                  <Button htmlType="reset" style={{ width: "100%" }}>
+                  <Button htmlType="reset" style={{ width: "100%" }} disabled= {currentUserInfo.role == "employee" ? true : false}>
                     Cancel
                   </Button>
                 </Form.Item>
@@ -303,6 +297,7 @@ const CreateAccount = () => {
                     type="primary"
                     htmlType="submit"
                     style={{ width: "100%" }}
+                    disabled= {currentUserInfo.role == "employee" ? true : false}
                   >
                     Create
                   </Button>

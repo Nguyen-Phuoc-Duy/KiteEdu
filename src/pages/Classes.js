@@ -117,6 +117,9 @@ function Classes() {
       ID: currentUserInfo.id,
       role: currentUserInfo.role,
     });
+    getAllClasses();
+    getAllSubjects();
+    getAllUsers();
     setIsModalVisible(false);
     if (errorMessage) {
       setVisible(true); // Hiển thị modal
@@ -143,6 +146,7 @@ function Classes() {
       subjectId: currentUserInfo.subjectId,
       listPupil: transformedArrayA,
     });
+    getPupilByClass({ ID: idClass });
     getClassByUser({
       ID: currentUserInfo.id,
       role: currentUserInfo.role,
@@ -214,7 +218,6 @@ function Classes() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            <p>{name}</p>
           </div>
         </>
       ),
@@ -227,8 +230,7 @@ function Classes() {
       render: (userId) => (
         <>
           <div className="avatar-info">
-            <Title level={5}>{userId}</Title>
-            <p>{userId}</p>
+            <a>{userId}</a>
           </div>
         </>
       ),
@@ -239,28 +241,26 @@ function Classes() {
       key: "subjectId",
       render: (subjectId) => (
         <>
-          <div className="avatar-info">
-            <Title level={5}>{subjectId}</Title>
-            <p>{subjectId}</p>
+          <div className="semibold">
+          {subjectId}
           </div>
         </>
       ),
     },
-    {
-      title: "SC",
-      dataIndex: "studentsCount",
-      key: "studentsCount",
-      width: "8%",
-      align: "center",
-      render: (studentsCount) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{studentsCount}</Title>
-            <p>{studentsCount}</p>
-          </div>
-        </>
-      ),
-    },
+    // {
+    //   title: "SC",
+    //   dataIndex: "studentsCount",
+    //   key: "studentsCount",
+    //   width: "8%",
+    //   align: "center",
+    //   render: (studentsCount) => (
+    //     <>
+    //       <div className="avatar-info">
+    //         <Title level={5}>{studentsCount}</Title>
+    //       </div>
+    //     </>
+    //   ),
+    // },
     {
       title: "STATUS",
       dataIndex: "status",
@@ -299,7 +299,7 @@ function Classes() {
             className="tag-primary"
             onClick={() => history.push("/lessons", record.ID)}
           >
-            Detail
+            Lessons
           </Button>
         </>
       ),
@@ -316,7 +316,6 @@ function Classes() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            <p>{name}</p>
           </div>
         </>
       ),
@@ -351,7 +350,7 @@ function Classes() {
       align: "center",
       render: (text, record) => (
         <>
-          {currentUserInfo.role === "employee" ? (
+          {currentUserInfo.role === "employee" && statusStates == "started" ? (
             <>
               <Button
                 type="primary"
@@ -435,7 +434,7 @@ function Classes() {
   let optionsUpdate = [];
   let optionsUpdateFinal = [];
 
-  const B = dataArrayD.filter(item => item.status === 'active');
+  const B = dataArrayD.filter((item) => item.status === "active");
   const arrayPupils = B.map((itemB) => ({
     label: itemB.name,
     value: itemB.name + " " + itemB.ID,
@@ -462,7 +461,7 @@ function Classes() {
   }));
 
   optionsUpdateFinal = arrayPupilsUpdate;
-  console.log('arrayPupilsarrayPupils', arrayPupils, options, optionsUpdate)
+  console.log("arrayPupilsarrayPupils", arrayPupils, options, optionsUpdate);
   // console.log("errorMessageerrorMessage", errorMessage);
   useEffect(() => {
     getAllClasses();
@@ -501,10 +500,10 @@ function Classes() {
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
-              title="INFORMATION CLASSES"
+              title="Class List"
               extra={
                 <>
-                  {errorMessage && (
+                  {/* {errorMessage && (
                     <Modal
                       title="Notification"
                       visible={visible}
@@ -513,7 +512,7 @@ function Classes() {
                     >
                       <h3>{errorMessage}</h3>
                     </Modal>
-                  )}
+                  )} */}
                   {currentUserInfo.role === "employee" ? (
                     <Button
                       type="primary"
@@ -561,7 +560,7 @@ function Classes() {
         onOk={currentUserInfo.role === "employee" ? handleOk : handleCancel}
         onCancel={handleCancel}
         width={1000}
-        bodyStyle={{ height: 440 }}
+        // bodyStyle={{ height: 440 }}
         destroyOnClose={true}
       >
         {selectedRecord && (
@@ -575,6 +574,7 @@ function Classes() {
                     onChange={(event) => {
                       handleChangeName(event.target.value);
                     }}
+                    disabled={currentUserInfo.role == "employee" && statusStates == "started" ? false : true}
                   />
                 </div>
               </Col>
@@ -599,6 +599,7 @@ function Classes() {
                       handleChange(value);
                     }}
                     value={statusStates}
+                    disabled={currentUserInfo.role == "employee" ? false : true}
                   >
                     <Option value="started">started</Option>
                     <Option value="finished">finished</Option>
@@ -618,6 +619,7 @@ function Classes() {
                       // defaultValue={["a10", "c12"]}
                       onChange={handleChangeSelectUpdate}
                       options={optionsUpdateFinal}
+                      disabled={currentUserInfo.role == "employee" && statusStates == "started" ? false : true}
                     />
                   </Space>
                 </div>
@@ -629,11 +631,11 @@ function Classes() {
                     <Table
                       columns={columnsDetail}
                       dataSource={newArrayPupil}
-                      pagination={false}
+                      pagination={{ pageSize: 3 }}
                       className="ant-border-space"
                       loading={isLoading}
                       bordered
-                      scroll={{ y: 240 }}
+                      // scroll={{ y: 240 }}
                     />
                   </div>
                 </div>

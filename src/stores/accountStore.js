@@ -7,6 +7,7 @@ export default class AccountStore {
   currentUserInfo = undefined;
   errorMessage = undefined;
   errorCode = undefined;
+  errorMessageLogin = undefined;
   userList = {};
   subjectList = {};
   roomList = {};
@@ -15,6 +16,7 @@ export default class AccountStore {
   detailClass = {};
   ClassByUser = {};
   PupilByClass = {};
+  AllPupilByClass = {};
   PupilByLesson = {};
   LessonByClass = {};
   LessonByUser = {};
@@ -51,7 +53,7 @@ export default class AccountStore {
         window.location.replace("/dashboard");
       } else {
         runInAction(() => {
-          this.errorMessage = response.errMsg;
+          this.errorMessageLogin = response.errMsg;
         });
       }
     });
@@ -172,7 +174,19 @@ export default class AccountStore {
     });
     this.setIsLoading(false);
   };
-
+  getAllPupilByClass = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.ClassAction.getAllPupilByClass(body).then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.AllPupilByClass = response.data;
+        });
+      } else {
+        // console.log(response.errMsg);
+      }
+    });
+    this.setIsLoading(false);
+  };
   getPupilByLesson = async (body) => {
     this.setIsLoading(true);
     await axiosAgents.LessonAction.getPupilByLesson(body).then((response) => {
@@ -350,7 +364,8 @@ export default class AccountStore {
       runInAction(() => {
         this.errorMessage = response.errMsg;
       });
-      await this.getClassByUser()
+      await this.getClassByUser();
+      await this.getAllClasses()
     } catch (error) {
       console.error("Error updating", error);
     }
@@ -447,8 +462,8 @@ export default class AccountStore {
         this.errorMessage = response.errMsg;
       });
     });
-    await this.getClassByUser()
-    await this.getAllClasses()
+    await this.getClassByUser();
+    await this.getAllClasses();
     this.setIsLoading(false);
   };
   createLesson = async (body) => {

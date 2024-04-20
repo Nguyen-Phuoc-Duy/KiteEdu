@@ -117,7 +117,6 @@ function Accounts() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            <p>{name}</p>
           </div>
         </>
       ),
@@ -137,13 +136,13 @@ function Accounts() {
       dataIndex: "email",
       key: "email",
       width: "15%",
-      render: (email) => <Title level={5}>{email}</Title>,
+      render: (email) => <a>{email}</a>,
     },
     {
       title: "PHONE",
       dataIndex: "phone",
       key: "phone",
-      render: (phone) => <div className="semibold">{phone}</div>,
+      render: (phone) => <div>{phone}</div>,
     },
     {
       title: "ADDRESS",
@@ -151,7 +150,7 @@ function Accounts() {
       key: "address",
       render: (address) => (
         <>
-          <div className="semibold">{address}</div>
+          <div>{address}</div>
         </>
       ),
     },
@@ -160,7 +159,7 @@ function Accounts() {
       dataIndex: "gender",
       key: "gender",
       render: (gender) => (
-        <div className="semibold">{gender === 1 ? "Nam" : "Nữ"}</div>
+        <div>{gender === 1 ? "Nam" : "Nữ"}</div>
       ),
     },
     {
@@ -168,7 +167,7 @@ function Accounts() {
       dataIndex: "birth",
       key: "birth",
       render: (birth) => (
-        <div className="semibold">{moment(birth).format("DD-MM-YYYY")}</div>
+        <div>{moment(birth).format("DD-MM-YYYY")}</div>
       ),
     },
     {
@@ -190,7 +189,7 @@ function Accounts() {
       dataIndex: "locked",
       key: "locked",
       render: (locked) => (
-        <div className="semibold">
+        <div>
           <Switch
             checked={locked}
             // onChange={(value) => handleSwitchChange(value, locked)}
@@ -205,10 +204,12 @@ function Accounts() {
       fixed: "right",
       render: (text, record) => (
         <>
+        
           <Button
             type="primary"
             className="tag-primary"
             onClick={() => showModal(record)}
+            disabled= {currentUserInfo.role == "employee" ? true : false}
           >
             {/* {pencil} */}
             Edit
@@ -216,13 +217,6 @@ function Accounts() {
           </Button>
           {/* <Button type="link" className="darkbtn">
             {pencil} EDIT
-          </Button> */}
-          {/* <Button
-            type="danger"
-            className="tag-primary"
-            onClick={() => showModal(record)}
-          >
-            Delete
           </Button> */}
         </>
       ),
@@ -411,13 +405,14 @@ function Accounts() {
             <Card
               bordered={false}
               className="criclebox tablespace mb-24"
-              title="INFORMATION ACCOUNTS"
+              title="Account List"
               extra={
                 <Button
                   type="primary"
                   className="tag-primary"
                   onClick={() => history.push("/create-account")}
                   style={{ align: "right" }}
+                  disabled= {currentUserInfo.role == "employee" ? true : false}
                 >
                   Create Account
                 </Button>

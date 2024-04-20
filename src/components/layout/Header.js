@@ -282,13 +282,13 @@ function Header({
 
   const userSignOut = (
     <Menu>
-      {/* <Link to="/account-information" className="btn-sign-in">
-        <Menu.Item primary onClick={() => history.push("/account-information")}>
+      {/* <Link to="/Profile" className="btn-sign-in">
+        <Menu.Item primary onClick={() => history.push("/Profile")}>
           Profile
         </Menu.Item>
       </Link> */}
       <Link to="/sign-in" className="btn-sign-in">
-        <Menu.Item danger onClick={() => localStorage.removeItem("userInfo")}>
+        <Menu.Item danger onClick={() => localStorage.removeItem("userInfo")} >
           Sign out
         </Menu.Item>
       </Link>
@@ -297,9 +297,9 @@ function Header({
   const history = useHistory();
   const toProfile = (
     <Menu>
-      <Link to="/account-information" className="btn-sign-in">
-        <Menu.Item primary onClick={() => history.push("/account-information")}>
-        Profile
+      <Link to="/Profile" className="btn-sign-in">
+        <Menu.Item primary onClick={() => history.push("/Profile")} >
+          Profile
         </Menu.Item>
       </Link>
     </Menu>
@@ -329,11 +329,13 @@ function Header({
           </div>
         </Col>
         <Col span={24} md={18} className="header-control">
-          <Badge size="small" 
-          // count={4}
+          <Badge
+            size="small"
+            // count={4}
           >
-            <Dropdown overlay={menu} 
-            // trigger={["click"]}
+            <Dropdown
+              overlay={menu}
+              // trigger={["click"]}
             >
               <a
                 href="#pablo"
@@ -350,8 +352,8 @@ function Header({
             {logsetting}
           </Button> */}
           <Dropdown overlay={toProfile}>
-            <div className="btn-sign-in">
-            {logsetting}
+            <div className="btn-sign-in" style={{cursor: "pointer"}}>
+              {logsetting}
               {/* {currentUserInfo ? (
                 <span>{currentUserInfo.username}</span>
               ) : (
@@ -474,12 +476,12 @@ function Header({
             </div>
           </Drawer>
           <Dropdown overlay={userSignOut}>
-            <div className="btn-sign-in">
+            <div className="btn-sign-in" style={{cursor: "pointer"}}>
               {profile}
               {currentUserInfo ? (
                 <span>{currentUserInfo.username}</span>
               ) : (
-                <span>Sign in</span>
+                <span onClick={() => history.push("sign-in")} >Sign in</span>
               )}
             </div>
           </Dropdown>

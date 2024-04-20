@@ -41,9 +41,11 @@ function Lessons() {
   const [lecturer, setLecturer] = useState(null);
   const [subject, setSubject] = useState(null);
   const [roomId, setRoomId] = useState(null);
+  const [roomIdEdit, setRoomIdEdit] = useState(null);
   const [name1, setName1] = useState(null);
-  const [idLesson, setIdLesson] = useState();
-  const [idClass, setIdClass] = useState();
+  const [idLesson, setIdLesson] = useState(null);
+  const [idClass, setIdClass] = useState(null);
+  const [statusClass, setStatusClass] = useState(null);
   const history = useHistory();
 
   const showModal = (record) => {
@@ -54,6 +56,8 @@ function Lessons() {
       idClass,
       record.classId
     );
+    setStatusClass(record.statusClass);
+    console.log("AAAAAAAAAAACCCCCCCCCC", statusClass);
     getDetailLesson({ ID: record.ID });
     console.log("record", JSON.parse(JSON.stringify(record?.pupils)));
     setSelectedRecord(record);
@@ -68,10 +72,11 @@ function Lessons() {
     setLecturer(record.userName);
     setRoom(record.roomName);
     setIdLesson(JSON.parse(JSON.stringify(record?.ID)));
-
+    setRoomId(record.roomId);
+    setRoomIdEdit(record.roomId);
     setClassName(record.className);
-    setTimeStart(moment.parseZone(record.timeStart));
-    setTimeFinish(moment.parseZone(record.timeFinish));
+    setTimeStart(moment(record.timeStart));
+    setTimeFinish(moment(record.timeFinish));
     setIsModalVisible(true);
     getPupilByClass({
       ID: record.classId || location.state,
@@ -139,6 +144,7 @@ function Lessons() {
       content: content,
       timeFinish: timeFinish,
       timeStart: timeStart,
+      roomId: roomIdEdit,
     });
     getLessonByClass({ ID: location.state });
     getPupilByClass({
@@ -176,7 +182,7 @@ function Lessons() {
   };
 
   const handlePresentPupil = async (value) => {
-    console.log('idClassidClass', idClass)
+    console.log("idClassidClass", idClass);
     await presentPupilInClass({
       classId: idClass || location.state,
       pupilId: value?.pupilId,
@@ -205,17 +211,17 @@ function Lessons() {
     console.log("1111111111111111111111111111111", value);
 
     await presentPupilInClass({
-      classId: idClass ||location.state,
+      classId: idClass || location.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "absent",
     });
     await getPupilByClass({
-      ID: idClass ||location.state,
+      ID: idClass || location.state,
     });
     await getPupilByLesson({
-      classId: idClass ||location.state,
+      classId: idClass || location.state,
       lessonId: idLesson,
     });
   };
@@ -223,17 +229,17 @@ function Lessons() {
     console.log("1111111111111111111111111111111", value);
 
     await presentPupilInClass({
-      classId: idClass ||location.state,
+      classId: idClass || location.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "tardy",
     });
     await getPupilByClass({
-      ID: idClass ||location.state,
+      ID: idClass || location.state,
     });
     await getPupilByLesson({
-      classId: idClass ||location.state,
+      classId: idClass || location.state,
       lessonId: idLesson,
     });
   };
@@ -241,17 +247,17 @@ function Lessons() {
     console.log("1111111111111111111111111111111", value);
 
     await presentPupilInClass({
-      classId: idClass ||location.state,
+      classId: idClass || location.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "excused",
     });
     await getPupilByClass({
-      ID: idClass ||location.state,
+      ID: idClass || location.state,
     });
     await getPupilByLesson({
-      classId: idClass ||location.state,
+      classId: idClass || location.state,
       lessonId: idLesson,
     });
   };
@@ -271,7 +277,10 @@ function Lessons() {
   const handleChange1 = (value) => {
     setRoomId(value);
   };
-
+  const handleChangeEditRoom = (value) => {
+    setRoomIdEdit(value);
+    console.log('ZZZZZ', roomIdEdit)
+  };
   const handleChangeName1 = (value) => {
     setName1(value);
   };
@@ -288,92 +297,58 @@ function Lessons() {
       key: "name",
       fixed: "left",
       render: (name) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{name}</Title>
-            <p>{name}</p>
-          </div>
-        </>
+        <div className="avatar-info">
+          <Title level={5}>{name}</Title>
+        </div>
       ),
     },
     {
       title: "CONTENT",
       dataIndex: "content",
       key: "content",
-      render: (content) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{content}</Title>
-            <p>{content}</p>
-          </div>
-        </>
-      ),
+      render: (content) => <div>{content}</div>,
     },
     {
       title: "LECTURER",
       dataIndex: "userName",
       key: "userId",
-      render: (userId) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{userId}</Title>
-            <p>{userId}</p>
-          </div>
-        </>
-      ),
+      render: (userId) => <div className="semibold">{userId}</div>,
     },
     {
       title: "CLASS",
       dataIndex: "className",
       key: "classId",
-      render: (classId) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{classId}</Title>
-            <p>{classId}</p>
-          </div>
-        </>
-      ),
+      render: (classId) => <a>{classId}</a>,
     },
     {
       title: "ROOM",
       dataIndex: "roomName",
       key: "roomId",
-      render: (roomId) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{roomId}</Title>
-            <p>{roomId}</p>
-          </div>
-        </>
-      ),
+      render: (roomId) => <div className="semibold">{roomId}</div>,
     },
-    {
-      title: "SC",
-      dataIndex: "studentsCount",
-      key: "studentsCount",
-      width: "8%",
-      align: "center",
-      render: (studentsCount) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{studentsCount}</Title>
-            <p>{studentsCount}</p>
-          </div>
-        </>
-      ),
-    },
+    // Kiểm tra location.state, nếu không null thì hiển thị cột "SC"
+    // ...(location.state !== null
+    //   ? [
+    //       {
+    //         title: "SC",
+    //         dataIndex: "studentsCount",
+    //         key: "studentsCount",
+    //         width: "8%",
+    //         align: "center",
+    //         render: (studentsCount) => (
+    //           <div className="avatar-info">
+    //             <Title level={5}>{studentsCount}</Title>
+    //           </div>
+    //         ),
+    //       },
+    //     ]
+    //   : []),
     {
       title: "TIME START",
       dataIndex: "timeStart",
       key: "timeStart",
       render: (timeStart) => (
-        <>
-          <div className="semibold">
-            {moment.parseZone(timeStart).format("HH:mm DD-MM-YYYY")}
-          </div>
-          {/* {timeStart} */}
-        </>
+        <div>{moment(timeStart).format("HH:mm DD-MM-YYYY")}</div>
       ),
     },
     {
@@ -381,12 +356,7 @@ function Lessons() {
       dataIndex: "timeFinish",
       key: "timeFinish",
       render: (timeFinish) => (
-        <>
-          <div className="semibold">
-            {moment.parseZone(timeFinish).format("HH:mm DD-MM-YYYY")}
-            {/* {timeFinish} */}
-          </div>
-        </>
+        <div>{moment(timeFinish).format("HH:mm DD-MM-YYYY")}</div>
       ),
     },
     {
@@ -407,23 +377,18 @@ function Lessons() {
         </>
       ),
     },
-
     {
       title: "ACTION",
       key: "action",
-      // align: 'center',
       fixed: "right",
       render: (text, record) => (
-        <>
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => showModal(record, record?.pupils)}
-          >
-            Detail
-            {/* {record.classId} */}
-          </Button>
-        </>
+        <Button
+          type="primary"
+          className="tag-primary"
+          onClick={() => showModal(record, record?.pupils)}
+        >
+          Detail
+        </Button>
       ),
     },
   ];
@@ -437,7 +402,6 @@ function Lessons() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            <p>{name}</p>
           </div>
         </>
       ),
@@ -482,8 +446,6 @@ function Lessons() {
                   }}
                 >
                   <Button
-                    type="primary"
-                    className="tag-primary"
                     disabled
                     size={"small"}
                     style={{
@@ -494,8 +456,6 @@ function Lessons() {
                     Present
                   </Button>{" "}
                   <Button
-                    type="danger"
-                    className="tag-primary"
                     disabled
                     size={"small"}
                     style={{
@@ -509,8 +469,6 @@ function Lessons() {
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <Button
-                    type="primary"
-                    className="tag-primary"
                     size={"small"}
                     disabled
                     style={{
@@ -521,8 +479,6 @@ function Lessons() {
                     Tardy
                   </Button>{" "}
                   <Button
-                    type="danger"
-                    className="tag-primary"
                     size={"small"}
                     disabled
                     style={{
@@ -536,7 +492,8 @@ function Lessons() {
             </>
           ) : (
             <>
-              {currentUserInfo.role == "employee" ? (
+              {currentUserInfo.role == "employee" &&
+              statusClass == "started" && statusStates == 'started' ? (
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div
                     style={{
@@ -546,8 +503,6 @@ function Lessons() {
                     }}
                   >
                     <Button
-                      type="primary"
-                      className="tag-primary"
                       onClick={() => handlePresentPupil(record)}
                       size={"small"}
                       style={{
@@ -561,8 +516,6 @@ function Lessons() {
                       Present
                     </Button>{" "}
                     <Button
-                      type="danger"
-                      className="tag-primary"
                       onClick={() => handleAbsentPupil(record)}
                       size={"small"}
                       style={{
@@ -579,8 +532,6 @@ function Lessons() {
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <Button
-                      type="primary"
-                      className="tag-primary"
                       size={"small"}
                       onClick={() => handleTardyPupil(record)}
                       style={{
@@ -594,8 +545,6 @@ function Lessons() {
                       Tardy
                     </Button>{" "}
                     <Button
-                      type="danger"
-                      className="tag-primary"
                       size={"small"}
                       onClick={() => handleExcusedPupil(record)}
                       style={{
@@ -619,8 +568,6 @@ function Lessons() {
                     }}
                   >
                     <Button
-                      type="primary"
-                      className="tag-primary"
                       disabled
                       size={"small"}
                       style={{
@@ -634,8 +581,6 @@ function Lessons() {
                       Present
                     </Button>{" "}
                     <Button
-                      type="danger"
-                      className="tag-primary"
                       disabled
                       size={"small"}
                       style={{
@@ -652,8 +597,6 @@ function Lessons() {
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <Button
-                      type="primary"
-                      className="tag-primary"
                       size={"small"}
                       disabled
                       style={{
@@ -667,8 +610,6 @@ function Lessons() {
                       Tardy
                     </Button>{" "}
                     <Button
-                      type="danger"
-                      className="tag-primary"
                       size={"small"}
                       disabled
                       style={{
@@ -698,7 +639,6 @@ function Lessons() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            <p>{name}</p>
           </div>
         </>
       ),
@@ -944,6 +884,7 @@ function Lessons() {
       roomName: correspondingItem3 ? correspondingItem3.name : null,
     };
   });
+  console.log("newArrayLessonAll", newArrayLessonAll);
   newArrayLessonAll.forEach((lesson) => {
     if (
       lesson &&
@@ -956,7 +897,9 @@ function Lessons() {
       const attendedStudents = lesson.pupilsSum.filter(
         (pupil) => pupil.status === "attended"
       );
-
+      const attendedStudents1 = lesson.pupilsSum.filter(
+        (pupil) => pupil.classId === "attended"
+      );
       lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
     } else {
       const presentStudents = lesson.pupils.filter(
@@ -1043,29 +986,27 @@ function Lessons() {
       );
       lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
     }
-
-    console.log("Lesson:", lesson);
   });
 
   const onChange123S = (value, dateString) => {
-    setTimeStart(moment.parseZone(dateString).format("HH:mm DD-MM-YYYY"));
+    setTimeStart(moment(dateString).format("HH:mm DD-MM-YYYY"));
   };
   const onChange123F = (value, dateString) => {
-    setTimeFinish(moment.parseZone(dateString).format("HH:mm DD-MM-YYYY"));
+    setTimeFinish(moment(dateString).format("HH:mm DD-MM-YYYY"));
   };
 
   const onChangeCreateS = (value, dateString) => {
-    setTimeStartCreate(moment.parseZone(dateString).format("HH:mm DD-MM-YYYY"));
+    console.log("dateStringdateString", dateString);
+    setTimeStartCreate(moment(dateString).format("HH:mm DD-MM-YYYY"));
   };
   const onChangeCreateF = (value, dateString) => {
-    setTimeFinishCreate(
-      moment.parseZone(dateString).format("HH:mm DD-MM-YYYY")
-    );
+    console.log("dateStringdateString2", dateString);
+    setTimeFinishCreate(moment(dateString).format("HH:mm DD-MM-YYYY"));
   };
   ///////////
   const onOkCreateS = (value) => {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", value);
     setTimeStartCreate(value);
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", value, timeStartCreate);
   };
   const onOkCreateF = (value) => {
     setTimeFinishCreate(value);
@@ -1095,6 +1036,7 @@ function Lessons() {
       role: currentUserInfo.role,
     });
     getLessonByUser({ ID: currentUserInfo.id });
+
     // getPupilByClass({
     //   // ID: idClass,
     //   ID: location.state,
@@ -1130,21 +1072,26 @@ function Lessons() {
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
-              title="INFORMATION LESSON"
+              title="Lesson List"
               extra={
                 <>
-                  {currentUserInfo.role === "employee" ? (
-                    <Button
-                      type="primary"
-                      className="tag-primary"
-                      onClick={(record) => showModal1(record)}
-                      style={{ align: "right" }}
-                    >
-                      Add Lesson
-                    </Button>
-                  ) : (
-                    ""
-                  )}
+                  {currentUserInfo.role === "employee" &&
+                    location.state != null && (
+                      <Button
+                        type="primary"
+                        className="tag-primary"
+                        onClick={showModal1}
+                        style={{ float: "right" }}
+                        // disabled={
+                        //   currentUserInfo.role == "employee" &&
+                        //   statusClass == "started" 
+                        //     ? false
+                        //     : true
+                        // }
+                      >
+                        Add Lesson
+                      </Button>
+                    )}
                 </>
               }
             >
@@ -1194,6 +1141,13 @@ function Lessons() {
                     onChange={(event) => {
                       handleChangeName(event.target.value);
                     }}
+                    disabled={
+                      currentUserInfo.role == "employee" &&
+                      statusClass == "started" && 
+                      statusStates == "started"
+                        ? false
+                        : true
+                    }
                   />
                 </div>
               </Col>
@@ -1205,6 +1159,13 @@ function Lessons() {
                     onChange={(event) => {
                       handleChangeContent(event.target.value);
                     }}
+                    disabled={
+                      currentUserInfo.role == "employee" &&
+                      statusClass == "started" && 
+                      statusStates == "started"
+                        ? false
+                        : true
+                    }
                   />
                 </div>
               </Col>
@@ -1217,6 +1178,12 @@ function Lessons() {
                       handleChange(value);
                     }}
                     value={statusStates}
+                    disabled={
+                      currentUserInfo.role == "employee" &&
+                      statusClass == "started" 
+                        ? false
+                        : true
+                    }
                   >
                     <Option value="started">started</Option>
                     <Option value="finished">finished</Option>
@@ -1230,9 +1197,16 @@ function Lessons() {
                   <Select
                     style={{ width: 120 }}
                     onChange={(value) => {
-                      handleChange1(value);
+                      handleChangeEditRoom(value);
                     }}
                     value={room}
+                    disabled={
+                      currentUserInfo.role == "employee" &&
+                      statusClass == "started" && 
+                      statusStates == "started"
+                        ? false
+                        : true
+                    }
                   >
                     {dataArrayE.map((item) => {
                       if (item.status === "empty") {
@@ -1278,6 +1252,13 @@ function Lessons() {
                     allowClear={true}
                     showNow={false}
                     value={timeStart}
+                    disabled={
+                      currentUserInfo.role == "employee" &&
+                      statusClass == "started" && 
+                      statusStates == "started"
+                        ? false
+                        : true
+                    }
                   />
                 </div>
               </Col>
@@ -1294,6 +1275,13 @@ function Lessons() {
                     allowClear={true}
                     value={timeFinish}
                     showNow={false}
+                    disabled={
+                      currentUserInfo.role == "employee" &&
+                      statusClass == "started" && 
+                      statusStates == "started"
+                        ? false
+                        : true
+                    }
                   />
                 </div>
               </Col>
@@ -1304,11 +1292,11 @@ function Lessons() {
                     <Table
                       columns={columnsDetail}
                       dataSource={listPupilByClassArray}
-                      pagination={false}
+                      pagination={{ pageSize: 3, position: ["bottomCenter"] }}
                       className="ant-border-space"
                       loading={isLoading}
                       bordered
-                      scroll={{ y: 240 }}
+                      // scroll={{ y: 240 }}
                     />
                   </div>
                 </div>
@@ -1320,11 +1308,11 @@ function Lessons() {
                     <Table
                       columns={columnsDetail1}
                       dataSource={newArrayPupil1}
-                      pagination={false}
+                      pagination={{ pageSize: 3, position: ["bottomCenter"] }}
                       className="ant-border-space"
                       loading={isLoading}
                       bordered
-                      scroll={{ y: 240 }}
+                      // scroll={{ y: 240 }}
                     />
                   </div>
                 </div>
@@ -1384,9 +1372,6 @@ function Lessons() {
               <div className="author-info">
                 <Title level={5}>Time Start</Title>
                 <DatePicker
-                  // onChange={(value) => {
-                  //   handleChangeBirthAdd(value);
-                  // }}
                   showTime={{
                     format: "HH:mm",
                   }}
@@ -1403,9 +1388,6 @@ function Lessons() {
               <div className="author-info">
                 <Title level={5}>Time Finish</Title>
                 <DatePicker
-                  // onChange={(value) => {
-                  //   handleChangeBirthAdd(value);
-                  // }}
                   showTime={{
                     format: "HH:mm",
                   }}
