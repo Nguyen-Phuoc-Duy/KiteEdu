@@ -10,128 +10,103 @@ import {
   Select,
   Tag,
   Input,
-  message,
-  notification,
 } from "antd";
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import CreateSubject from "./CreateSubject";
 const { Title } = Typography;
 const { Option } = Select;
 
-function Subjects() {
+function Rooms() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [isModalVisibleAdd, setIsModalVisibleAdd] = useState(false);
+  const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [statusStates, setStatusStates] = useState(null);
-  const [statusStatesAdd, setStatusStatesAdd] = useState(null);
   const [name, setName] = useState(null);
-  const [nameAdd, setNameAdd] = useState(null);
+  const [statusStates1, setStatusStates1] = useState(null);
+  const [name1, setName1] = useState(null);
+  const [visible, setVisible] = useState(false);
   const history = useHistory();
 
-  const { accountStore } = useStore();
-  const {
-    isLoading,
-    subjectList,
-    getAllSubjects,
-    updateSubject,
-    createSubject,
-    currentUserInfo,
-    testMsg,
-    errorMessage,
-    errorCode,
-  } = accountStore;
-
-  // Hiển thị modal chỉnh sửa thông tin môn học
   const showModal = (record) => {
     setSelectedRecord(record);
     setStatusStates(record.status);
     setName(record.name);
     setIsModalVisible(true);
   };
-
-  // Hiển thị modal thêm môn học
-  const showModalAdd = (record) => {
-    setIsModalVisibleAdd(true);
+  const showModal1 = (record) => {
+    setIsModalVisible1(true);
   };
+  const { accountStore } = useStore();
+  const {
+    isLoading,
+    subjectList,
+    getAllSubjects,
+    updateSubject,
+    updateRoom,
+    roomList,
+    getAllRooms,
+    createRoom,
+    currentUserInfo,
+    errorMessageR,
+  } = accountStore;
 
-  // Xử lý khi nhấn nút OK trên modal chỉnh sửa
-  const handleOk = async () => {
-    await updateSubject({
+  const handleOk = () => {
+    updateRoom({
       ID: selectedRecord.ID,
       status: statusStates,
       name: name,
     });
     setIsModalVisible(false);
-    console.log("errorMessage0", errorMessage);
-    if (errorMessage) {
+    if (errorMessageR) {
+      console.log("errorMessage2", errorMessageR);
       setVisible(true); // Hiển thị modal
       const timer = setTimeout(() => {
         setVisible(false); // Ẩn modal sau 3 giây
       }, 1000);
-      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessageR thay đổi
     }
   };
-
-  // Xử lý khi nhấn nút OK trên modal thêm
-  const handleOkAdd = () => {
-    createSubject({
-      status: statusStatesAdd,
-      name: nameAdd,
+  const handleOk1 = () => {
+    createRoom({
+      status: statusStates1,
+      name: name1,
     });
-    setIsModalVisibleAdd(false);
-    setNameAdd(null);
-    setStatusStatesAdd(null);
-    getAllSubjects();
-    if (errorMessage) {
+    setIsModalVisible1(false);
+    setName1(null);
+    setStatusStates1(null);
+    getAllRooms();
+    console.log("errorMessage1", errorMessageR);
+    if (errorMessageR) {
       setVisible(true); // Hiển thị modal
       const timer = setTimeout(() => {
         setVisible(false); // Ẩn modal sau 3 giây
       }, 1000);
-      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessageR thay đổi
     }
   };
 
-  // Xử lý khi nhấn nút Cancel
   const handleCancel = () => {
     setIsModalVisible(false);
-    setIsModalVisibleAdd(false);
+    setIsModalVisible1(false);
+    console.log("currentUserInfo", currentUserInfo.role);
   };
 
-  // Xử lý thay đổi trạng thái môn học
   const handleChange = (value) => {
     setStatusStates(value);
   };
 
-  // Xử lý thay đổi tên môn học
   const handleChangeName = (value) => {
     setName(value);
   };
 
-  // Xử lý thay đổi trạng thái khi thêm môn học
-  const handleChangeAdd = (value) => {
-    setStatusStatesAdd(value);
+  const handleChange1 = (value) => {
+    setStatusStates1(value);
   };
 
-  // Xử lý thay đổi tên môn học khi thêm môn học
-  const handleChangeNameAdd = (value) => {
-    setNameAdd(value);
+  const handleChangeName1 = (value) => {
+    setName1(value);
   };
-  useEffect(() => {
-    getAllSubjects();
-    createSubject();
-    updateSubject()
-  }, []);
-  // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
-  // useEffect(() => {
-  //   getAllSubjects();
-  //   createSubject();
-  //   updateSubject()
-  // }, [createSubject, errorMessage, getAllSubjects, updateSubject]);
-
-  // Cấu hình cột cho Table
   const columns = [
     {
       title: "NAME",
@@ -141,7 +116,7 @@ function Subjects() {
         <>
           <div className="avatar-info">
             <Title level={5}>{name}</Title>
-            {/* <p>{name}</p> */}
+            <p>{name}</p>
           </div>
         </>
       ),
@@ -152,36 +127,37 @@ function Subjects() {
       key: "status",
       render: (status) => (
         <>
-          {status === "active" ? (
+          {status === "empty" ? (
             <Tag color="green">{status}</Tag>
-          ) : (
+          ) : status === "fix" ? (
             <Tag color="red">{status}</Tag>
+          ) : status === "full" ? (
+            <Tag color="blue">{status}</Tag>
+          ) : (
+            <Tag color="orange">{status}</Tag>
           )}
         </>
       ),
     },
-    ...(currentUserInfo.role !== "employee"
-      ? [
-          {
-            title: "ACTION",
-            key: "action",
-            render: (text, record) => (
-              <>
-                <Button
-                  type="primary"
-                  className="tag-primary"
-                  onClick={() => showModal(record)}
-                >
-                  Edit
-                </Button>
-              </>
-            ),
-          },
-        ]
-      : []),
-  ];
 
-  // Cấu hình cột cho Table khi người dùng là nhân viên
+    {
+      title: "ACTION",
+      key: "action",
+      // align: 'center',
+      render: (text, record) => (
+        <>
+          <Button
+            type="primary"
+            className="tag-primary"
+            onClick={() => showModal(record)}
+          >
+            Edit
+            {/* {record.username} */}
+          </Button>
+        </>
+      ),
+    },
+  ];
   const columnsEmployee = [
     {
       title: "NAME",
@@ -202,10 +178,14 @@ function Subjects() {
       key: "status",
       render: (status) => (
         <>
-          {status === "active" ? (
+          {status === "empty" ? (
             <Tag color="green">{status}</Tag>
-          ) : (
+          ) : status === "fix" ? (
             <Tag color="red">{status}</Tag>
+          ) : status === "full" ? (
+            <Tag color="blue">{status}</Tag>
+          ) : (
+            <Tag color="orange">{status}</Tag>
           )}
         </>
       ),
@@ -214,6 +194,7 @@ function Subjects() {
     {
       title: "ACTION",
       key: "action",
+      // align: 'center',
       render: (text, record) => (
         <>
           <Button type="primary" className="tag-primary" disabled>
@@ -223,9 +204,31 @@ function Subjects() {
       ),
     },
   ];
+  useEffect(() => {
+    getAllRooms();
+    if (errorMessageR) {
+      console.log("errorMessage0", errorMessageR);
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessageR thay đổi
+    }
+  }, [isModalVisible1, isModalVisible, getAllRooms, errorMessageR]);
 
-  // Chuyển đổi dữ liệu thành mảng và sắp xếp lại theo thứ tự
-  const dataA = Array.from(subjectList);
+  const dataA = Array.from(roomList);
+  const dataArray = dataA.map((user) => {
+    const order = ["ID", "name", "status", "createdAt", "updatedAt"];
+
+    const sortedUser = {};
+    order.forEach((key) => {
+      if (user.hasOwnProperty(key)) {
+        sortedUser[key] = user[key];
+      }
+    });
+
+    return sortedUser;
+  });
 
   return (
     <>
@@ -235,45 +238,41 @@ function Subjects() {
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
-              title="Subject List"
+              title="INFORMATION ROOMS"
               extra={
                 <>
-                  {errorMessage && (
+                  {errorMessageR && (
                     <Modal
                       title="Notification"
                       visible={visible}
                       footer={null}
                       onCancel={() => setVisible(false)}
                     >
-                      <p><b>{errorMessage}</b></p>
+                      <p>{errorMessageR}</p>
                     </Modal>
                   )}
-                  {currentUserInfo.role == "employee" ? (
-                    ""
-                  ) : (
-                    <Button
-                      type="primary"
-                      className="tag-primary"
-                      onClick={(record) => showModalAdd(record)}
-                      style={{ align: "right" }}
-                    >
-                      Add Subject
-                    </Button>
-                  )}
+
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    // onClick={() => history.push("/create-room")}
+                    onClick={(record) => showModal1(record)}
+                    style={{ align: "right" }}
+                  >
+                    Add Room
+                  </Button>
                 </>
               }
             >
               <div className="table-responsive">
                 <Table
                   columns={
-                    // currentUserInfo.role === "employee"
-                    //   ? columnsEmployee
-                    //   :
-                    columns
+                    currentUserInfo.role == "employee"
+                      ? columnsEmployee
+                      : columns
                   }
-                  dataSource={dataA}
+                  dataSource={dataArray}
                   pagination={false}
-                  rowKey={(record) => record.ID}
                   className="ant-border-space"
                   loading={isLoading}
                   bordered
@@ -285,7 +284,6 @@ function Subjects() {
         </Row>
       </div>
 
-      {/* Modal chỉnh sửa */}
       <Modal
         title="EDIT"
         visible={isModalVisible}
@@ -297,7 +295,7 @@ function Subjects() {
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <div className="author-info">
-                  <Title level={5}>Subject</Title>
+                  <Title level={5}>Room</Title>
                   <Input
                     value={name}
                     onChange={(event) => {
@@ -316,8 +314,9 @@ function Subjects() {
                     }}
                     value={statusStates}
                   >
-                    <Option value="active">active</Option>
-                    <Option value="inactive">inactive</Option>
+                    <Option value="empty">empty</Option>
+                    <Option value="fix">fix</Option>
+                    <Option value="full">full</Option>
                   </Select>
                 </div>
               </Col>
@@ -325,11 +324,10 @@ function Subjects() {
           </>
         )}
       </Modal>
-
       <Modal
         title="ADD"
-        visible={isModalVisibleAdd}
-        onOk={handleOkAdd}
+        visible={isModalVisible1}
+        onOk={handleOk1}
         onCancel={handleCancel}
         destroyOnClose={true}
       >
@@ -337,8 +335,9 @@ function Subjects() {
           <Row gutter={[16, 16]}>
             <Col span={12}>
               <div className="author-info">
-                <Title level={5}>Subject</Title>
+                <Title level={5}>Room</Title>
                 <Input
+                  // value={name1}
                   rules={[
                     {
                       required: true,
@@ -346,7 +345,7 @@ function Subjects() {
                     },
                   ]}
                   onChange={(event) => {
-                    handleChangeNameAdd(event.target.value);
+                    handleChangeName1(event.target.value);
                   }}
                 />
               </div>
@@ -357,14 +356,15 @@ function Subjects() {
                 <Select
                   style={{ width: "100%" }}
                   onChange={(value) => {
-                    handleChangeAdd(value);
+                    handleChange1(value);
                   }}
                   rules={[{ required: true, message: "Please input status!" }]}
-                  value={statusStatesAdd || "active"}
+                  value={statusStates1 || "empty"}
                   disabled
                 >
-                  <Option value="active">active</Option>
-                  <Option value="inactive">inactive</Option>
+                  <Option value="empty">empty</Option>
+                  <Option value="fix">fix</Option>
+                  <Option value="full">full</Option>
                 </Select>
               </div>
             </Col>
@@ -375,4 +375,4 @@ function Subjects() {
   );
 }
 
-export default observer(Subjects);
+export default observer(Rooms);

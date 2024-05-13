@@ -33,6 +33,9 @@ const AuthAction = {
   getAllUsers: () => {
     return request.get(`/users/getAll`);
   },
+  getEmployee: () => {
+    return request.get(`/users/getEmployee`);
+  },
   updateUserInfo: (newUserInfo) => {
     return request.post(`/users/updateProfile`, newUserInfo);
   },
@@ -51,6 +54,9 @@ const AdminAction = {
   createUser: (body) => {
     return request.post(`/admin/createUser`, body);
   },
+  getInforUser: (userID) => {
+    return request.get(`/getInforUser/${userID}`);
+  }
 };
 
 const SubjectAction = {
@@ -92,6 +98,9 @@ const ClassAction = {
   getAllClasses: () => {
     return request.get(`/classes/getAll`);
   },
+  getAllClassesActive: () => {
+    return request.get(`/classes/getAllClassesActive`);
+  },
   updateClass: (body) => {
     return request.post(`/class/updateClass`, body);
   },
@@ -104,6 +113,60 @@ const ClassAction = {
   getPupilByClass: (body) => {
     return request.post(`/class/getPupilByClass`, body);
   },
+  getAllPupilByClass: (body) => {
+    return request.post(`/class/getAllPupilByClass`, body);
+  },
+  removePupilInClass: (body) => {
+    return request.post(`/class/removePupilInClass`, body);
+  },
+  addPupilInClass: (body) => {
+    return request.post(`/class/addPupilInClass`, body);
+  },
+  getDetailClass: (body) => {
+    return request.post(`/class/getDetailClass`, body);
+  },
+};
+
+const LessonAction = {
+  getAllLessons: () => {
+    return request.get(`/lessons/getAll`);
+  },
+  getPupilByLesson: (body) => {
+    return request.post(`/lesson/getPupilByLesson`, body);
+  },
+  getLessonByClass: (body) => {
+    return request.post(`/lesson/getLessonByClass`, body);
+  },
+  getLessonByUser: (body) => {
+    return request.post(`/lesson/getLessonByUser`, body);
+  },
+  getDetailLesson: (body) => {
+    return request.post(`/lesson/getDetailLesson`, body);
+  },
+  createLesson: (body) => {
+    return request.post(`/lesson/createLesson`, body);
+  },
+  addLesson: (body) => {
+    return request.post(`/lesson/addLesson`, body);
+  },
+  updateLesson: (body) => {
+    return request.post(`/lesson/updateLesson`, body);
+  },
+  updateLessonInLesson: (body) => {
+    return request.post(`/lesson/updateLessonInLesson`, body);
+  },
+  presentPupilInClass: (body) => {
+    return request.post(`/lesson/presentPupilInClass`, body);
+  },
+  absentPupilInClass: (body) => {
+    return request.post(`/lesson/absentPupilInClass`, body);
+  },
+};
+
+const ListPupilAction = {
+  updatePupilStatusInClass: (body) => {
+    return request.post(`/listpupil/updatePupilStatusInClass`, body);
+  },
 };
 const axiosAgents = {
   AuthAction,
@@ -112,6 +175,8 @@ const axiosAgents = {
   RoomAction,
   PupilAction,
   ClassAction,
+  LessonAction,
+  ListPupilAction,
 };
 
 export default axiosAgents;

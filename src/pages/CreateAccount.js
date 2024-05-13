@@ -23,6 +23,7 @@ import {
   Col,
   Select,
   DatePicker,
+  Modal,
 } from "antd";
 import Title from "antd/lib/skeleton/Title";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -33,14 +34,40 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const CreateAccount = () => {
   const history = useHistory();
+  const [visible1, setVisible1] = useState(false);
+  const [errorMessage1, seterrorMessage1] = useState("");
+  const [visible, setVisible] = useState(false);
   const { accountStore } = useStore();
-  const { createUser, subjectList, getAllSubjects } = accountStore;
+  const {
+    createUser,
+    subjectList,
+    getAllSubjects,
+    currentUserInfo,
+    errorMessage,
+    isLoading,
+  } = accountStore;
   const [form] = Form.useForm();
+  useEffect(() => {
+    // Kiểm tra errorMessage chỉ khi dữ liệu đã tải lần đầu tiên và không đang trong quá trình tải
+    if (errorMessage && isLoading && currentUserInfo) {
+      setVisible(true);
+      const timer = setTimeout(() => {
+        form.resetFields();
+        setVisible(false);
 
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
   const onFinish = (values) => {
-    console.log("finishResults", values);
-    createUser(values);
-    form.resetFields();
+    console.log("finishResults", values.password);
+    if (values.password === values.confirmPassword) {
+      createUser(values);
+      
+    } else {
+      seterrorMessage1("❌ password does not match!");
+      setVisible1(true);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -66,22 +93,43 @@ const CreateAccount = () => {
   });
   return (
     <>
-      <div
-        className="
-      layout-default 
-      
-      layout-sign-up
-      "
-      >
+      <div className="layout-default  layout-sign-up">
         <Card
-          className="
-          header-solid 
-          h-full 
-          ant-card 
-          pt-0
-          "
-          title={<h1>ACCOUNT INFORMATION</h1>}
+          className="header-solid h-full ant-card pt-0"
+          title={
+            <h6>
+              <b>INFORMATION</b>
+            </h6>
+          }
           bordered={false}
+          extra={
+            <>
+              {errorMessage && (
+                <Modal
+                  title="Notification"
+                  visible={visible}
+                  footer={null}
+                  onCancel={() => setVisible(false)}
+                >
+                  <p>
+                    <b>{errorMessage}</b>
+                  </p>
+                </Modal>
+              )}
+              {errorMessage1 && (
+                <Modal
+                  title="Notification"
+                  visible={visible1}
+                  footer={null}
+                  onCancel={() => setVisible1(false)}
+                >
+                  <p>
+                    <b>{errorMessage1}</b>
+                  </p>
+                </Modal>
+              )}
+            </>
+          }
         >
           <Form
             name="basic"
@@ -91,7 +139,7 @@ const CreateAccount = () => {
             form={form}
           >
             <Row gutter={[16, 16]}>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="name"
                   label="Name"
@@ -102,38 +150,13 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Name" />
+                  <Input
+                    placeholder="Name"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="email"
-                  label="E-mail"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input email!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Email" />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="phone"
-                  label="Phone Number"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input phone number!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Phone Number" />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="username"
                   label="Username"
@@ -144,44 +167,68 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Username" />
+                  <Input
+                    placeholder="Username"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
-                  name="password"
-                  label="Password"
-                  rules={[
-                    { required: true, message: "Please input password!" },
-                  ]}
-                >
-                  <Input.Password placeholder="Password" />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="confirmPassword"
-                  label="Confirm Password"
+                  name="email"
+                  label="E-mail"
                   rules={[
                     {
+                      pattern: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/,
+                      message: "The input is not a valid email!",
+                    },
+                    {
                       required: true,
-                      message: "Please input confirm password!",
+                      message: "Please input email!",
                     },
                   ]}
                 >
-                  <Input.Password placeholder="Confirm Password" />
+                  <Input
+                    placeholder="Email"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
+                <Form.Item
+                  name="phone"
+                  label="Phone Number"
+                  rules={[
+                    {
+                      pattern: /^[0-9]{10}$/,
+                      message: "The input is not a valid phone number!",
+                    },
+                    {
+                      required: true,
+                      message: "Please input phone number!",
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder="Phone Number"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
                 <Form.Item
                   name="address"
                   label="Address"
                   rules={[{ required: true, message: "Please input address!" }]}
                 >
-                  <Input placeholder="Address" />
+                  <Input
+                    placeholder="Address"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={4}>
                 <Form.Item
                   name="gender"
                   label="Gender"
@@ -191,22 +238,25 @@ const CreateAccount = () => {
                     placeholder="Gender"
                     // onChange={onGenderChange}
                     allowClear
+                    disabled={currentUserInfo.role == "employee" ? true : false}
                   >
                     <Option value="1">Nam</Option>
                     <Option value="0">Nữ</Option>
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={4}>
                 <Form.Item
                   label="Birth"
                   name="birth"
                   rules={[{ required: true, message: "Please input!" }]}
                 >
-                  <DatePicker />
+                  <DatePicker
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={4}>
                 <Form.Item
                   name="subjectId"
                   label="Subject"
@@ -215,8 +265,9 @@ const CreateAccount = () => {
                   <Select
                     placeholder="Subject"
                     // onChange={onGenderChange}
+                    disabled={currentUserInfo.role == "employee" ? true : false}
                     allowClear
-                    defaultValue={''}
+                    defaultValue={""}
                   >
                     {dataArray.map((item) => {
                       if (item.status === "active") {
@@ -231,11 +282,93 @@ const CreateAccount = () => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={16}></Col>
+              <Col span={12}>
+                <Form.Item
+                  name="password"
+                  label="Password"
+                  rules={[
+                    { required: true, message: "Please input password!" },
+                  ]}
+                >
+                  <Input.Password
+                    placeholder="Password"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input confirm password!",
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    placeholder="Confirm Password"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
+                </Form.Item>
+              </Col>
               <Col span={8}></Col>
+              {/* {currentUserInfo.role == "employee" ? (
+                <>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button
+                        htmlType="reset"
+                        style={{ width: "100%" }}
+                        disabled
+                      >
+                        Cancel
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        style={{ width: "100%" }}
+                        disabled
+                      >
+                        Create
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </>
+              ) : (
+                <>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button htmlType="reset" style={{ width: "100%" }}>
+                        Cancel
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        style={{ width: "100%" }}
+                      >
+                        Create
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </>
+              )} */}
               <Col span={4}>
                 <Form.Item>
-                  <Button htmlType="reset" style={{ width: "100%" }}>
+                  <Button
+                    htmlType="reset"
+                    style={{ width: "100%" }}
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  >
                     Cancel
                   </Button>
                 </Form.Item>
@@ -246,6 +379,7 @@ const CreateAccount = () => {
                     type="primary"
                     htmlType="submit"
                     style={{ width: "100%" }}
+                    disabled={currentUserInfo.role == "employee" ? true : false}
                   >
                     Create
                   </Button>

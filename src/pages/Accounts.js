@@ -77,16 +77,16 @@ function Accounts() {
       {
         ID: selectedRecord.ID,
         role: roleState,
-      },
-      // updateUserSubject(
-      {
-        ID: selectedRecord.ID,
-        subjectId: subjectState,
-        role: selectedRecord.role,
       }
+      // updateUserSubject(
+      // {
+      //   ID: selectedRecord.ID,
+      //   subjectId: subjectState,
+      //   role: selectedRecord.role,
+      // }
       // )
     );
-    console.log("hhhhhhhhhhhhhhhh", selectedRecord.ID, subjectState, roleState);
+    // console.log("hhhhhhhhhhhhhhhh", selectedRecord.ID, subjectState, roleState);
     setIsModalVisible(false);
   };
 
@@ -112,6 +112,122 @@ function Accounts() {
       dataIndex: "name",
       key: "name",
       fixed: "left",
+      width: "15%",
+      render: (name) => (
+        <>
+          <div className="avatar-info">
+            <Title level={5}>{name}</Title>
+          </div>
+        </>
+      ),
+    },
+    {
+      title: "SUBJECT",
+      dataIndex: "subjectId",
+      key: "subjectId",
+      render: (subjectId) => (
+        <>
+          <div className="semibold">{subjectId}</div>
+        </>
+      ),
+    },
+    {
+      title: "EMAIL",
+      dataIndex: "email",
+      key: "email",
+      width: "15%",
+      render: (email) => <a>{email}</a>,
+    },
+    {
+      title: "PHONE",
+      dataIndex: "phone",
+      key: "phone",
+      render: (phone) => <div>{phone}</div>,
+    },
+    {
+      title: "ADDRESS",
+      dataIndex: "address",
+      key: "address",
+      render: (address) => (
+        <>
+          <div>{address}</div>
+        </>
+      ),
+    },
+    {
+      title: "GENDER",
+      dataIndex: "gender",
+      key: "gender",
+      render: (gender) => <div>{gender === 1 ? "Nam" : "Nữ"}</div>,
+    },
+    {
+      title: "BIRTH",
+      dataIndex: "birth",
+      key: "birth",
+      render: (birth) => <div>{moment(birth).format("DD-MM-YYYY")}</div>,
+    },
+    {
+      title: "ROLE",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => (
+        <>
+          {role === "employee" ? (
+            <Tag color="green">{role}</Tag>
+          ) : (
+            <Tag color="red">{role}</Tag>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "LOCKED",
+      dataIndex: "locked",
+      key: "locked",
+      render: (locked) => (
+        <div>
+          <Switch
+            checked={locked}
+            // onChange={(value) => handleSwitchChange(value, locked)}
+            disabled
+          />
+        </div>
+      ),
+    },
+    ...(currentUserInfo.role !== "employee"
+      ? [
+          {
+            title: "ACTION",
+            key: "action",
+            fixed: "right",
+            render: (text, record) => (
+              <>
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={() => showModal(record)}
+                  disabled={currentUserInfo.role == "employee" ? true : false}
+                >
+                  {/* {pencil} */}
+                  Edit
+                  {/* {record.username} */}
+                </Button>
+                {/* <Button type="link" className="darkbtn">
+                {pencil} EDIT
+              </Button> */}
+              </>
+            ),
+          },
+        ]
+      : []),
+  ];
+  const columnsEmployee = [
+    {
+      title: "NAME",
+      dataIndex: "name",
+      key: "name",
+      fixed: "left",
+      width: "15%",
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -135,6 +251,7 @@ function Accounts() {
       title: "EMAIL",
       dataIndex: "email",
       key: "email",
+      width: "15%",
       render: (email) => <Title level={5}>{email}</Title>,
     },
     {
@@ -147,6 +264,7 @@ function Accounts() {
       title: "ADDRESS",
       dataIndex: "address",
       key: "address",
+      width: "15%",
       render: (address) => (
         <>
           <div className="semibold">{address}</div>
@@ -203,30 +321,13 @@ function Accounts() {
       fixed: "right",
       render: (text, record) => (
         <>
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => showModal(record)}
-          >
-            {/* {pencil} */}
+          <Button type="primary" className="tag-primary" disabled>
             Edit
-            {/* {record.username} */}
           </Button>
-          {/* <Button type="link" className="darkbtn">
-            {pencil} EDIT
-          </Button> */}
-          {/* <Button
-            type="danger"
-            className="tag-primary"
-            onClick={() => showModal(record)}
-          >
-            Delete
-          </Button> */}
         </>
       ),
     },
   ];
-
   useEffect(() => {
     getAllUsers();
     getAllSubjects();
@@ -303,26 +404,44 @@ function Accounts() {
             <Card
               bordered={false}
               className="criclebox tablespace mb-24"
-              title="INFORMATION ACCOUNTS"
+              title="Account List"
+              extra={
+                currentUserInfo.role !== "employee" && (
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    onClick={() => history.push("/create-account")}
+                    style={{ align: "right" }}
+                  >
+                    Create Account
+                  </Button>
+                )
+              }
             >
               <div className="table-responsive">
                 <Table
-                  columns={columns}
+                  columns={
+                    // currentUserInfo.role == "employee"
+                    //   ? columnsEmployee
+                    //   :
+                    columns
+                  }
                   dataSource={filteredArray}
                   pagination={false}
                   className="ant-border-space"
                   loading={isLoading}
-                  // bordered
-                  title={() => (
-                    <Button
-                      type="primary"
-                      className="tag-primary"
-                      onClick={() => history.push("/create-account")}
-                      style={{ align: "right" }}
-                    >
-                      Create Account
-                    </Button>
-                  )}
+                  bordered
+                  scroll={{ x: 1600, y: 415 }}
+                  // title={() => (
+                  //   <Button
+                  //     type="primary"
+                  //     className="tag-primary"
+                  //     onClick={() => history.push("/create-account")}
+                  //     style={{ align: "right" }}
+                  //   >
+                  //     Create Account
+                  //   </Button>
+                  // )}
                 />
               </div>
             </Card>
@@ -349,7 +468,7 @@ function Accounts() {
                 <div className="author-info">
                   <Title level={5}>Subject</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: '100%' }}
                     onChange={(value) => {
                       handleChangeSubject(
                         value
@@ -378,7 +497,7 @@ function Accounts() {
                   <Title level={5}>Role</Title>
                   <Select
                     // defaultValue={selectedRecord.role}
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}

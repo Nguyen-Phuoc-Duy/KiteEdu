@@ -11,7 +11,7 @@
 */
 
 import { useState, useEffect } from "react";
-
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import {
   Row,
   Col,
@@ -36,6 +36,10 @@ import {
   TwitterOutlined,
   FacebookFilled,
   DownOutlined,
+  LogoutOutlined,
+  RightCircleFilled,
+  SmileFilled,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 
 import { NavLink, Link } from "react-router-dom";
@@ -170,21 +174,22 @@ const data = [
 ];
 
 const menu = (
-  <List
-    min-width="100%"
-    className="header-notifications-dropdown "
-    itemLayout="horizontal"
-    dataSource={data}
-    renderItem={(item) => (
-      <List.Item>
-        <List.Item.Meta
-          avatar={<Avatar shape="square" src={item.avatar} />}
-          title={item.title}
-          description={item.description}
-        />
-      </List.Item>
-    )}
-  />
+  // <List
+  //   min-width="100%"
+  //   className="header-notifications-dropdown "
+  //   itemLayout="horizontal"
+  //   dataSource={data}
+  //   renderItem={(item) => (
+  //     <List.Item>
+  //       <List.Item.Meta
+  //         avatar={<Avatar shape="square" src={item.avatar} />}
+  //         title={item.title}
+  //         description={item.description}
+  //       />
+  //     </List.Item>
+  //   )}
+  // />
+  <></>
 );
 
 const logsetting = [
@@ -277,19 +282,33 @@ function Header({
 
   const userSignOut = (
     <Menu>
+      {/* <Link to="/Profile" className="btn-sign-in">
+        <Menu.Item primary onClick={() => history.push("/Profile")}>
+          Profile
+        </Menu.Item>
+      </Link> */}
       <Link to="/sign-in" className="btn-sign-in">
-        <Menu.Item danger onClick={() => localStorage.removeItem("userInfo")}>
+        <Menu.Item danger onClick={() => localStorage.removeItem("userInfo")} >
           Sign out
         </Menu.Item>
       </Link>
     </Menu>
   );
-
+  const history = useHistory();
+  const toProfile = (
+    <Menu>
+      <Link to="/Profile" className="btn-sign-in">
+        <Menu.Item primary onClick={() => history.push("/Profile")} >
+          Profile
+        </Menu.Item>
+      </Link>
+    </Menu>
+  );
   return (
     <>
-      <div className="setting-drwer" onClick={showDrawer}>
+      {/* <div className="setting-drwer" onClick={showDrawer}>
         {setting}
-      </div>
+      </div> */}
       <Row gutter={[24, 0]}>
         <Col span={24} md={6}>
           <Breadcrumb>
@@ -310,8 +329,14 @@ function Header({
           </div>
         </Col>
         <Col span={24} md={18} className="header-control">
-          <Badge size="small" count={4}>
-            <Dropdown overlay={menu} trigger={["click"]}>
+          <Badge
+            size="small"
+            // count={4}
+          >
+            <Dropdown
+              overlay={menu}
+              // trigger={["click"]}
+            >
               <a
                 href="#pablo"
                 className="ant-dropdown-link"
@@ -321,9 +346,21 @@ function Header({
               </a>
             </Dropdown>
           </Badge>
-          <Button type="link" onClick={showDrawer}>
+          {/* <Button type="link" 
+           onClick={showDrawer}
+          >
             {logsetting}
-          </Button>
+          </Button> */}
+          <Dropdown overlay={toProfile}>
+            <div className="btn-sign-in" style={{cursor: "pointer"}}>
+              {logsetting}
+              {/* {currentUserInfo ? (
+                <span>{currentUserInfo.username}</span>
+              ) : (
+                <span>Sign in</span>
+              )} */}
+            </div>
+          </Dropdown>
           <Button
             type="link"
             className="sidebar-toggler"
@@ -439,21 +476,21 @@ function Header({
             </div>
           </Drawer>
           <Dropdown overlay={userSignOut}>
-            <div className="btn-sign-in">
+            <div className="btn-sign-in" style={{cursor: "pointer"}}>
               {profile}
-              {currentUserInfo.username ? (
+              {currentUserInfo ? (
                 <span>{currentUserInfo.username}</span>
               ) : (
-                <span>Sign in</span>
+                <span onClick={() => history.push("sign-in")} >User Forbidden</span>
               )}
             </div>
           </Dropdown>
 
-          <Input
+          {/* <Input
             className="header-search"
             placeholder="Type here..."
             prefix={<SearchOutlined />}
-          />
+          /> */}
         </Col>
       </Row>
     </>
