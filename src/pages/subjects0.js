@@ -349,7 +349,7 @@
 //                 <div className="author-info">
 //                   <Title level={5}>Status</Title>
 //                   <Select
-//                     style={{ width: 120 }}
+//                     style={{ width: '100%' }}
 //                     onChange={(value) => {
 //                       handleChange(value);
 //                     }}
@@ -394,7 +394,7 @@
 //               <div className="author-info">
 //                 <Title level={5}>Status</Title>
 //                 <Select
-//                   style={{ width: 120 }}
+//                   style={{ width: '100%' }}
 //                   onChange={(value) => {
 //                     handleChangeAdd(value);
 //                   }}
@@ -844,7 +844,7 @@ function Subjects() {
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}
@@ -889,7 +889,7 @@ function Subjects() {
               <div className="author-info">
                 <Title level={5}>Status</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: "100%" }}
                   onChange={(value) => {
                     handleChangeAdd(value);
                   }}

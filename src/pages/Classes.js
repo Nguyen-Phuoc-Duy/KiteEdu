@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Row,
   Col,
@@ -12,6 +12,8 @@ import {
   Input,
   Space,
 } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import Highlighter from 'react-highlight-words';
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -26,7 +28,7 @@ function Classes() {
   const [name, setName] = useState(null);
   const [lecturer, setLecturer] = useState(null);
   const [subject, setSubject] = useState(null);
-  const [statusStates1, setStatusStates1] = useState(null);
+  const [lecturerId, setLecturerId] = useState(null);
   const [name1, setName1] = useState(null);
   const [statusPupil, setStatusPupil] = useState(null);
   const [classPupils, setClassPupils] = useState([]);
@@ -56,7 +58,129 @@ function Classes() {
     addPupilInClass,
     detailClass,
     errorMessage,
+    employeeList,
+    getEmployee,
+    classList,
   } = accountStore;
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+      const handleFilterClose = () => {
+        clearFilters && handleReset(clearFilters);
+        setSelectedKeys([]);
+        confirm(); // Xác nhận việc đóng filter
+        setSearchText('');
+        setSearchedColumn('');
+      };
+  
+      return (
+        <div
+          style={{
+            padding: 8,
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{
+              marginBottom: 8,
+              display: 'block',
+            }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={handleFilterClose} // Gọi hàm để đóng filter
+              // onClick={() => {
+              //   close();
+              // }}
+            >
+              Close
+            </Button>
+          </Space>
+        </div>
+      );
+    },
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
+
 
   const handleChangeSelect = (value) => {
     // const result = value.split(' ').pop();
@@ -69,6 +193,7 @@ function Classes() {
   };
 
   const showModal = (record) => {
+    console.log("record", record);
     setSelectedRecord(record);
     setStatusStates(record.status);
     setName(record.name);
@@ -138,12 +263,14 @@ function Classes() {
       return match ? match[0] : null;
     });
     const transformedArrayA = uuidArray.map((id) => ({ id }));
-    // console.log("réult", uuidArray, transformedArrayA);
+
+    const filteredObjects = dataEmployee.filter((obj) => obj.ID === lecturerId);
+    const subjectId = filteredObjects.map((obj) => obj.subjectId).join(", ");
     createClass({
       name: name1,
-      status: statusStates1,
-      userId: currentUserInfo.id,
-      subjectId: currentUserInfo.subjectId,
+      status: "started",
+      userId: lecturerId,
+      subjectId: subjectId,
       listPupil: transformedArrayA,
     });
     getPupilByClass({ ID: idClass });
@@ -198,9 +325,13 @@ function Classes() {
     // console.log("name", name);
   };
 
+  const handleFilter = (value) => {
+    console.log("aaaaaaaaa", value);
+  };
+
   const handleChange1 = (value) => {
     // console.log("vvvvvvvvvvvvvvvvvvvvvvv", value);
-    setStatusStates1(value);
+    setLecturerId(value);
   };
 
   const handleChangeName1 = (value) => {
@@ -214,6 +345,7 @@ function Classes() {
       title: "NAME",
       dataIndex: "name",
       key: "name",
+      ...getColumnSearchProps('name'),
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -227,6 +359,7 @@ function Classes() {
       title: "LECTURER",
       dataIndex: "userName",
       key: "userId",
+      ...getColumnSearchProps('userName'),
       render: (userId) => (
         <>
           <div className="avatar-info">
@@ -239,11 +372,10 @@ function Classes() {
       title: "SUBJECT",
       dataIndex: "subjectName",
       key: "subjectId",
+      ...getColumnSearchProps('subjectName'),
       render: (subjectId) => (
         <>
-          <div className="semibold">
-          {subjectId}
-          </div>
+          <div className="semibold">{subjectId}</div>
         </>
       ),
     },
@@ -265,6 +397,7 @@ function Classes() {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      ...getColumnSearchProps('status'),
       render: (status) => (
         <>
           {status === "finished" ? (
@@ -297,7 +430,16 @@ function Classes() {
           <Button
             type="primary"
             className="tag-primary"
-            onClick={() => history.push("/lessons", record.ID)}
+            onClick={() =>
+              history.push("/lessons", {
+                state: record.ID,
+                lecturer: record.userId,
+                class: record.ID,
+                status: record.status,
+                nameLecturer: record.userName,
+                nameClass: record.name,
+              })
+            }
           >
             Lessons
           </Button>
@@ -350,71 +492,75 @@ function Classes() {
       align: "center",
       render: (text, record) => (
         <>
-          {currentUserInfo.role === "employee" && statusStates == "started" ? (
-            <>
-              <Button
-                type="primary"
-                className="tag-primary"
-                onClick={() => handleAddPupil(record.pupilId)}
-              >
-                Add
-              </Button>{" "}
-              <Button
-                type="danger"
-                className="tag-primary"
-                onClick={() => handleRemovePupil(record.pupilId)}
-              >
-                Remove
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button type="primary" className="tag-primary" disabled>
-                Add
-              </Button>{" "}
-              <Button type="danger" className="tag-primary" disabled>
-                Remove
-              </Button>
-            </>
-          )}
+          {
+            // currentUserInfo.role === "employee" &&
+            statusStates == "started" ? (
+              <>
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={() => handleAddPupil(record.pupilId)}
+                >
+                  Add
+                </Button>{" "}
+                <Button
+                  type="danger"
+                  className="tag-primary"
+                  onClick={() => handleRemovePupil(record.pupilId)}
+                >
+                  Remove
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button type="primary" className="tag-primary" disabled>
+                  Add
+                </Button>{" "}
+                <Button type="danger" className="tag-primary" disabled>
+                  Remove
+                </Button>
+              </>
+            )
+          }
         </>
       ),
     },
   ];
-
-  const dataArray = Array.from(ClassByUser);
-
   const dataArrayB = Array.from(subjectList);
 
   const dataArrayC = Array.from(userList);
 
-  let newArray1 = dataArray.map((item1) => {
-    // Tìm phần tử tương ứng trong Array2
+  const dataArrayD = Array.from(pupilList);
+  //  const dataEmployee = JSON.parse(JSON.stringify(employeeList))
+  const dataEmployee = Array.from(employeeList);
+
+  let newArray1 = [];
+  const dataArray =
+    currentUserInfo.role == "employee"
+      ? Array.from(ClassByUser)
+      : Array.from(classList);
+
+  newArray1 = dataArray.map((item1) => {
     let correspondingItem = dataArrayB.find(
       (item2) => item2.ID === item1.subjectId
     );
+    let correspondingItem1 = dataArrayC.find(
+      (item2) => item2.ID === item1.userId
+    );
 
-    let correspondingItem1 = dataArrayC.find((item2) => {
-      return item2.ID === item1.userId;
-    });
+    const students = item1.pupils || [];
+    const attendedStudents = students.filter(
+      (pupil) => pupil.status === "attended"
+    );
+    const studentsCount = attendedStudents.length;
+
     return {
       ...item1,
       userName: correspondingItem1 ? correspondingItem1.name : null,
       subjectName: correspondingItem ? correspondingItem.name : null,
+      studentsCount: studentsCount,
     };
   });
-  newArray1.forEach((item) => {
-    console.log("itemitemitemitem", item);
-    if (item.pupils) {
-      const attendedStudents = item.pupils.filter(
-        (pupil) => pupil.status === "attended"
-      );
-      item.studentsCount = attendedStudents.length;
-    } else {
-      item.studentsCount = 0; // Nếu không có mảng pupils, gán studentsCount là 0
-    }
-  });
-  const dataArrayD = Array.from(pupilList);
 
   const listPupilByClass = Array.from(PupilByClass);
 
@@ -461,13 +607,17 @@ function Classes() {
   }));
 
   optionsUpdateFinal = arrayPupilsUpdate;
-  console.log("arrayPupilsarrayPupils", arrayPupils, options, optionsUpdate);
-  // console.log("errorMessageerrorMessage", errorMessage);
+  useEffect(() => {
+    createClass();
+    updateClass();
+  }, []);
+
   useEffect(() => {
     getAllClasses();
     getAllSubjects();
     getAllUsers();
     getAllPupils();
+    getEmployee();
     getClassByUser({
       ID: currentUserInfo.id,
       role: currentUserInfo.role,
@@ -475,7 +625,6 @@ function Classes() {
     getPupilByClass({
       ID: idClass,
     });
-    console.log("detailClass", detailClass);
   }, [
     isModalVisible1,
     isModalVisible,
@@ -484,13 +633,13 @@ function Classes() {
     getAllUsers,
     getAllPupils,
     getClassByUser,
-    currentUserInfo.id,
-    currentUserInfo.role,
+    // currentUserInfo.id,
+    // currentUserInfo.role,
     getPupilByClass,
-    idClass,
-    detailClass,
-    createClass,
-    updateClass,
+    // idClass,
+    // detailClass,
+    // createClass,
+    // updateClass,
   ]);
   return (
     <>
@@ -503,17 +652,20 @@ function Classes() {
               title="Class List"
               extra={
                 <>
-                  {/* {errorMessage && (
+                  {errorMessage && (
                     <Modal
                       title="Notification"
                       visible={visible}
                       footer={null}
                       onCancel={() => setVisible(false)}
                     >
-                      <h3>{errorMessage}</h3>
+                      <p>
+                        <b>{errorMessage}</b>
+                      </p>
                     </Modal>
-                  )} */}
-                  {currentUserInfo.role === "employee" ? (
+                  )}
+                  <Col span={24} md={24} className="header-control">
+                  {currentUserInfo.role !== "employee" ? (
                     <Button
                       type="primary"
                       className="tag-primary"
@@ -525,6 +677,15 @@ function Classes() {
                   ) : (
                     ""
                   )}
+                    {/* <Input
+                      className="header-search"
+                      placeholder="Type here..."
+                      prefix={<SearchOutlined />}
+                      onChange={(e) => handleFilter(e.target.value)}
+                    /> */}
+                    
+                  </Col>
+                  
                 </>
               }
             >
@@ -557,7 +718,7 @@ function Classes() {
       <Modal
         title="DETAIL"
         visible={isModalVisible}
-        onOk={currentUserInfo.role === "employee" ? handleOk : handleCancel}
+        onOk={handleOk}
         onCancel={handleCancel}
         width={1000}
         // bodyStyle={{ height: 440 }}
@@ -574,7 +735,12 @@ function Classes() {
                     onChange={(event) => {
                       handleChangeName(event.target.value);
                     }}
-                    disabled={currentUserInfo.role == "employee" && statusStates == "started" ? false : true}
+                    disabled={
+                      currentUserInfo.role !== "employee" &&
+                      statusStates == "started"
+                        ? false
+                        : true
+                    }
                   />
                 </div>
               </Col>
@@ -594,12 +760,14 @@ function Classes() {
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}
                     value={statusStates}
-                    disabled={currentUserInfo.role == "employee" ? false : true}
+                    disabled={
+                      currentUserInfo.role !== "employee" ? false : true
+                    }
                   >
                     <Option value="started">started</Option>
                     <Option value="finished">finished</Option>
@@ -607,6 +775,22 @@ function Classes() {
                   </Select>
                 </div>
               </Col>
+              {/* <Scheduler
+                  timeZone="Asia/Bangkok"
+                  dataSource={dataSource}
+                  views={views}
+                  defaultCurrentView="day"
+                  defaultCurrentDate={currentDate}
+                  height={470}
+                  startDayHour={0}
+                  endDayHour={24}
+                  remoteFiltering={false}
+                  dateSerializationFormat="yyyy-MM-ddTHH:mm:ssZ"
+                  textExpr="Text"
+                  startDateExpr="StartDate"
+                  endDateExpr="EndDate"
+                  allDayExpr="AllDay"
+                /> */}
               <Col span={12}>
                 <div className="author-info">
                   <Title level={5}>Pupils</Title>
@@ -619,7 +803,12 @@ function Classes() {
                       // defaultValue={["a10", "c12"]}
                       onChange={handleChangeSelectUpdate}
                       options={optionsUpdateFinal}
-                      disabled={currentUserInfo.role == "employee" && statusStates == "started" ? false : true}
+                      disabled={
+                        currentUserInfo.role !== "employee" &&
+                        statusStates == "started"
+                          ? false
+                          : true
+                      }
                     />
                   </Space>
                 </div>
@@ -655,7 +844,7 @@ function Classes() {
       >
         <>
           <Row gutter={[16, 16]}>
-            <Col span={12}>
+            <Col span={8}>
               <div className="author-info">
                 <Title level={5}>Class</Title>
                 <Input
@@ -666,20 +855,35 @@ function Classes() {
                 />
               </div>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <div className="author-info">
                 <Title level={5}>Status</Title>
-                <Select
-                  style={{ width: 120 }}
-                  onChange={(value) => {
-                    handleChange1(value);
-                  }}
-                  value={statusStates1 || "started"}
-                  disabled
-                >
+                <Select style={{ width: "100%" }} value={"started"} disabled>
                   <Option value="started">started</Option>
                   <Option value="finished">finished</Option>
                   <Option value="canceled">canceled</Option>
+                </Select>
+              </div>
+            </Col>
+            <Col span={8}>
+              <div className="author-info">
+                <Title level={5}>Lecturer</Title>
+                <Select
+                  style={{ width: "100%" }}
+                  onChange={(value) => {
+                    handleChange1(value);
+                  }}
+                >
+                  {dataEmployee.map((item) => {
+                    if (item.role === "employee") {
+                      return (
+                        <Option key={item.ID} value={item.ID}>
+                          {item.name}
+                        </Option>
+                      );
+                    }
+                    return null; // Trả về null nếu item.status không phải 'active'
+                  })}
                 </Select>
               </div>
             </Col>

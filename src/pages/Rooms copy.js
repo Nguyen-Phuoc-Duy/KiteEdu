@@ -241,7 +241,7 @@ function Rooms() {
               title="INFORMATION ROOMS"
               extra={
                 <>
-                {errorMessageR && (
+                  {errorMessageR && (
                     <Modal
                       title="Notification"
                       visible={visible}
@@ -251,7 +251,7 @@ function Rooms() {
                       <p>{errorMessageR}</p>
                     </Modal>
                   )}
-                  
+
                   <Button
                     type="primary"
                     className="tag-primary"
@@ -308,7 +308,7 @@ function Rooms() {
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}
@@ -354,7 +354,7 @@ function Rooms() {
               <div className="author-info">
                 <Title level={5}>Status</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: "100%" }}
                   onChange={(value) => {
                     handleChange1(value);
                   }}

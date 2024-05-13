@@ -23,6 +23,7 @@ import {
   Col,
   Select,
   DatePicker,
+  Modal,
 } from "antd";
 import Title from "antd/lib/skeleton/Title";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -33,15 +34,40 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const CreateAccount = () => {
   const history = useHistory();
+  const [visible1, setVisible1] = useState(false);
+  const [errorMessage1, seterrorMessage1] = useState("");
+  const [visible, setVisible] = useState(false);
   const { accountStore } = useStore();
-  const { createUser, subjectList, getAllSubjects, currentUserInfo } =
-    accountStore;
+  const {
+    createUser,
+    subjectList,
+    getAllSubjects,
+    currentUserInfo,
+    errorMessage,
+    isLoading,
+  } = accountStore;
   const [form] = Form.useForm();
+  useEffect(() => {
+    // Kiểm tra errorMessage chỉ khi dữ liệu đã tải lần đầu tiên và không đang trong quá trình tải
+    if (errorMessage && isLoading && currentUserInfo) {
+      setVisible(true);
+      const timer = setTimeout(() => {
+        form.resetFields();
+        setVisible(false);
 
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
   const onFinish = (values) => {
-    console.log("finishResults", values);
-    createUser(values);
-    form.resetFields();
+    console.log("finishResults", values.password);
+    if (values.password === values.confirmPassword) {
+      createUser(values);
+      
+    } else {
+      seterrorMessage1("❌ password does not match!");
+      setVisible1(true);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -67,12 +93,43 @@ const CreateAccount = () => {
   });
   return (
     <>
-      <div
-        className="layout-default  layout-sign-up">
+      <div className="layout-default  layout-sign-up">
         <Card
           className="header-solid h-full ant-card pt-0"
-          title={<h1>INFORMATION</h1>}
+          title={
+            <h6>
+              <b>INFORMATION</b>
+            </h6>
+          }
           bordered={false}
+          extra={
+            <>
+              {errorMessage && (
+                <Modal
+                  title="Notification"
+                  visible={visible}
+                  footer={null}
+                  onCancel={() => setVisible(false)}
+                >
+                  <p>
+                    <b>{errorMessage}</b>
+                  </p>
+                </Modal>
+              )}
+              {errorMessage1 && (
+                <Modal
+                  title="Notification"
+                  visible={visible1}
+                  footer={null}
+                  onCancel={() => setVisible1(false)}
+                >
+                  <p>
+                    <b>{errorMessage1}</b>
+                  </p>
+                </Modal>
+              )}
+            </>
+          }
         >
           <Form
             name="basic"
@@ -93,7 +150,10 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Name" disabled= {currentUserInfo.role == "employee" ? true : false}/>
+                  <Input
+                    placeholder="Name"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -107,7 +167,10 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Username" disabled= {currentUserInfo.role == "employee" ? true : false}/>
+                  <Input
+                    placeholder="Username"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -125,7 +188,10 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Email" disabled= {currentUserInfo.role == "employee" ? true : false}/>
+                  <Input
+                    placeholder="Email"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -143,7 +209,10 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Phone Number" disabled= {currentUserInfo.role == "employee" ? true : false}/>
+                  <Input
+                    placeholder="Phone Number"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
 
@@ -153,7 +222,10 @@ const CreateAccount = () => {
                   label="Address"
                   rules={[{ required: true, message: "Please input address!" }]}
                 >
-                  <Input placeholder="Address" disabled= {currentUserInfo.role == "employee" ? true : false}/>
+                  <Input
+                    placeholder="Address"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
               <Col span={4}>
@@ -166,7 +238,7 @@ const CreateAccount = () => {
                     placeholder="Gender"
                     // onChange={onGenderChange}
                     allowClear
-                    disabled= {currentUserInfo.role == "employee" ? true : false}
+                    disabled={currentUserInfo.role == "employee" ? true : false}
                   >
                     <Option value="1">Nam</Option>
                     <Option value="0">Nữ</Option>
@@ -179,7 +251,9 @@ const CreateAccount = () => {
                   name="birth"
                   rules={[{ required: true, message: "Please input!" }]}
                 >
-                  <DatePicker disabled= {currentUserInfo.role == "employee" ? true : false}/>
+                  <DatePicker
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
               <Col span={4}>
@@ -191,7 +265,7 @@ const CreateAccount = () => {
                   <Select
                     placeholder="Subject"
                     // onChange={onGenderChange}
-                    disabled= {currentUserInfo.role == "employee" ? true : false}
+                    disabled={currentUserInfo.role == "employee" ? true : false}
                     allowClear
                     defaultValue={""}
                   >
@@ -216,7 +290,10 @@ const CreateAccount = () => {
                     { required: true, message: "Please input password!" },
                   ]}
                 >
-                  <Input.Password placeholder="Password" disabled= {currentUserInfo.role == "employee" ? true : false}/>
+                  <Input.Password
+                    placeholder="Password"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -230,8 +307,9 @@ const CreateAccount = () => {
                     },
                   ]}
                 >
-                  <Input.Password placeholder="Confirm Password" 
-                  disabled= {currentUserInfo.role == "employee" ? true : false}
+                  <Input.Password
+                    placeholder="Confirm Password"
+                    disabled={currentUserInfo.role == "employee" ? true : false}
                   />
                 </Form.Item>
               </Col>
@@ -286,7 +364,11 @@ const CreateAccount = () => {
               )} */}
               <Col span={4}>
                 <Form.Item>
-                  <Button htmlType="reset" style={{ width: "100%" }} disabled= {currentUserInfo.role == "employee" ? true : false}>
+                  <Button
+                    htmlType="reset"
+                    style={{ width: "100%" }}
+                    disabled={currentUserInfo.role == "employee" ? true : false}
+                  >
                     Cancel
                   </Button>
                 </Form.Item>
@@ -297,7 +379,7 @@ const CreateAccount = () => {
                     type="primary"
                     htmlType="submit"
                     style={{ width: "100%" }}
-                    disabled= {currentUserInfo.role == "employee" ? true : false}
+                    disabled={currentUserInfo.role == "employee" ? true : false}
                   >
                     Create
                   </Button>

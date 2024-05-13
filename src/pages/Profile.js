@@ -36,13 +36,8 @@ const Profile = () => {
   const [visible1, setVisible1] = useState(false);
   const { currentUserInfo, updateUserInfo, isLoading, errorMessage } =
     accountStore;
-  const [gender, setGender] = useState(
-    currentUserInfo.gender === true ? "Nam" : "Nữ"
-  );
+
   useEffect(() => {
-    if (currentUserInfo) {
-      setGender(currentUserInfo.gender);
-    }
 
     // Kiểm tra errorMessage chỉ khi dữ liệu đã tải lần đầu tiên và không đang trong quá trình tải
     if (errorMessage && isLoading && currentUserInfo) {
@@ -55,31 +50,25 @@ const Profile = () => {
   }, [currentUserInfo, errorMessage, isLoading]);
   const [errorMessage1, seterrorMessage1] = useState('');
   const onFinish = (values) => {
-    console.log('inin', values.password)
-    if(values.password === values.confirmPassword) {
+    console.log("inin", values.password);
+    if (values.password === values.confirmPassword) {
       updateUserInfo({
         ...values,
         ID: currentUserInfo.id,
       });
-      if (currentUserInfo) {
-        setGender(currentUserInfo.gender);
-        
-      }
+    } else {
+      seterrorMessage1("❌ New password does not match!");
+      setVisible1(true);
     }
-    else {
-      seterrorMessage1("❌ New password does not match!")
-      setVisible1(true)
-    }
-    
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
-  const onGenderChange = (value) => {
-    setGender(value);
-  };
+  // const onGenderChange = (value) => {
+  //   setGender(value);
+  // };
 
   return (
     <>
@@ -87,30 +76,38 @@ const Profile = () => {
         <Card
           loading={isLoading}
           className=" header-solid h-full ant-card pt-0"
-          title={<h1>Profile</h1>}
+          title={
+            <h6>
+              <b>Profile</b>
+            </h6>
+          }
           bordered={true}
           extra={
             <>
-              {/* {errorMessage && (
+              {errorMessage && (
                 <Modal
                   title="Notification"
                   visible={visible}
                   footer={null}
                   onCancel={() => setVisible(false)}
                 >
-                  <h3>{errorMessage}</h3>
+                  <p>
+                    <b>{errorMessage}</b>
+                  </p>
                 </Modal>
-              )} */}
-              {/* {errorMessage1 && (
+              )}
+              {errorMessage1 && (
                 <Modal
                   title="Notification"
                   visible={visible1}
                   footer={null}
                   onCancel={() => setVisible1(false)}
                 >
-                  <h3>{errorMessage1}</h3>
+                  <p>
+                    <b>{errorMessage1}</b>
+                  </p>
                 </Modal>
-              )} */}
+              )}
             </>
           }
         >
@@ -119,7 +116,7 @@ const Profile = () => {
             initialValues={{
               name: currentUserInfo.name,
               username: currentUserInfo.username,
-              gender: gender,
+              gender: currentUserInfo.gender == "1" ? "Nam" : "Nữ",
               email: currentUserInfo.email,
               phone: currentUserInfo.phone,
               birth: dayjs(currentUserInfo.birth),
@@ -205,7 +202,10 @@ const Profile = () => {
               </Col>
               <Col span={6}>
                 <Form.Item name="gender" label="Gender">
-                  <Select placeholder="Gender" onChange={onGenderChange}>
+                  <Select
+                    placeholder="Gender"
+                    // onChange={onGenderChange}
+                  >
                     <Option value="true">Nam</Option>
                     <Option value="false">Nữ</Option>
                   </Select>
@@ -243,7 +243,7 @@ const Profile = () => {
                   *Leave blank to keep the same password
                 </p>
               </Col>
-              <Col span={8}>
+              {/* <Col span={8}>
                 <Form.Item
                   name="currentPWD"
                   label="Current Password"
@@ -253,8 +253,8 @@ const Profile = () => {
                 >
                   <Input.Password placeholder="Current Password" />
                 </Form.Item>
-              </Col>
-              <Col span={8}>
+              </Col> */}
+              <Col span={12}>
                 <Form.Item
                   name="password"
                   label="New Password"
@@ -265,7 +265,7 @@ const Profile = () => {
                   <Input.Password placeholder="New Password" />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
                   name="confirmPassword"
                   label="Confirm Password"

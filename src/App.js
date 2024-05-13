@@ -1,3 +1,4 @@
+// import 'devextreme/dist/css/dx.light.css';
 
 import Home from "./pages/Home";
 import Tables from "./pages/Tables";
@@ -27,6 +28,7 @@ import Pupils from "./pages/Pupils";
 import CreatePupil from "./pages/CreatePupil";
 import Classes from "./pages/Classes";
 import Lessons from "./pages/Lessons";
+import SchedulerTable from "./pages/Scheduler"
 // import CreateClass from "./pages/CreateClass";
 // function App() {
 //   const history = useHistory();
@@ -101,7 +103,7 @@ function App() {
     <div className="App">
       <Switch>
         <Route path="/sign-in" exact component={SignIn} />
-        <Route path="/sign-up" exact component={SignUp} />
+        {/* <Route path="/sign-up" exact component={SignUp} /> */}
         <Main>
           {/* <PrivateRoute exact path="/dashboard" component={Home} /> */}
           <PrivateRoute exact path="/dashboard" component={Home} />
@@ -117,6 +119,7 @@ function App() {
             path="/profile"
             component={Profile}
           />
+          <PrivateRoute exact path="/scheduler" component={SchedulerTable} />
           <PrivateRoute exact path="/subjects" component={Subjects} />
           <PrivateRoute exact path="/rooms" component={Rooms} />
           <PrivateRoute exact path="/pupils" component={Pupils} />
@@ -124,7 +127,6 @@ function App() {
           <PrivateRoute exact path="/lessons" component={Lessons} />
           {/* <Redirect from="*" to="/dashboard" /> */}
           {/* <PrivateRoute exact path="/profile" component={Profile} /> */}
-          {/* <Redirect from="*" to="/dashboard" /> */}
           {/* Các Route khác chỉ hiển thị khi đã đăng nhập */}
         </Main>
         {/* Nếu người dùng truy cập vào một Route không tồn tại, redirect về trang dashboard */}

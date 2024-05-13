@@ -9,10 +9,13 @@ export default class AccountStore {
   errorCode = undefined;
   errorMessageLogin = undefined;
   userList = {};
+  employeeList = {};
   subjectList = {};
   roomList = {};
+  lessonList = {};
   pupilList = {};
   classList = {};
+  classListActive = {};
   detailClass = {};
   ClassByUser = {};
   PupilByClass = {};
@@ -50,7 +53,7 @@ export default class AccountStore {
     await axiosAgents.AuthAction.login(credentials).then((response) => {
       if (response.errCode === 200) {
         localStorage.setItem("userInfo", response.data.token);
-        window.location.replace("/dashboard");
+        window.location.replace("/scheduler");
       } else {
         runInAction(() => {
           this.errorMessageLogin = response.errMsg;
@@ -73,7 +76,19 @@ export default class AccountStore {
     });
     this.setIsLoading(false);
   };
-
+  getEmployee = async () => {
+    this.setIsLoading(true);
+    await axiosAgents.AuthAction.getEmployee().then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.employeeList = response.data;
+        });
+      } else {
+        console.log(response.errMsg);
+      }
+    });
+    this.setIsLoading(false);
+  };
   getAllSubjects = async () => {
     this.setIsLoading(true);
     await axiosAgents.SubjectAction.getAllSubjects().then((response) => {
@@ -102,6 +117,19 @@ export default class AccountStore {
     this.setIsLoading(false);
   };
 
+  getAllLessons = async () => {
+    this.setIsLoading(true);
+    await axiosAgents.LessonAction.getAllLessons().then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.lessonList = response.data;
+        });
+      } else {
+        console.log(response.errMsg);
+      }
+    });
+    this.setIsLoading(false);
+  };
   getAllPupils = async () => {
     this.setIsLoading(true);
     await axiosAgents.PupilAction.getAllPupils().then((response) => {
@@ -122,6 +150,20 @@ export default class AccountStore {
       if (response.errCode === 200) {
         runInAction(() => {
           this.classList = response.data;
+        });
+      } else {
+        console.log("getAllClassFailed", response.errMsg);
+      }
+    });
+    this.setIsLoading(false);
+  };
+
+  getAllClassesActive = async () => {
+    this.setIsLoading(true);
+    await axiosAgents.ClassAction.getAllClassesActive().then((response) => {
+      if (response.errCode === 200) {
+        runInAction(() => {
+          this.classListActive = response.data;
         });
       } else {
         console.log("getAllClassFailed", response.errMsg);
@@ -264,9 +306,9 @@ export default class AccountStore {
           console.log("ddddddddddddđ", response);
           localStorage.setItem("userInfo", response.token);
           this.errorMessage = response.errMsg;
-          runInAction(() => {
-            this.currentUserToken = response.token;
-          });
+          // runInAction(() => {
+          this.currentUserToken = response.token;
+          // });
         }
       );
     } catch (error) {
@@ -365,7 +407,7 @@ export default class AccountStore {
         this.errorMessage = response.errMsg;
       });
       await this.getClassByUser();
-      await this.getAllClasses()
+      await this.getAllClasses();
     } catch (error) {
       console.error("Error updating", error);
     }
@@ -374,11 +416,27 @@ export default class AccountStore {
 
   updateLesson = async (body) => {
     this.setIsLoading(true);
-    await axiosAgents.LessonAction.updateLesson(body).then((response) => {});
+    await axiosAgents.LessonAction.updateLesson(body).then((response) => {
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
+    });
     await this.getLessonByClass();
+    await this.getAllLessons();
     this.setIsLoading(false);
   };
 
+  updateLessonInLesson = async (body) => {
+    this.setIsLoading(true);
+    await axiosAgents.LessonAction.updateLessonInLesson(body).then((response) => {
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
+    });
+    await this.getLessonByClass();
+    await this.getAllLessons();
+    this.setIsLoading(false);
+  };
   adminUpdate = async (
     id,
     updateLockedBody,
@@ -418,7 +476,9 @@ export default class AccountStore {
   createUser = async (body) => {
     this.setIsLoading(true);
     await axiosAgents.AdminAction.createUser(body).then((response) => {
-      console.log("theResponse", response);
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
     });
     this.setIsLoading(false);
   };
@@ -469,10 +529,15 @@ export default class AccountStore {
   createLesson = async (body) => {
     this.setIsLoading(true);
     await axiosAgents.LessonAction.createLesson(body).then((response) => {
-      console.log("bbbbbbbbbbbbbbbbbbbbb", response);
+      runInAction(() => {
+        this.errorMessage = response.errMsg;
+      });
     });
+    await this.getLessonByClass();
+    await this.getAllLessons();
     this.setIsLoading(false);
-  };
+  }; 
+
   removePupilInClass = async (body) => {
     console.log("body", body);
     this.setIsLoading(true);

@@ -158,17 +158,13 @@ function Accounts() {
       title: "GENDER",
       dataIndex: "gender",
       key: "gender",
-      render: (gender) => (
-        <div>{gender === 1 ? "Nam" : "Nữ"}</div>
-      ),
+      render: (gender) => <div>{gender === 1 ? "Nam" : "Nữ"}</div>,
     },
     {
       title: "BIRTH",
       dataIndex: "birth",
       key: "birth",
-      render: (birth) => (
-        <div>{moment(birth).format("DD-MM-YYYY")}</div>
-      ),
+      render: (birth) => <div>{moment(birth).format("DD-MM-YYYY")}</div>,
     },
     {
       title: "ROLE",
@@ -198,29 +194,32 @@ function Accounts() {
         </div>
       ),
     },
-    {
-      title: "ACTION",
-      key: "action",
-      fixed: "right",
-      render: (text, record) => (
-        <>
-        
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => showModal(record)}
-            disabled= {currentUserInfo.role == "employee" ? true : false}
-          >
-            {/* {pencil} */}
-            Edit
-            {/* {record.username} */}
-          </Button>
-          {/* <Button type="link" className="darkbtn">
-            {pencil} EDIT
-          </Button> */}
-        </>
-      ),
-    },
+    ...(currentUserInfo.role !== "employee"
+      ? [
+          {
+            title: "ACTION",
+            key: "action",
+            fixed: "right",
+            render: (text, record) => (
+              <>
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={() => showModal(record)}
+                  disabled={currentUserInfo.role == "employee" ? true : false}
+                >
+                  {/* {pencil} */}
+                  Edit
+                  {/* {record.username} */}
+                </Button>
+                {/* <Button type="link" className="darkbtn">
+                {pencil} EDIT
+              </Button> */}
+              </>
+            ),
+          },
+        ]
+      : []),
   ];
   const columnsEmployee = [
     {
@@ -407,15 +406,16 @@ function Accounts() {
               className="criclebox tablespace mb-24"
               title="Account List"
               extra={
-                <Button
-                  type="primary"
-                  className="tag-primary"
-                  onClick={() => history.push("/create-account")}
-                  style={{ align: "right" }}
-                  disabled= {currentUserInfo.role == "employee" ? true : false}
-                >
-                  Create Account
-                </Button>
+                currentUserInfo.role !== "employee" && (
+                  <Button
+                    type="primary"
+                    className="tag-primary"
+                    onClick={() => history.push("/create-account")}
+                    style={{ align: "right" }}
+                  >
+                    Create Account
+                  </Button>
+                )
               }
             >
               <div className="table-responsive">
@@ -423,8 +423,8 @@ function Accounts() {
                   columns={
                     // currentUserInfo.role == "employee"
                     //   ? columnsEmployee
-                    //   : 
-                      columns
+                    //   :
+                    columns
                   }
                   dataSource={filteredArray}
                   pagination={false}
@@ -468,7 +468,7 @@ function Accounts() {
                 <div className="author-info">
                   <Title level={5}>Subject</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: '100%' }}
                     onChange={(value) => {
                       handleChangeSubject(
                         value
@@ -497,7 +497,7 @@ function Accounts() {
                   <Title level={5}>Role</Title>
                   <Select
                     // defaultValue={selectedRecord.role}
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}

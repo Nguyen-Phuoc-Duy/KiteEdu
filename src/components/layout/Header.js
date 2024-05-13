@@ -481,7 +481,7 @@ function Header({
               {currentUserInfo ? (
                 <span>{currentUserInfo.username}</span>
               ) : (
-                <span onClick={() => history.push("sign-in")} >Sign in</span>
+                <span onClick={() => history.push("sign-in")} >User Forbidden</span>
               )}
             </div>
           </Dropdown>

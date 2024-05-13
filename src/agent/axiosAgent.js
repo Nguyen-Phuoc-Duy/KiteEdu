@@ -33,6 +33,9 @@ const AuthAction = {
   getAllUsers: () => {
     return request.get(`/users/getAll`);
   },
+  getEmployee: () => {
+    return request.get(`/users/getEmployee`);
+  },
   updateUserInfo: (newUserInfo) => {
     return request.post(`/users/updateProfile`, newUserInfo);
   },
@@ -95,6 +98,9 @@ const ClassAction = {
   getAllClasses: () => {
     return request.get(`/classes/getAll`);
   },
+  getAllClassesActive: () => {
+    return request.get(`/classes/getAllClassesActive`);
+  },
   updateClass: (body) => {
     return request.post(`/class/updateClass`, body);
   },
@@ -122,6 +128,9 @@ const ClassAction = {
 };
 
 const LessonAction = {
+  getAllLessons: () => {
+    return request.get(`/lessons/getAll`);
+  },
   getPupilByLesson: (body) => {
     return request.post(`/lesson/getPupilByLesson`, body);
   },
@@ -137,8 +146,14 @@ const LessonAction = {
   createLesson: (body) => {
     return request.post(`/lesson/createLesson`, body);
   },
+  addLesson: (body) => {
+    return request.post(`/lesson/addLesson`, body);
+  },
   updateLesson: (body) => {
     return request.post(`/lesson/updateLesson`, body);
+  },
+  updateLessonInLesson: (body) => {
+    return request.post(`/lesson/updateLessonInLesson`, body);
   },
   presentPupilInClass: (body) => {
     return request.post(`/lesson/presentPupilInClass`, body);

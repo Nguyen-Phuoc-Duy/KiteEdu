@@ -68,7 +68,7 @@ const SignIn = () => {
       <Layout className="layout-default layout-signin">
         <Header>
           <div className="header-col header-brand">
-            <h1>KiteEdu</h1>
+            <h6>KiteEdu</h6>
           </div>
         </Header>
 
@@ -142,7 +142,7 @@ const SignIn = () => {
                   className="aligin-center"
                   valuePropName="checked"
                 >
-                  {errorMessageLogin && <h3>{errorMessageLogin}</h3>}
+                  {errorMessageLogin && <p><b>{errorMessageLogin}</b></p>}
                 </Form.Item>
                 <Form.Item>
                   <Button

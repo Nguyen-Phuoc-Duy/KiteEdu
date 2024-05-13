@@ -22,7 +22,7 @@ import { useLocation } from "react-router-dom";
 const { Title } = Typography;
 const { Option } = Select;
 
-function Lessons() {
+function SchedulerTable() {
   const location = useLocation();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible1, setIsModalVisible1] = useState(false);
@@ -31,6 +31,7 @@ function Lessons() {
   const [statusStates, setStatusStates] = useState(null);
   const [room, setRoom] = useState(null);
   const [name, setName] = useState(null);
+  const [lecturerId, setLecturerId] = useState(null);
   const [timeStart, setTimeStart] = useState(moment()); // Khởi tạo với thời gian hiện tại
   const [timeFinish, setTimeFinish] = useState(moment()); // Khởi tạo với thời gian hiện tại
   const [timeStartCreate, setTimeStartCreate] = useState(moment()); // Khởi tạo với thời gian hiện tại
@@ -47,57 +48,7 @@ function Lessons() {
   const [idClass, setIdClass] = useState(null);
   const [statusClass, setStatusClass] = useState(null);
   const history = useHistory();
-
-  const showModal = (record) => {
-    setIdClass(record?.classId);
-    console.log(
-      "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
-      record?.ID,
-      idClass,
-      record.classId
-    );
-    setStatusClass(record.statusClass);
-    console.log("AAAAAAAAAAACCCCCCCCCC", statusClass);
-    getDetailLesson({ ID: record.ID });
-    console.log("record", JSON.parse(JSON.stringify(record?.pupils)));
-    setSelectedRecord(record);
-    setArr(JSON.parse(JSON.stringify(record?.pupils)));
-    console.log("tttttttttttt", JSON.parse(JSON.stringify(record?.pupils)));
-    console.log("0,", selectedRecord);
-    newArrayPupil = [...arr];
-    setStatusStates(record.status);
-    setName(record.name);
-    setContent(record.content);
-    setSubject(record.subjectId);
-    setLecturer(record.userName);
-    setRoom(record.roomName);
-    setIdLesson(JSON.parse(JSON.stringify(record?.ID)));
-    setRoomId(record.roomId);
-    setRoomIdEdit(record.roomId);
-    setClassName(record.className);
-    setTimeStart(moment(record.timeStart));
-    setTimeFinish(moment(record.timeFinish));
-    setIsModalVisible(true);
-    getPupilByClass({
-      ID: record.classId || location.state,
-      // lessonId: idLesson,
-    });
-    getPupilByLesson({
-      classId: record.classId || location.state,
-      lessonId: record?.ID,
-    });
-    console.log("recordbfdbfhtrfh", record, timeFinish);
-  };
-  const showModal1 = (record) => {
-    newArrayPupil = [...arr];
-
-    console.log(newArrayPupil, arr);
-    getPupilByClass({
-      ID: location.state,
-      // lessonId: idLesson,
-    });
-    setIsModalVisible1(true);
-  };
+  const [visible, setVisible] = useState(false);
   const { accountStore } = useStore();
   const {
     isLoading,
@@ -128,44 +79,99 @@ function Lessons() {
     updatePupilStatusInClass,
     createLesson,
     PupilByLesson,
-    updateLesson,
+    updateLessonInLesson,
     getPupilByLesson,
     LessonByUser,
     getLessonByUser,
     getDetailLesson,
     detailLesson,
+    getAllLessons,
+    lessonList,
+    employeeList,
+    getEmployee,
+    errorMessage,
   } = accountStore;
+  const showModal = (record) => {
+    setIdClass(record?.classId);
+
+    setStatusClass(record?.statusClass);
+
+    getDetailLesson({ ID: record?.ID });
+
+    setSelectedRecord(record);
+    setArr(JSON.parse(JSON.stringify(record?.pupils)));
+
+    newArrayPupil = [...arr];
+    setStatusStates(record?.status);
+    setName(record?.name);
+    setContent(record?.content);
+    setSubject(record?.subjectId);
+    setLecturer(record?.userName);
+    setRoom(record?.roomName);
+    setIdLesson(JSON.parse(JSON.stringify(record?.ID)));
+    setRoomId(record?.roomId);
+    setRoomIdEdit(record?.roomId);
+    setClassName(record?.className);
+    setTimeStart(moment(record?.timeStart));
+    setTimeFinish(moment(record?.timeFinish));
+    setIsModalVisible(true);
+    getPupilByClass({
+      ID: record.classId || location.state?.state,
+      // lessonId: idLesson,
+    });
+    getPupilByLesson({
+      classId: record.classId || location.state?.state,
+      lessonId: record?.ID,
+    });
+  };
+  const showModal1 = (record) => {
+    newArrayPupil = [...arr];
+
+    getPupilByClass({
+      ID: location.state?.state,
+      // lessonId: idLesson,
+    });
+    setIsModalVisible1(true);
+  };
 
   const handleOk = () => {
-    updateLesson({
+    updateLessonInLesson({
       lessonId: idLesson,
       name: name,
       status: statusStates,
       content: content,
-      timeFinish: timeFinish,
-      timeStart: timeStart,
+      // timeFinish: timeFinish,
+      // timeStart: timeStart,
       roomId: roomIdEdit,
     });
-    getLessonByClass({ ID: location.state });
+    getLessonByClass({ ID: location.state?.state });
     getPupilByClass({
-      ID: location.state,
+      ID: location.state?.state,
       // lessonId: idLesson,
     });
     getPupilByLesson({
-      classId: location.state,
+      classId: location.state?.state,
       lessonId: idLesson,
     });
     setIsModalVisible(false);
+    if (errorMessage) {
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+    }
   };
 
   const handleOk1 = () => {
     createLesson({
       name: name1,
-      status: "started",
-      userId: currentUserInfo.id,
+      // status: "started",
+      // userId: location.state?.lecturer,
       // listPupil: transformedArrayA,
+      role: currentUserInfo.role,
       roomId: roomId,
-      classId: location.state,
+      classId: location.state?.state,
       content: contentCreate,
       timeFinish: timeFinishCreate,
       timeStart: timeStartCreate,
@@ -178,19 +184,25 @@ function Lessons() {
     getAllSubjects();
     getAllUsers();
     setIsModalVisible1(false);
-    // console.log("jkjk", currentUserInfo);
+    if (errorMessage) {
+      console.log("errorMessageerrorMessage", errorMessage);
+      setVisible(true); // Hiển thị modal
+      const timer = setTimeout(() => {
+        setVisible(false); // Ẩn modal sau 3 giây
+      }, 1000);
+      return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
+    }
   };
 
   const handlePresentPupil = async (value) => {
-    console.log("idClassidClass", idClass);
     await presentPupilInClass({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "present",
     });
-    console.log("value7777777777777777777777777777777", value, idClass);
+
     // await updatePupilStatusInClass({
     //   classId: location.state,
     //   pupilId: value.ID,
@@ -199,65 +211,59 @@ function Lessons() {
     //   userId: currentUserInfo.id,
     // });
     await getPupilByClass({
-      ID: idClass || location.state,
+      ID: idClass || location.state?.state,
       //  lessonId: idLesson
     });
     await getPupilByLesson({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       lessonId: idLesson,
     });
   };
   const handleAbsentPupil = async (value) => {
-    console.log("1111111111111111111111111111111", value);
-
     await presentPupilInClass({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "absent",
     });
     await getPupilByClass({
-      ID: idClass || location.state,
+      ID: idClass || location.state?.state,
     });
     await getPupilByLesson({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       lessonId: idLesson,
     });
   };
   const handleTardyPupil = async (value) => {
-    console.log("1111111111111111111111111111111", value);
-
     await presentPupilInClass({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "tardy",
     });
     await getPupilByClass({
-      ID: idClass || location.state,
+      ID: idClass || location.state?.state,
     });
     await getPupilByLesson({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       lessonId: idLesson,
     });
   };
   const handleExcusedPupil = async (value) => {
-    console.log("1111111111111111111111111111111", value);
-
     await presentPupilInClass({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       pupilId: value?.pupilId,
       lessonId: idLesson,
       userId: value?.userId,
       status: "excused",
     });
     await getPupilByClass({
-      ID: idClass || location.state,
+      ID: idClass || location.state?.state,
     });
     await getPupilByLesson({
-      classId: idClass || location.state,
+      classId: idClass || location.state?.state,
       lessonId: idLesson,
     });
   };
@@ -277,9 +283,11 @@ function Lessons() {
   const handleChange1 = (value) => {
     setRoomId(value);
   };
+  const handleChangeE = (value) => {
+    setLecturerId(value);
+  };
   const handleChangeEditRoom = (value) => {
     setRoomIdEdit(value);
-    console.log('ZZZZZ', roomIdEdit)
   };
   const handleChangeName1 = (value) => {
     setName1(value);
@@ -492,8 +500,12 @@ function Lessons() {
             </>
           ) : (
             <>
-              {currentUserInfo.role == "employee" &&
-              statusClass == "started" && statusStates == 'started' ? (
+              {(currentUserInfo.role == "employee" &&
+                location.state?.status == "started" &&
+                statusStates == "started") ||
+              (currentUserInfo.role !== "employee" &&
+                location.state?.status == "started" &&
+                statusStates == "started") ? (
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div
                     style={{
@@ -704,7 +716,7 @@ function Lessons() {
     // },
   ];
   const dataArray = Array.from(ClassByUser);
-  console.log("dataArraydataArray", dataArray);
+
   const dataArrayB = Array.from(subjectList);
 
   const dataArrayC = Array.from(userList);
@@ -729,7 +741,6 @@ function Lessons() {
   const dataArrayE = Array.from(roomList);
   const dataArrayG = Array.from(detailLesson);
 
-  console.log("dataArrayG", JSON.parse(JSON.stringify(detailLesson)));
   const listPupilByClass = Array.from(PupilByClass);
   let listPupilByClassArray = listPupilByClass.map((item1) => {
     let correspondingItem1 = dataArrayD.find((item2) => {
@@ -740,7 +751,7 @@ function Lessons() {
       pupilName: correspondingItem1 ? correspondingItem1.name : null,
     };
   });
-  console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", location.state);
+
   const listPupilByClass1 = Array.from(PupilByLesson);
 
   const arrayPupils = dataArrayD.map((itemB) => ({
@@ -759,7 +770,6 @@ function Lessons() {
     };
   });
 
-  console.log("newArrayPupilnewArrayPupil", newArrayPupil1, listPupilByClass1);
   let newArrayPupil = listPupilByClass1.map((item1) => {
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayD.find((item2) => {
@@ -771,7 +781,6 @@ function Lessons() {
     };
   });
 
-  console.log(" arr1111111111111", arr);
   let temp = []; // Khởi tạo một mảng temp để lưu trữ các phần tử từ mảng newArrayPupil.
   let check = []; // Khởi tạo một mảng check để lưu trữ các phần tử đã kiểm tra.
   temp = newArrayPupil.filter((e) => e.lessonId === idLesson); // Lọc các phần tử từ newArrayPupil với điều kiện lessonId bằng idLesson.
@@ -782,11 +791,10 @@ function Lessons() {
 
     temp.map((el) => {
       // Duyệt qua từng phần tử của mảng temp.
-      console.log("111111111111", el, el.pupilId, arr);
-      console.log("jjjjjjjjjjjj", temp);
+
       let checkItem = temArr.filter((code) => el.pupilId != code.ID);
       // Lọc các phần tử của mảng temArr với điều kiện pupilId không bằng ID.
-      console.log(checkItem);
+
       temArr = checkItem; // Gán lại temArr sau khi lọc.
     });
 
@@ -806,25 +814,19 @@ function Lessons() {
       };
       check.push(prt); // Thêm đối tượng prt vào mảng check.
     });
-
-    console.log("temArr", temArr);
-    console.log("temREsult", temREsult, check);
   } else {
     // newArrayPupil = newArrayPupil.filter((e) => e.lessonId == "");
 
-    console.log("jjjjjjjjjjjj", temp);
     let temArr = [...arr];
-    console.log(temArr);
 
     temp.map((el) => {
-      console.log("111111111111", el, el.pupilId, arr);
       let checkItem = temArr.filter((code) => el.pupilId != code.ID);
-      console.log(checkItem);
+
       temArr = checkItem;
     });
 
     let temREsult = temp.concat(temArr);
-    console.log("temREsult000000000000000000", temREsult, check);
+
     temREsult.map((e) => {
       let prt = {
         ID: e.ID,
@@ -837,19 +839,14 @@ function Lessons() {
       };
       check.push(prt);
     });
-
-    console.log("temArr", temArr);
-    console.log("temREsult", temREsult, check);
   }
-  console.log("newArrayPupil", newArrayPupil);
-  // console.log("temp", temp);
 
   newArrayPupil = [...new Map(check.map((item) => [item.ID, item])).values()];
   newArrayPupil = newArrayPupil.filter(
     (item) => item.id !== undefined || item.pupilName !== undefined
   );
   // Loại bỏ các phần tử trùng lặp từ mảng check và lưu kết quả vào mảng newArrayPupil.
-  console.log("newArrayPupil22222222222222", newArrayPupil);
+
   // console.log("hhhhhhhhhhhhhhhhh", check, newArrayPupil);
   // let obj = {};
   // obj = testMsg.errMsg;
@@ -864,7 +861,10 @@ function Lessons() {
     };
   });
 
-  const dataArrayAll = Array.from(LessonByUser);
+  const dataArrayAll =
+    currentUserInfo.role == "employee"
+      ? Array.from(LessonByUser)
+      : Array.from(lessonList);
   let newArrayLessonAll = dataArrayAll.map((item1) => {
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayC.find((item2) => {
@@ -884,7 +884,7 @@ function Lessons() {
       roomName: correspondingItem3 ? correspondingItem3.name : null,
     };
   });
-  console.log("newArrayLessonAll", newArrayLessonAll);
+
   newArrayLessonAll.forEach((lesson) => {
     if (
       lesson &&
@@ -897,23 +897,18 @@ function Lessons() {
       const attendedStudents = lesson.pupilsSum.filter(
         (pupil) => pupil.status === "attended"
       );
-      const attendedStudents1 = lesson.pupilsSum.filter(
-        (pupil) => pupil.classId === "attended"
-      );
       lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
     } else {
-      const presentStudents = lesson.pupils.filter(
-        (pupil) => pupil.status === "present" || pupil.status === "tardy"
-      );
-      const attendedStudents = lesson.pupilsSum.filter(
-        (pupil) => pupil.status === "attended"
-      );
+      const presentStudents =
+        lesson.pupils.filter(
+          (pupil) => pupil.status === "present" || pupil.status === "tardy"
+        ) || 0;
+      const attendedStudents =
+        lesson.pupilsSum.filter((pupil) => pupil.status === "attended") || 0;
       lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
     }
-
-    console.log("Lesson:", lesson);
   });
-  console.log("vv", newArrayLessonAll);
+
   // newArrayLessonAll.forEach((lesson) => {
   //   if (
   //     lesson &&
@@ -942,7 +937,7 @@ function Lessons() {
   //   console.log("Lesson:", lesson);
   // });
   const dataArray0 = Array.from(LessonByClass);
-  console.log("dataArray0dataArray0", dataArray0);
+
   let newArrayLesson = dataArray0.map((item1) => {
     // Tìm phần tử tương ứng trong Array2
     let correspondingItem1 = dataArrayC.find((item2) => {
@@ -987,7 +982,7 @@ function Lessons() {
       lesson.studentsCount = `${presentStudents.length}/${attendedStudents.length}`;
     }
   });
-
+  const dataEmployee = Array.from(employeeList);
   const onChange123S = (value, dateString) => {
     setTimeStart(moment(dateString).format("HH:mm DD-MM-YYYY"));
   };
@@ -996,17 +991,14 @@ function Lessons() {
   };
 
   const onChangeCreateS = (value, dateString) => {
-    console.log("dateStringdateString", dateString);
     setTimeStartCreate(moment(dateString).format("HH:mm DD-MM-YYYY"));
   };
   const onChangeCreateF = (value, dateString) => {
-    console.log("dateStringdateString2", dateString);
     setTimeFinishCreate(moment(dateString).format("HH:mm DD-MM-YYYY"));
   };
   ///////////
   const onOkCreateS = (value) => {
     setTimeStartCreate(value);
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", value, timeStartCreate);
   };
   const onOkCreateF = (value) => {
     setTimeFinishCreate(value);
@@ -1020,11 +1012,16 @@ function Lessons() {
   const dataArrayF = Array.from(ClassByUser);
   // Sử dụng phương thức find để tìm phần tử trong mảng có thuộc tính id bằng giá trị của biến a
   let foundElement = dataArrayF.find(
-    (element) => element.ID === location.state
+    (element) => element.ID === location.state?.state
   );
 
   // Nếu tìm thấy phần tử phù hợp, lấy giá trị của thuộc tính name, ngược lại gán bằng null hoặc một giá trị mặc định khác
   let b = foundElement ? foundElement.name : null;
+
+  useEffect(() => {
+    createLesson();
+    updateLessonInLesson();
+  }, []);
   useEffect(() => {
     getAllRooms();
     // getAllClasses();
@@ -1036,7 +1033,7 @@ function Lessons() {
       role: currentUserInfo.role,
     });
     getLessonByUser({ ID: currentUserInfo.id });
-
+    getAllLessons();
     // getPupilByClass({
     //   // ID: idClass,
     //   ID: location.state,
@@ -1046,8 +1043,9 @@ function Lessons() {
     //   classId: location.state,
     //   lessonId: idLesson,
     // });
-    getLessonByClass({ ID: location.state });
-    console.log("hohohoho", PupilByLesson);
+    getEmployee();
+    getLessonByClass({ ID: location.state?.state });
+    console.log("location.state", location.state);
   }, [
     isModalVisible1,
     isModalVisible,
@@ -1062,6 +1060,8 @@ function Lessons() {
     location.state,
     PupilByLesson,
     getLessonByUser,
+    getAllLessons,
+    getEmployee,
   ]);
 
   return (
@@ -1075,23 +1075,30 @@ function Lessons() {
               title="Lesson List"
               extra={
                 <>
-                  {currentUserInfo.role === "employee" &&
-                    location.state != null && (
+                  {errorMessage && (
+                    <Modal
+                      title="Notification"
+                      visible={visible}
+                      footer={null}
+                      onCancel={() => setVisible(false)}
+                    >
+                      <p>
+                        <b>{errorMessage}</b>
+                      </p>
+                    </Modal>
+                  )}
+                  {/* {currentUserInfo.role !== "employee" &&
+                    location.state?.status == "started" &&
+                    location.state?.state != null && (
                       <Button
                         type="primary"
                         className="tag-primary"
                         onClick={showModal1}
                         style={{ float: "right" }}
-                        // disabled={
-                        //   currentUserInfo.role == "employee" &&
-                        //   statusClass == "started" 
-                        //     ? false
-                        //     : true
-                        // }
                       >
                         Add Lesson
                       </Button>
-                    )}
+                    )} */}
                 </>
               }
             >
@@ -1100,6 +1107,7 @@ function Lessons() {
                   columns={columns}
                   dataSource={
                     location.state == null ? newArrayLessonAll : newArrayLesson
+                    // newArrayLesson
                   }
                   pagination={false}
                   className="ant-border-space"
@@ -1126,7 +1134,7 @@ function Lessons() {
       <Modal
         title="DETAIL"
         visible={isModalVisible}
-        onOk={currentUserInfo.role === "employee" ? handleOk : handleCancel}
+        onOk={handleOk}
         onCancel={handleCancel}
         width={1000}
       >
@@ -1141,9 +1149,10 @@ function Lessons() {
                     onChange={(event) => {
                       handleChangeName(event.target.value);
                     }}
+
                     disabled={
-                      currentUserInfo.role == "employee" &&
-                      statusClass == "started" && 
+                      currentUserInfo.role !== "employee" &&
+                      location.state?.status == "started" &&
                       statusStates == "started"
                         ? false
                         : true
@@ -1161,7 +1170,7 @@ function Lessons() {
                     }}
                     disabled={
                       currentUserInfo.role == "employee" &&
-                      statusClass == "started" && 
+                      location.state?.status == "started" &&
                       statusStates == "started"
                         ? false
                         : true
@@ -1173,14 +1182,14 @@ function Lessons() {
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}
                     value={statusStates}
                     disabled={
-                      currentUserInfo.role == "employee" &&
-                      statusClass == "started" 
+                      currentUserInfo.role !== "employee" &&
+                      location.state?.status == "started"
                         ? false
                         : true
                     }
@@ -1195,18 +1204,19 @@ function Lessons() {
                 <div className="author-info">
                   <Title level={5}>Room</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChangeEditRoom(value);
                     }}
-                    value={room}
-                    disabled={
-                      currentUserInfo.role == "employee" &&
-                      statusClass == "started" && 
-                      statusStates == "started"
-                        ? false
-                        : true
-                    }
+                    defaultValue={room}
+                    disabled={true}
+                    // disabled={
+                    //   currentUserInfo.role !== "employee" &&
+                    //   location.state?.status == "started" &&
+                    //   statusStates == "started"
+                    //     ? false
+                    //     : true
+                    // }
                   >
                     {dataArrayE.map((item) => {
                       if (item.status === "empty") {
@@ -1247,18 +1257,20 @@ function Lessons() {
                       format: "HH:mm",
                     }}
                     format="HH:mm DD-MM-YYYY"
+                    use12Hours
                     onChange={onChange123S}
                     onOk={onOk123S}
                     allowClear={true}
                     showNow={false}
                     value={timeStart}
-                    disabled={
-                      currentUserInfo.role == "employee" &&
-                      statusClass == "started" && 
-                      statusStates == "started"
-                        ? false
-                        : true
-                    }
+                    // disabled={
+                    //   currentUserInfo.role !== "employee" &&
+                    //   location.state?.status == "started" &&
+                    //   statusStates == "started"
+                    //     ? false
+                    //     : true
+                    // }
+                    disabled={true}
                   />
                 </div>
               </Col>
@@ -1271,17 +1283,19 @@ function Lessons() {
                     }}
                     format="HH:mm DD-MM-YYYY"
                     onChange={onChange123F}
+                    use12Hours
                     onOk={onOk123F}
                     allowClear={true}
                     value={timeFinish}
                     showNow={false}
-                    disabled={
-                      currentUserInfo.role == "employee" &&
-                      statusClass == "started" && 
-                      statusStates == "started"
-                        ? false
-                        : true
-                    }
+                    // disabled={
+                    //   currentUserInfo.role !== "employee" &&
+                    //   location.state?.status == "started" &&
+                    //   statusStates == "started"
+                    //     ? false
+                    //     : true
+                    // }
+                    disabled={true}
                   />
                 </div>
               </Col>
@@ -1358,13 +1372,35 @@ function Lessons() {
             <Col span={12}>
               <div className="author-info">
                 <Title level={5}>Lecturer</Title>
-                <Input value={currentUserInfo.name} disabled />
+                <Input value={location.state?.nameLecturer} disabled />
               </div>
             </Col>
+            {/* <Col span={12}>
+              <div className="author-info">
+                <Title level={5}>Lecturer</Title>
+                <Select
+                  style={{ width: "100%" }}
+                  onChange={(value) => {
+                    handleChangeE(value);
+                  }}
+                >
+                  {dataEmployee.map((item) => {
+                    if (item.role === "employee") {
+                      return (
+                        <Option key={item.ID} value={item.ID}>
+                          {item.name}
+                        </Option>
+                      );
+                    }
+                    return null; // Trả về null nếu item.status không phải 'active'
+                  })}
+                </Select>
+              </div>
+            </Col> */}
             <Col span={12}>
               <div className="author-info">
                 <Title level={5}>Class</Title>
-                <Input value={b} disabled />
+                <Input value={location.state?.nameClass} disabled />
               </div>
             </Col>
 
@@ -1376,6 +1412,7 @@ function Lessons() {
                     format: "HH:mm",
                   }}
                   format="YYYY-MM-DD HH:mm"
+                  use12Hours
                   onChange={onChangeCreateS}
                   onOk={onOkCreateS}
                   allowClear={true}
@@ -1391,6 +1428,7 @@ function Lessons() {
                   showTime={{
                     format: "HH:mm",
                   }}
+                  use12Hours
                   format="YYYY-MM-DD HH:mm"
                   onChange={onChangeCreateF}
                   onOk={onOkCreateF}
@@ -1404,7 +1442,7 @@ function Lessons() {
               <div className="author-info">
                 <Title level={5}>Status</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: "100%" }}
                   // onChange={(value) => {
                   //   handleChange1(value);
                   // }}
@@ -1421,7 +1459,7 @@ function Lessons() {
               <div className="author-info">
                 <Title level={5}>Room</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: "100%" }}
                   onChange={(value) => {
                     handleChange1(value);
                   }}
@@ -1462,4 +1500,4 @@ function Lessons() {
   );
 }
 
-export default observer(Lessons);
+export default observer(SchedulerTable);

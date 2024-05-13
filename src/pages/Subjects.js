@@ -119,19 +119,17 @@ function Subjects() {
   const handleChangeNameAdd = (value) => {
     setNameAdd(value);
   };
-
-  // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
   useEffect(() => {
     getAllSubjects();
-    // if (errorMessage) {
-    //   console.log("errorMessage0", errorMessage);
-    //   setVisible(true); // Hiển thị modal
-    //   const timer = setTimeout(() => {
-    //     setVisible(false); // Ẩn modal sau 3 giây
-    //   }, 1000);
-    //   return () => clearTimeout(timer); // Xóa timeout khi component unmount hoặc errorMessage thay đổi
-    // }
-  }, [createSubject, errorMessage, getAllSubjects, updateSubject]);
+    createSubject();
+    updateSubject()
+  }, []);
+  // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
+  // useEffect(() => {
+  //   getAllSubjects();
+  //   createSubject();
+  //   updateSubject()
+  // }, [createSubject, errorMessage, getAllSubjects, updateSubject]);
 
   // Cấu hình cột cho Table
   const columns = [
@@ -162,23 +160,25 @@ function Subjects() {
         </>
       ),
     },
-
-    {
-      title: "ACTION",
-      key: "action",
-      render: (text, record) => (
-        <>
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => showModal(record)}
-            disabled= {currentUserInfo.role == "employee" ? true : false}
-          >
-            Edit
-          </Button>
-        </>
-      ),
-    },
+    ...(currentUserInfo.role !== "employee"
+      ? [
+          {
+            title: "ACTION",
+            key: "action",
+            render: (text, record) => (
+              <>
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={() => showModal(record)}
+                >
+                  Edit
+                </Button>
+              </>
+            ),
+          },
+        ]
+      : []),
   ];
 
   // Cấu hình cột cho Table khi người dùng là nhân viên
@@ -245,19 +245,21 @@ function Subjects() {
                       footer={null}
                       onCancel={() => setVisible(false)}
                     >
-                      <h3>{errorMessage}</h3>
+                      <p><b>{errorMessage}</b></p>
                     </Modal>
                   )}
-
-                  <Button
-                    type="primary"
-                    className="tag-primary"
-                    onClick={(record) => showModalAdd(record)}
-                    style={{ align: "right" }}
-                    disabled= {currentUserInfo.role == "employee" ? true : false}
-                  >
-                    Add Subject
-                  </Button>
+                  {currentUserInfo.role == "employee" ? (
+                    ""
+                  ) : (
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      onClick={(record) => showModalAdd(record)}
+                      style={{ align: "right" }}
+                    >
+                      Add Subject
+                    </Button>
+                  )}
                 </>
               }
             >
@@ -266,8 +268,8 @@ function Subjects() {
                   columns={
                     // currentUserInfo.role === "employee"
                     //   ? columnsEmployee
-                    //   : 
-                      columns
+                    //   :
+                    columns
                   }
                   dataSource={dataA}
                   pagination={false}
@@ -308,7 +310,7 @@ function Subjects() {
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}
@@ -353,7 +355,7 @@ function Subjects() {
               <div className="author-info">
                 <Title level={5}>Status</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: "100%" }}
                   onChange={(value) => {
                     handleChangeAdd(value);
                   }}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Row,
   Col,
@@ -10,11 +10,13 @@ import {
   Select,
   Tag,
   Input,
-  Switch,
+  Space,
   DatePicker,
 } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import moment from "moment";
+import Highlighter from 'react-highlight-words';
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -58,6 +60,128 @@ function Pulpils() {
     createPupil,
     errorMessage,
   } = accountStore;
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+      const handleFilterClose = () => {
+        clearFilters && handleReset(clearFilters);
+        setSelectedKeys([]);
+        confirm(); // Xác nhận việc đóng filter
+        setSearchText('');
+        setSearchedColumn('');
+      };
+  
+      return (
+        <div
+          style={{
+            padding: 8,
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{
+              marginBottom: 8,
+              display: 'block',
+            }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={handleFilterClose} // Gọi hàm để đóng filter
+              // onClick={() => {
+              //   close();
+              // }}
+            >
+              Close
+            </Button>
+          </Space>
+        </div>
+      );
+    },
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
+  
+
+
+
 
   const validateEmail = (value) => {
     const regexEmail = new RegExp(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
@@ -149,6 +273,9 @@ function Pulpils() {
     setIsModalVisibleAdd(false);
   };
 
+  const handleFilter = (value) => {
+    console.log("aaaaaaaaa", value);
+  };
   const handleChange = (value) => {
     setStatusStates(value);
   };
@@ -237,6 +364,8 @@ function Pulpils() {
       key: "name",
       fixed: "left",
       width: "10%",
+      ...getColumnSearchProps('name'),
+      sortDirections: ['descend', 'ascend'],
       render: (name) => (
         <>
           <div className="avatar-info">
@@ -251,20 +380,26 @@ function Pulpils() {
       title: "EMAIL",
       dataIndex: "email",
       key: "email",
-      width: "15%",
+      width: "12%",
+      ...getColumnSearchProps('email'),
+      sortDirections: ['descend', 'ascend'],
       render: (email) => <a>{email}</a>,
     },
     {
       title: "PHONE",
       dataIndex: "phone",
       key: "phone",
-      render: (phone) => <div >{phone}</div>,
+      ...getColumnSearchProps('phone'),
+      sortDirections: ['descend', 'ascend'],
+      render: (phone) => <div>{phone}</div>,
     },
     {
       title: "PARENT'S NAME",
       dataIndex: "parent_name",
       key: "parent_name",
       width: "10%",
+      ...getColumnSearchProps('parent_name'),
+      sortDirections: ['descend', 'ascend'],
       render: (parent_name) => (
         <>
           <div className="avatar-info">
@@ -277,13 +412,17 @@ function Pulpils() {
       title: "PARENT'S EMAIL",
       dataIndex: "parent_email",
       key: "parent_email",
-      width: "15%",
+      width: "12%",
+      ...getColumnSearchProps('parent_email'),
+      sortDirections: ['descend', 'ascend'],
       render: (parent_email) => <a>{parent_email}</a>,
     },
     {
       title: "PARENT'S PHONE",
       dataIndex: "parent_phone",
       key: "parent_phone",
+      ...getColumnSearchProps('parent_phone'),
+      sortDirections: ['descend', 'ascend'],
       render: (parent_phone) => <div>{parent_phone}</div>,
     },
 
@@ -291,6 +430,8 @@ function Pulpils() {
       title: "GENDER",
       dataIndex: "gender",
       key: "gender",
+      ...getColumnSearchProps('gender'),
+      sortDirections: ['descend', 'ascend'],
       render: (gender) => (
         <div>
           {gender == 1 ? "Nam" : "Nữ"}
@@ -302,15 +443,17 @@ function Pulpils() {
       title: "BIRTH",
       dataIndex: "birth",
       key: "birth",
-      render: (birth) => (
-        <div >{moment(birth).format("DD-MM-YYYY")}</div>
-      ),
+      ...getColumnSearchProps('birth'),
+      sortDirections: ['descend', 'ascend'],
+      render: (birth) => <div>{moment(birth).format("DD-MM-YYYY")}</div>,
     },
     {
       title: "ADDRESS",
       dataIndex: "address",
       key: "address",
       width: "10%",
+      ...getColumnSearchProps('address'),
+      sortDirections: ['descend', 'ascend'],
       render: (address) => (
         <>
           <div className="semibold">{address}</div>
@@ -353,14 +496,9 @@ function Pulpils() {
   ];
   useEffect(() => {
     getAllPupils();
-  }, [
-    getAllPupils,
-    isModalVisible,
-    isModalVisibleAdd,
-    createPupil,
-    updatePupil,
-    errorMessage,
-  ]);
+    createPupil();
+    updatePupil();
+  }, []);
   const dataArray = Array.from(pupilList);
 
   return (
@@ -374,24 +512,34 @@ function Pulpils() {
               title="Pupil list"
               extra={
                 <>
-                  {/* {errorMessage && (
+                  {errorMessage && (
                     <Modal
                       title="Notification"
                       visible={visible}
                       footer={null}
                       onCancel={() => setVisible(false)}
                     >
-                      <h3>{errorMessage}</h3>
+                      <p>
+                        <b>{errorMessage}</b>
+                      </p>
                     </Modal>
-                  )} */}
-                  <Button
-                    type="primary"
-                    className="tag-primary"
-                    onClick={(record) => showModalAdd(record)}
-                    style={{ align: "right" }}
-                  >
-                    Add Pupil
-                  </Button>
+                  )}
+                  <Col span={24} md={24} className="header-control">
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      onClick={(record) => showModalAdd(record)}
+                      style={{ align: "right" }}
+                    >
+                      Add Pupil
+                    </Button>
+                    {/* <Input
+                      className="header-search"
+                      placeholder="Type here..."
+                      prefix={<SearchOutlined />}
+                      onChange={(e) => handleFilter(e.target.value)}
+                    /> */}
+                  </Col>
                 </>
               }
             >
@@ -507,7 +655,7 @@ function Pulpils() {
                 <div className="author-info">
                   <Title level={5}>Gender</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChangeGender(value);
                     }}
@@ -544,7 +692,7 @@ function Pulpils() {
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: '100%' }}
                     onChange={(value) => {
                       handleChange(value);
                     }}
@@ -658,7 +806,7 @@ function Pulpils() {
               <div className="author-info">
                 <Title level={5}>Gender</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: "100%" }}
                   onChange={(value) => {
                     handleChangeGenderAdd(value);
                   }}
@@ -693,7 +841,7 @@ function Pulpils() {
               <div className="author-info">
                 <Title level={5}>Status</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: '100%' }}
                   onChange={(value) => {
                     handleChangeAdd(value);
                   }}

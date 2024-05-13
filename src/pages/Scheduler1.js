@@ -16,7 +16,7 @@ import RadioGroup from "devextreme-react/radio-group";
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import Scheduler, { Resource, Editing } from "devextreme-react/scheduler";
+import Scheduler, { Resource } from "devextreme-react/scheduler";
 import * as AspNetData from "devextreme-aspnet-data-nojquery";
 const { Title } = Typography;
 const { Option } = Select;
@@ -68,10 +68,7 @@ function SchedulerTable() {
   //   setScheduleData([...scheduleData, newSchedule]);
   // };
   const A = JSON.parse(JSON.stringify(lessonList));
-  const dataA = Array.isArray(A)
-    ? A.filter((item) => item.status !== "canceled")
-    : [];
-
+  const dataA = A.filter((item) => item.status !== "canceled");
   const arrayA = [];
   for (let i = 0; i < dataA.length; i++) {
     const {
@@ -241,103 +238,103 @@ function SchedulerTable() {
 
   return (
     <>
-      {/* <div className="tabled">
+      <div className="tabled">
         <Row gutter={[24, 0]}>
-          <Col xs="24" xl={24}> */}
-      <Card
-        bordered={true}
-        className="criclebox tablespace mb-24"
-        title="Scheduler"
-        extra={
-          <>
-            {errorMessage && (
-              <Modal
-                title="Notification"
-                visible={visible}
-                footer={null}
-                onCancel={() => setVisible(false)}
-                // onOk={onOk}
-              >
-                <p>
-                  <b>{errorMessage}</b>
-                </p>
-              </Modal>
-            )}
-          </>
-        }
-      >
-        <div className="table-responsive">
-          <Scheduler
-            timeZone="Asia/Bangkok"
-            dataSource={arrayA}
-            views={views}
-            defaultCurrentView="month"
-            defaultCurrentDate={currentDate}
-            height={400}
-            startDayHour={0}
-            endDayHour={24}
-            descriptionExpr="descriptionExpr"
-            onAppointmentAdding={onAppointmentAdding}
-            onAppointmentUpdating={onAppointmentUpdating}
-          >
-            <Editing
-              allowAdding={true}
-              allowDeleting={false}
-              allowResizing={true}
-              allowDragging={true}
-              allowUpdating={true}
-            />
-            {/* <Resource
+          <Col xs="24" xl={24}>
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="Scheduler"
+              extra={
+                <>
+                  {errorMessage && (
+                    <Modal
+                      title="Notification"
+                      visible={visible}
+                      footer={null}
+                      onCancel={() => setVisible(false)}
+                      // onOk={onOk}
+                    >
+                      <p>
+                        <b>{errorMessage}</b>
+                      </p>
+                    </Modal>
+                  )}
+                </>
+              }
+            >
+              <div className="table-responsive">
+                <Scheduler
+                  timeZone="Asia/Bangkok"
+                  dataSource={arrayA}
+                  views={views}
+                  defaultCurrentView="day"
+                  defaultCurrentDate={currentDate}
+                  height={400}
+                  startDayHour={0}
+                  endDayHour={24}
+                  descriptionExpr="descriptionExpr"
+                  onAppointmentAdding={onAppointmentAdding}
+                  onAppointmentUpdating={onAppointmentUpdating}
+                >
+                  {/* <Editing
+          allowAdding={allowAdding}
+          allowDeleting={allowDeleting}
+          allowResizing={allowResizing}
+          allowDragging={allowDragging}
+          allowUpdating={allowUpdating}
+        /> */}
+                  {/* <Resource
                     fieldExpr="ownerId"
                     allowMultiple={false}
                     dataSource={arrayB}
                     label="Lecturer"
                     useColorAsDefault={currentResource === "Lecturer"}
                   /> */}
-            <Resource
-              fieldExpr="classID"
-              allowMultiple={false}
-              dataSource={arrayC}
-              label="Class"
-              useColorAsDefault={currentResource === "Class"}
-            />
-            <Resource
-              fieldExpr="roomID"
-              allowMultiple={false}
-              dataSource={arrayD}
-              label="Room"
-              useColorAsDefault={currentResource === "Room"}
-            />
-          </Scheduler>
-          <div
-            className="options"
-            style={{
-              backgroundColor: "rgba(191, 191, 191, 0.15)",
-            }}
-          >
-            <div
-              style={{
-                margin: "0 10px",
-              }}
-            >
-              <div className="caption">
-                <b>Use colors of:</b>
+                  <Resource
+                    fieldExpr="classID"
+                    allowMultiple={false}
+                    dataSource={arrayC}
+                    label="Class"
+                    useColorAsDefault={currentResource === "Class"}
+                  />
+                  <Resource
+                    fieldExpr="roomID"
+                    allowMultiple={false}
+                    dataSource={arrayD}
+                    label="Room"
+                    useColorAsDefault={currentResource === "Room"}
+                  />
+                </Scheduler>
+                <div
+                  className="options"
+                  style={{
+                    backgroundColor: "rgba(191, 191, 191, 0.15)",
+                  }}
+                >
+                  <div
+                    style={{
+                      margin: "0 10px",
+                    }}
+                  >
+                    <div className="caption">
+                      <b>Use colors of:</b>
+                    </div>
+                    <div className="option">
+                      <RadioGroup
+                        items={resourcesList}
+                        value={currentResource}
+                        layout="horizontal"
+                        onValueChanged={onRadioGroupValueChanged}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="option">
-                <RadioGroup
-                  items={resourcesList}
-                  value={currentResource}
-                  layout="horizontal"
-                  onValueChanged={onRadioGroupValueChanged}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-      {/* </Col>
+            </Card>
+          </Col>
         </Row>
-      </div> */}
+      </div>
     </>
   );
 }

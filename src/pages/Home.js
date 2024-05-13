@@ -373,12 +373,14 @@ function Home() {
                 <>
                   <div className="author-info">
                     <span style={{ fontSize: "1.5em" }}>Class: </span>
+                    {/* <h5>Class: </h5> */}
                     <Select
-                      style={{ width: 120 }}
+                      // style={{ width: "100%" }}
                       onChange={(value) => {
                         handleChange1(value);
                       }}
                       value={classTK}
+                      placeholder={"Choose class"}
                     >
                       {dataArray1.map((item) => (
                         <Option key={item.ID} value={item.ID}>
@@ -391,18 +393,18 @@ function Home() {
               }
             >
               <div className="table-responsive">
-                      <Table
-                        columns={columns}
-                        dataSource={
-                          // location.state == null ? newArrayLessonAll : newArrayLesson
-                          newArray
-                        }
-                        pagination={{ pageSize: 4, position: ['bottomCenter'] }}
-                        className="ant-border-space"
-                        loading={isLoading}
-                        bordered
-                      />
-                    </div>
+                <Table
+                  columns={columns}
+                  dataSource={
+                    // location.state == null ? newArrayLessonAll : newArrayLesson
+                    newArray
+                  }
+                  pagination={{ pageSize: 4, position: ["bottomCenter"] }}
+                  className="ant-border-space"
+                  loading={isLoading}
+                  bordered
+                />
+              </div>
             </Card>
           </Col>
         </Row>

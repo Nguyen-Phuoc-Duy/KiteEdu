@@ -118,20 +118,25 @@ function Subjects() {
     setName1(value);
   };
 
-  // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
   useEffect(() => {
     getAllRooms();
-  }, [
-    createSubject,
-    errorMessage,
-    getAllRooms,
-    getAllSubjects,
-    updateSubject,
-    createRoom,
-    updateRoom,
-    isModalVisible,
-    isModalVisible1,
-  ]);
+    updateRoom();
+    createSubject()
+  }, []);
+  // Lấy danh sách môn học khi component được render hoặc khi modal hiển thị/ẩn hoặc khi có sự thay đổi từ tạo hoặc cập nhật môn học
+  // useEffect(() => {
+  //   getAllRooms();
+  // }, [
+  //   createSubject,
+  //   errorMessage,
+  //   getAllRooms,
+  //   getAllSubjects,
+  //   updateSubject,
+  //   createRoom,
+  //   updateRoom,
+  //   isModalVisible,
+  //   isModalVisible1,
+  // ]);
 
   const columns = [
     {
@@ -166,70 +171,26 @@ function Subjects() {
       ),
     },
 
-    {
-      title: "ACTION",
-      key: "action",
-      // align: 'center',
-      render: (text, record) => (
-        <>
-          <Button
-            type="primary"
-            className="tag-primary"
-            onClick={() => showModal(record)}
-            disabled= {currentUserInfo.role == "employee" ? true : false}
-          >
-            Edit
-            {/* {record.username} */}
-          </Button>
-        </>
-      ),
-    },
-  ];
-  const columnsEmployee = [
-    {
-      title: "NAME",
-      dataIndex: "name",
-      key: "name",
-      render: (name) => (
-        <>
-          <div className="avatar-info">
-            <Title level={5}>{name}</Title>
-            <p>{name}</p>
-          </div>
-        </>
-      ),
-    },
-    {
-      title: "STATUS",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <>
-          {status === "empty" ? (
-            <Tag color="green">{status}</Tag>
-          ) : status === "fix" ? (
-            <Tag color="red">{status}</Tag>
-          ) : status === "full" ? (
-            <Tag color="blue">{status}</Tag>
-          ) : (
-            <Tag color="orange">{status}</Tag>
-          )}
-        </>
-      ),
-    },
-
-    {
-      title: "ACTION",
-      key: "action",
-      // align: 'center',
-      render: (text, record) => (
-        <>
-          <Button type="primary" className="tag-primary" disabled>
-            Edit
-          </Button>
-        </>
-      ),
-    },
+    ...(currentUserInfo.role !== "employee"
+      ? [
+          {
+            title: "ACTION",
+            key: "action",
+            // align: 'center',
+            render: (text, record) => (
+              <>
+                <Button
+                  type="primary"
+                  className="tag-primary"
+                  onClick={() => showModal(record)}
+                >
+                  Edit
+                </Button>
+              </>
+            ),
+          },
+        ]
+      : []),
   ];
 
   // Chuyển đổi dữ liệu thành mảng và sắp xếp lại theo thứ tự
@@ -257,37 +218,34 @@ function Subjects() {
               title="Room List"
               extra={
                 <>
-                  {/* {errorMessage && (
+                  {errorMessage && (
                     <Modal
                       title="Notification"
                       visible={visible}
                       footer={null}
                       onCancel={() => setVisible(false)}
                     >
-                      <h3>{errorMessage}</h3>
+                      <p><b>{errorMessage}</b></p>
                     </Modal>
-                  )} */}
-
-                  <Button
-                    type="primary"
-                    className="tag-primary"
-                    onClick={(record) => showModal1(record)}
-                    style={{ align: "right" }}
-                    disabled= {currentUserInfo.role == "employee" ? true : false}
-                  >
-                    Add Room
-                  </Button>
+                  )}
+                  {currentUserInfo.role == "employee" ? (
+                    ""
+                  ) : (
+                    <Button
+                      type="primary"
+                      className="tag-primary"
+                      onClick={(record) => showModal1(record)}
+                      style={{ align: "right" }}
+                    >
+                      Add Room
+                    </Button>
+                  )}
                 </>
               }
             >
               <div className="table-responsive">
                 <Table
-                  columns={
-                    // currentUserInfo.role === "employee"
-                    //   ? columnsEmployee
-                    //   : 
-                      columns
-                  }
+                  columns={columns}
                   dataSource={dataArray}
                   pagination={false}
                   rowKey={(record) => record.ID}
@@ -327,7 +285,7 @@ function Subjects() {
                 <div className="author-info">
                   <Title level={5}>Status</Title>
                   <Select
-                    style={{ width: 120 }}
+                    style={{ width: "100%" }}
                     onChange={(value) => {
                       handleChange(value);
                     }}
@@ -373,12 +331,12 @@ function Subjects() {
               <div className="author-info">
                 <Title level={5}>Status</Title>
                 <Select
-                  style={{ width: 120 }}
+                  style={{ width: "100%" }}
                   onChange={(value) => {
                     handleChangeAdd(value);
                   }}
                   rules={[{ required: true, message: "Please input status!" }]}
-                  value={statusStates1 || "active"}
+                  value={statusStates1 || "empty"}
                   disabled
                 >
                   <Option value="empty">empty</Option>

@@ -31,6 +31,7 @@ import {
   SolutionOutlined,
   ProfileOutlined,
   PieChartOutlined,
+  BarsOutlined,
   LineChartOutlined,
 } from "@ant-design/icons";
 import { useStore } from "../../stores/store";
@@ -233,6 +234,7 @@ function Sidenav({ color }) {
             <span className="label">Dashboard</span>
           </NavLink>
         </Menu.Item>
+        
         {/* <Menu.Item key="2">
           <NavLink to="/tables">
             <span
@@ -272,6 +274,14 @@ function Sidenav({ color }) {
             <span className="label">RTL</span>
           </NavLink>
         </Menu.Item> */}
+        <Menu.Item key="111">
+          <NavLink to="/scheduler">
+            <span className="icon">
+            <BarsOutlined />
+            </span>
+            <span className="label">Scheduler</span>
+          </NavLink>
+        </Menu.Item>
         <Menu.Item key="12">
           <NavLink to="/subjects">
             <span className="icon">
