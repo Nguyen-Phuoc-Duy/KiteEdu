@@ -6,6 +6,7 @@ import LineChart from "../components/chart/LineChart";
 import { Link, useHistory } from "react-router-dom";
 import { useStore } from "../stores/store";
 import { observer } from "mobx-react-lite";
+import Cookies from "js-cookie";
 function Home() {
   const { Title, Paragraph } = Typography;
   const history = useHistory();
@@ -28,7 +29,7 @@ function Home() {
   const dataArray1 = Array.from(ClassByUser);
   let countClassByUser = dataArray1.length;
   useEffect(() => {
-    const userInfo = localStorage.getItem("userInfo");
+    const userInfo = localStorage.getItem("userInfo") || Cookies.get("userInfo");
     if (!userInfo || userInfo.trim() === "") {
       history.push("/sign-in");
     }

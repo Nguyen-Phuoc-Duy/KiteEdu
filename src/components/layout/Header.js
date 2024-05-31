@@ -28,7 +28,7 @@ import {
   Popover,
   Menu,
 } from "antd";
-
+import Cookies from 'js-cookie';
 import { useStore } from "../../stores/store";
 import {
   SearchOutlined,
@@ -288,7 +288,10 @@ function Header({
         </Menu.Item>
       </Link> */}
       <Link to="/sign-in" className="btn-sign-in">
-        <Menu.Item danger onClick={() => localStorage.removeItem("userInfo")} >
+        {/* <Menu.Item danger onClick={() => localStorage.removeItem("userInfo")} >
+          Sign out
+        </Menu.Item> */}
+        <Menu.Item danger onClick={() => Cookies.remove('userInfo')} >
           Sign out
         </Menu.Item>
       </Link>

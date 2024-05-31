@@ -1,9 +1,10 @@
 import { autorun, makeAutoObservable, runInAction } from "mobx";
 import axiosAgents from "../agent/axiosAgent";
 import { jwtDecode } from "jwt-decode";
-
+import Cookies from "js-cookie";
+// interceptor trong axios về login logout, cho ví dụ cụ thể
 export default class AccountStore {
-  currentUserToken = localStorage.getItem("userInfo") || undefined;
+  currentUserToken = localStorage.getItem("userInfo") || Cookies.get("userInfo") || undefined;
   currentUserInfo = undefined;
   errorMessage = undefined;
   errorCode = undefined;
@@ -48,21 +49,40 @@ export default class AccountStore {
     });
   };
 
+  // login = async (credentials) => {
+  //   this.setIsLoading(true);
+  //   await axiosAgents.AuthAction.login(credentials).then((response) => {
+  //     if (response.errCode === 200) {
+  //       localStorage.setItem("userInfo", response.data.token);
+  //       window.location.replace("/scheduler");
+  //     } else {
+  //       runInAction(() => {
+  //         this.errorMessageLogin = response.errMsg;
+  //       });
+  //     }
+  //   });
+  //   this.setIsLoading(false);
+  // };
   login = async (credentials) => {
     this.setIsLoading(true);
-    await axiosAgents.AuthAction.login(credentials).then((response) => {
+    try {
+      const response = await axiosAgents.AuthAction.login(credentials);
       if (response.errCode === 200) {
-        localStorage.setItem("userInfo", response.data.token);
+        // Lưu token vào cookies
+        Cookies.set("userInfo", response.data.token, { expires: 7, secure: true, sameSite: "Strict" });
+        // Điều hướng đến trang "/scheduler"
         window.location.replace("/scheduler");
       } else {
         runInAction(() => {
           this.errorMessageLogin = response.errMsg;
         });
       }
-    });
-    this.setIsLoading(false);
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      this.setIsLoading(false);
+    }
   };
-
   getAllUsers = async () => {
     this.setIsLoading(true);
     await axiosAgents.AuthAction.getAllUsers().then((response) => {
